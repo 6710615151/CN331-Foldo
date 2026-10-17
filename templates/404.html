@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Page not found — FOLDO{% endblock %}
+
+{% block content %}
+<section class="foldo-section">
+  <div class="container">
+    <div class="foldo-state">
+      <p class="foldo-state__code">404</p>
+      <h1 class="foldo-section__title">We couldn't find that page</h1>
+      <p class="foldo-section__subtitle">
+        The page may have moved, or the link may be incorrect.
+      </p>
+      <a class="btn btn-foldo mt-2" href="{% url 'core:landing' %}">Back to dashboard</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

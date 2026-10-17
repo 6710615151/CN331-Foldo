@@ -1,0 +1,14 @@
+{% comment %}
+  Minimal navigation: the logo only. The landing page is a single screen, so
+  there is nothing to scroll to. "Log in" is added with the authentication Issue.
+{% endcomment %}
+<header class="sticky-top">
+  <nav class="navbar foldo-navbar" aria-label="เมนูหลัก">
+    <div class="container">
+      <a class="navbar-brand foldo-brand" href="{% url 'core:landing' %}" lang="en">
+        {% include "partials/logo_mark.html" %}
+        <span class="foldo-brand__name">Foldo</span>
+      </a>
+    </div>
+  </nav>
+</header>

@@ -1,0 +1,8 @@
+{% comment %}
+  Empty slot for a designer-supplied graphic (see static/images/README.md).
+  Params: label (shown on the placeholder), ratio (CSS aspect-ratio, default "16 / 10"), class.
+  When the asset is ready, replace the include with e.g.
+  <img class="foldo-asset-img {{ class }}" src="{% static 'images/<file>' %}" alt="">
+{% endcomment %}
+<span class="foldo-asset {{ class|default:'' }}" data-asset="{{ label|default:'' }}"
+      style="--ratio: {{ ratio|default:'16 / 10' }}" aria-hidden="true"></span>

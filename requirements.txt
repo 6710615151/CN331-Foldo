@@ -1,0 +1,26 @@
+# ---------------------------------------------------------------------------
+# FOLDO — Python dependencies
+# ---------------------------------------------------------------------------
+# Only the packages the course stack actually requires. Each non-standard
+# dependency is explained below so the team understands why it is here.
+#
+# Install with:  pip install -r requirements.txt
+# ---------------------------------------------------------------------------
+
+# Web framework (course requirement: Django 5.x, LTS line).
+# Django 5.2 is the current LTS release and is supported until April 2028.
+Django>=5.2,<5.3
+
+# PostgreSQL driver for production deployments (course requirement).
+# "psycopg" is the modern psycopg 3 driver; the [binary] extra ships
+# pre-built wheels so no compiler is needed. Django's ORM talks to
+# PostgreSQL through this driver.
+psycopg[binary]>=3.2,<4.0
+
+# Redis client library (course requirement: Redis for caching and future
+# task-queue integration). Used with Django's cache framework; no Celery.
+redis>=5.0,<7.0
+
+# Loads environment variables from a local .env file during development so
+# that settings.py can stay free of hardcoded secrets and DB credentials.
+python-dotenv>=1.0,<2.0

@@ -1,0 +1,566 @@
+:root,
+[data-bs-theme="dark"] {
+  /* Surfaces — deep navy canvas with slightly lifted panels. */
+  --foldo-bg: #0b1530;
+  --foldo-bg-deep: #08102a;
+  --foldo-surface: #111d40;
+  --foldo-surface-2: #17264f;
+  --foldo-border: rgba(126, 146, 255, 0.18);
+  --foldo-border-strong: rgba(126, 146, 255, 0.45);
+
+  /* Text */
+  --foldo-ink: #f5f7fb;
+  --foldo-muted: #a9b4d0;
+  --foldo-ink-dark: #0b1530;
+  --foldo-muted-dark: #5b6183;
+
+  /* Brand palette */
+  --foldo-blue: #1d4ed8;
+  --foldo-blue-strong: #2f5fe6;
+  --foldo-blue-text: #7ea2ff;
+  --foldo-lime: #b8f34a;
+  --foldo-lime-strong: #a3dd33;
+  --foldo-pink: #f725a8;
+  --foldo-purple: #6425ff;
+  --foldo-violet: #8a5cff;
+  --foldo-orange: #ff6a2b;
+
+  /* Legacy aliases used by other pages. */
+  --foldo-accent: var(--foldo-blue);
+  --foldo-accent-strong: var(--foldo-blue-strong);
+  --foldo-accent-soft: rgba(29, 78, 216, 0.16);
+
+  --foldo-radius: 10px;
+  --foldo-radius-lg: 16px;
+
+  --foldo-space-1: 0.5rem;
+  --foldo-space-2: 1rem;
+  --foldo-space-3: 1.5rem;
+  --foldo-space-4: 2.5rem;
+  --foldo-space-5: 5rem;
+
+  --foldo-shadow-sm: 0 2px 6px rgba(3, 6, 30, 0.35);
+  --foldo-shadow-md: 0 18px 40px rgba(3, 6, 30, 0.5);
+
+  --foldo-font-sans: "Inter", "Noto Sans Thai", system-ui, -apple-system,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --foldo-font-display: "Prompt", "Inter", "Noto Sans Thai", system-ui, sans-serif;
+
+  /* Bootstrap integration: dark theme picks up FOLDO's palette. */
+  --bs-body-bg: var(--foldo-bg);
+  --bs-body-color: var(--foldo-ink);
+  --bs-secondary-color: var(--foldo-muted);
+  --bs-border-color: var(--foldo-border);
+  --bs-primary: #1d4ed8;
+  --bs-primary-rgb: 29, 78, 216;
+  --bs-link-color: var(--foldo-blue-text);
+  --bs-link-color-rgb: 126, 162, 255;
+  --bs-link-hover-color: var(--foldo-lime);
+  --bs-link-hover-color-rgb: 184, 243, 74;
+}
+
+/* --- Base --------------------------------------------------------------- */
+body {
+  font-family: var(--foldo-font-sans);
+  color: var(--foldo-ink);
+  background-color: var(--foldo-bg);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.6;
+}
+
+/* Thai needs taller lines so tone marks and vowels never collide. */
+html:lang(th) body {
+  line-height: 1.75;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--foldo-font-display);
+  letter-spacing: -0.01em;
+  font-weight: 600;
+}
+
+a {
+  color: var(--foldo-blue-text);
+}
+
+a:hover {
+  color: var(--foldo-lime);
+}
+
+/* Visible, consistent keyboard focus — lime reads well on navy. */
+:focus-visible {
+  outline: 3px solid var(--foldo-lime);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Bootstrap replaces the outline with a faint shadow on these; restore it. */
+.foldo-brand:focus-visible {
+  outline: 3px solid var(--foldo-lime);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+/* Anchored sections clear the sticky navbar. */
+section[id] {
+  scroll-margin-top: 5rem;
+}
+
+.foldo-text-lime {
+  color: var(--foldo-lime);
+}
+
+.foldo-arrow {
+  display: inline-block;
+  margin-left: 0.35rem;
+  transition: transform 0.2s ease;
+}
+
+.btn:hover .foldo-arrow {
+  transform: translateX(3px);
+}
+
+/* --- Skip link ---------------------------------------------------------- */
+.foldo-skip-link {
+  position: absolute;
+  left: var(--foldo-space-2);
+  top: -3rem;
+  z-index: 1080;
+  background: var(--foldo-lime);
+  color: var(--foldo-ink-dark);
+  font-weight: 600;
+  padding: 0.6rem 1rem;
+  border-radius: var(--foldo-radius);
+  text-decoration: none;
+  transition: top 0.15s ease-in-out;
+}
+
+.foldo-skip-link:focus {
+  top: var(--foldo-space-2);
+  color: var(--foldo-ink-dark);
+}
+
+/* --- Navigation --------------------------------------------------------- */
+.foldo-navbar {
+  background: var(--foldo-bg);
+  border-bottom: 1px solid transparent;
+  padding: 0.85rem 0;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.foldo-navbar.is-scrolled {
+  border-bottom-color: var(--foldo-border);
+  box-shadow: var(--foldo-shadow-sm);
+}
+
+.foldo-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--foldo-font-display);
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: -0.01em;
+  color: var(--foldo-ink);
+  text-decoration: none;
+}
+
+.foldo-brand:hover {
+  color: var(--foldo-ink);
+}
+
+.foldo-brand--lg {
+  font-size: 1.75rem;
+}
+
+.foldo-navbar .container {
+  flex-wrap: nowrap;
+}
+
+.btn-foldo,
+.btn-outline-foldo,
+.btn-lime {
+  --bs-btn-font-weight: 600;
+  --bs-btn-padding-x: 1.4rem;
+  --bs-btn-padding-y: 0.6rem;
+  --bs-btn-font-size: 0.95rem;
+  --bs-btn-border-radius: 6px;
+  --bs-btn-border-width: 1.5px;
+  --bs-btn-focus-box-shadow: none;
+}
+
+/* Bootstrap swaps the outline for an animated shadow; use an immediate,
+   offset outline instead so it also reads around the lime button. */
+.btn-foldo:focus-visible,
+.btn-outline-foldo:focus-visible,
+.btn-lime:focus-visible {
+  outline: 3px solid var(--foldo-lime);
+  outline-offset: 3px;
+}
+
+.btn-lg.btn-foldo,
+.btn-lg.btn-outline-foldo,
+.btn-lg.btn-lime {
+  --bs-btn-padding-x: 1.7rem;
+  --bs-btn-padding-y: 0.8rem;
+  --bs-btn-font-size: 1rem;
+}
+
+.btn-foldo {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: var(--foldo-blue);
+  --bs-btn-border-color: var(--foldo-blue);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--foldo-blue-strong);
+  --bs-btn-hover-border-color: var(--foldo-blue-strong);
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: var(--foldo-blue);
+  --bs-btn-active-border-color: var(--foldo-blue);
+}
+
+.btn-outline-foldo {
+  --bs-btn-color: var(--foldo-ink);
+  --bs-btn-bg: transparent;
+  --bs-btn-border-color: var(--foldo-border-strong);
+  --bs-btn-hover-color: var(--foldo-ink);
+  --bs-btn-hover-bg: rgba(29, 78, 216, 0.18);
+  --bs-btn-hover-border-color: var(--foldo-blue-strong);
+  --bs-btn-active-color: var(--foldo-ink);
+  --bs-btn-active-bg: rgba(29, 78, 216, 0.28);
+  --bs-btn-active-border-color: var(--foldo-blue-strong);
+}
+
+.btn-lime {
+  --bs-btn-color: var(--foldo-ink-dark);
+  --bs-btn-bg: var(--foldo-lime);
+  --bs-btn-border-color: var(--foldo-lime);
+  --bs-btn-hover-color: var(--foldo-ink-dark);
+  --bs-btn-hover-bg: #c9f76b;
+  --bs-btn-hover-border-color: #c9f76b;
+  --bs-btn-active-color: var(--foldo-ink-dark);
+  --bs-btn-active-bg: var(--foldo-lime-strong);
+  --bs-btn-active-border-color: var(--foldo-lime-strong);
+}
+
+/* --- Asset slots (designer graphics go here later) --------------------- */
+.foldo-asset {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: var(--ratio, 16 / 10);
+  border: 1.5px dashed var(--foldo-border-strong);
+  border-radius: var(--asset-radius, 12px);
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(126, 146, 255, 0.07) 0 10px,
+    transparent 10px 20px
+  );
+  color: var(--foldo-muted);
+}
+
+.foldo-asset::after {
+  content: attr(data-asset);
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 0.5rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  color: inherit;
+}
+
+.foldo-asset-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.foldo-asset--logo {
+  flex: 0 0 auto;
+  width: 2.1rem;
+  aspect-ratio: 1;
+  --asset-radius: 8px;
+}
+
+.foldo-brand--lg .foldo-asset--logo {
+  width: 2.4rem;
+}
+
+.foldo-section {
+  padding: 5.5rem 0;
+  border-top: 1px solid var(--foldo-border);
+  overflow-x: clip;
+}
+
+.foldo-section__title {
+  margin-bottom: 0.75rem;
+  font-size: clamp(1.75rem, 3.4vw, 2.75rem);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.foldo-section__subtitle {
+  max-width: 40rem;
+  color: var(--foldo-muted);
+}
+
+/* --- Hero (landing key visual) ------------------------------------------ */
+/* Full-bleed electric-blue screen: copy on the left, illustration on the
+   right, lime + orange bands anchored to the bottom-left edge. */
+main:has(> .foldo-hero) {
+  display: flex;
+  flex-direction: column;
+}
+
+.foldo-hero {
+  --hero-bg: #1a34d8;
+  --hero-band-h: clamp(2.25rem, 6vh, 3.5rem);
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 4rem 0 calc(var(--hero-band-h) * 2 + 3rem);
+  overflow: hidden;
+  background: var(--hero-bg);
+}
+
+.foldo-hero__inner {
+  position: relative;
+  z-index: 1;
+}
+
+.foldo-hero__copy {
+  max-width: 42rem;
+}
+
+/* Large brand lock-up: logo mark + wordmark. */
+.foldo-hero__logo {
+  display: flex;
+  align-items: center;
+  gap: 0.18em;
+  margin: 0 0 clamp(1.5rem, 5vh, 3rem);
+  font-family: var(--foldo-font-display);
+  font-size: clamp(4.5rem, min(11vw, 18vh), 10rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+}
+
+.foldo-asset.foldo-hero__mark {
+  width: 1.05em;
+  --asset-radius: 0.18em;
+  border-color: rgba(255, 255, 255, 0.55);
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.foldo-hero__title {
+  margin-bottom: 1.5rem;
+  font-size: clamp(2.5rem, 4.6vw, 4rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+
+.foldo-hero__title .foldo-text-lime {
+  display: block;
+}
+
+.foldo-hero__lead {
+  margin: 0;
+  font-size: clamp(1.15rem, 1.7vw, 1.5rem);
+  line-height: 1.7;
+  color: #ffffff;
+}
+
+/* Two classes so it outranks the shared .btn-lg.btn-lime sizing. */
+.btn-lg.foldo-hero__cta {
+  --bs-btn-padding-x: 2.75rem;
+  --bs-btn-padding-y: 1.15rem;
+  --bs-btn-font-size: clamp(1.2rem, 1.6vw, 1.45rem);
+  --bs-btn-border-radius: 10px;
+  margin-top: 2.25rem;
+}
+
+/* Not wired yet: a visible but inert button with a "coming soon" tag. */
+.btn-lg.foldo-hero__cta:disabled {
+  --bs-btn-disabled-color: var(--foldo-ink-dark);
+  --bs-btn-disabled-bg: var(--foldo-lime);
+  --bs-btn-disabled-border-color: var(--foldo-lime);
+  --bs-btn-disabled-opacity: 1;
+  cursor: not-allowed;
+}
+
+.foldo-hero__soon {
+  margin-left: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: var(--foldo-ink-dark);
+  color: var(--foldo-lime);
+  font-size: 0.7em;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+.foldo-arrow--out {
+  margin-left: 0.3rem;
+}
+
+.btn:hover .foldo-arrow--out {
+  transform: translate(2px, -2px);
+}
+
+/* Illustration slot: right half, anchored to the bottom edge, behind the copy. */
+.foldo-hero__visual {
+  position: absolute;
+  top: 6%;
+  right: 3%;
+  bottom: 0;
+  z-index: 0;
+  width: 54%;
+  pointer-events: none;
+}
+
+.foldo-asset.foldo-hero__placeholder {
+  height: 100%;
+  aspect-ratio: auto;
+  --asset-radius: 24px 24px 0 0;
+  border: 2px dashed rgba(255, 255, 255, 0.5);
+  border-bottom: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.07) 0 12px,
+    transparent 12px 24px
+  );
+  color: #e3e8ff;
+}
+
+.foldo-asset.foldo-hero__placeholder::after {
+  inset: 1.25rem 1.5rem auto auto;
+  display: block;
+  padding: 0;
+}
+
+/* Bottom-left colour bands. */
+.foldo-hero__bands {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  display: grid;
+  width: 48%;
+}
+
+.foldo-hero__band {
+  display: block;
+  height: var(--hero-band-h);
+}
+
+.foldo-hero__band--lime {
+  width: 97%;
+  background: var(--foldo-lime);
+}
+
+.foldo-hero__band--orange {
+  width: 100%;
+  background: var(--foldo-orange);
+}
+
+/* --- Error pages (404 / 500) ------------------------------------------- */
+.foldo-state {
+  max-width: 34rem;
+  margin: 0 auto;
+  padding: var(--foldo-space-4) 0;
+  text-align: center;
+}
+
+.foldo-state__code {
+  font-family: var(--foldo-font-display);
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--foldo-lime);
+  margin-bottom: 0.25rem;
+}
+
+/* --- Footer ------------------------------------------------------------- */
+.foldo-footer {
+  background: var(--foldo-bg-deep);
+  border-top: 1px solid var(--foldo-border);
+}
+
+.foldo-footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem 2.5rem;
+  padding: 1.75rem 0;
+}
+
+.foldo-footer__meta {
+  margin-right: auto;
+}
+
+.foldo-footer__meta {
+  font-size: 0.85rem;
+  color: var(--foldo-muted);
+  text-decoration: none;
+}
+
+/* --- Responsive --------------------------------------------------------- */
+@media (max-width: 991.98px) {
+  .foldo-hero {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 3rem 0 0;
+  }
+
+  .foldo-hero__copy {
+    max-width: none;
+  }
+
+  /* Stack: copy, then the illustration, then the bands. */
+  .foldo-hero__visual {
+    position: relative;
+    inset: auto;
+    width: auto;
+    margin: 2.5rem 1rem 0;
+    order: 1;
+  }
+
+  .foldo-asset.foldo-hero__placeholder {
+    height: auto;
+    aspect-ratio: 1 / 0.9;
+  }
+
+  .foldo-hero__bands {
+    position: relative;
+    order: 2;
+    width: 88%;
+  }
+
+  .foldo-section {
+    padding: 4rem 0;
+  }
+}
+
+/* --- Reduced motion ----------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}

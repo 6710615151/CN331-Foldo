@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Development guide
+    url: https://github.com/6710615151/CN331-Foldo/blob/main/docs/DEVELOPMENT.md
+    about: Setup, running the project and testing.
+  - name: Git workflow
+    url: https://github.com/6710615151/CN331-Foldo/blob/main/docs/GIT_WORKFLOW.md
+    about: Branching, commits, Pull Requests and code review.

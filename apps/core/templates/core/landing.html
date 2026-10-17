@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block html_lang %}th{% endblock %}
+{% block title %}FOLDO — One Profile. Many Forms.{% endblock %}
+{% block meta_description %}FOLDO — เก็บทุกผลงานไว้ที่เดียว แล้วสร้าง Portfolio ได้หลายเวอร์ชัน{% endblock %}
+
+{# Full-bleed hero: the landing page carries its own large logo, so no navbar or footer. #}
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% comment %}
+  Single-screen landing page, laid out like the brand key visual:
+  large logo → headline → Thai supporting line → Get Started on the left,
+  the illustration on the right, lime + orange bands along the bottom-left.
+  Logo and illustration are designer slots (see static/images/README.md).
+{% endcomment %}
+
+{% block content %}
+<section class="foldo-hero" aria-labelledby="hero-heading">
+  {# ASSET SLOT: hero illustration (student + University / Career / Creative / Freelance cards). #}
+  <div class="foldo-hero__visual">
+    {% include "partials/asset_slot.html" with label="Hero illustration · 1400 × 1300" class="foldo-hero__placeholder" %}
+  </div>
+
+  <div class="container foldo-hero__inner">
+    <div class="foldo-hero__copy">
+      <p class="foldo-hero__logo" lang="en">
+        {% include "partials/logo_mark.html" with class="foldo-hero__mark" %}
+        <span>Foldo</span>
+      </p>
+
+      <h1 id="hero-heading" class="foldo-hero__title" lang="en">
+        One Profile. <span class="foldo-text-lime">Many Forms.</span>
+      </h1>
+      <p class="foldo-hero__lead">
+        เก็บทุกผลงานไว้ที่เดียว<br>
+        แล้วสร้าง <span lang="en">Portfolio</span> ได้หลายเวอร์ชัน
+      </p>
+
+      {# Not wired yet: the app (sign-up, profile) arrives with FOLDO-02 and the authentication Issue. #}
+      <button type="button" class="btn btn-lime btn-lg foldo-hero__cta" disabled aria-describedby="hero-cta-soon">
+        <span lang="en">Get Started</span> <span class="foldo-arrow foldo-arrow--out" aria-hidden="true">&nearr;</span>
+        <span class="foldo-hero__soon" id="hero-cta-soon">เร็วๆ นี้</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="foldo-hero__bands" aria-hidden="true">
+    <span class="foldo-hero__band foldo-hero__band--lime"></span>
+    <span class="foldo-hero__band foldo-hero__band--orange"></span>
+  </div>
+</section>
+{% endblock %}

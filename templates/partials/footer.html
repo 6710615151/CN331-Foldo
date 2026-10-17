@@ -1,0 +1,15 @@
+{# Minimal footer. Legal pages, contact details and social links are added only once they really exist. #}
+<footer class="foldo-footer mt-auto">
+  <div class="container">
+    <div class="foldo-footer__inner">
+      <a class="foldo-brand foldo-brand--lg" href="{% url 'core:landing' %}" lang="en">
+        {% include "partials/logo_mark.html" %}
+        <span class="foldo-brand__name">Foldo</span>
+      </a>
+
+      <p class="foldo-footer__meta mb-0">
+        <span lang="en">One Profile. Many Forms.</span> &middot; โปรเจกต์รายวิชา CN331 Software Engineering
+      </p>
+    </div>
+  </div>
+</footer>

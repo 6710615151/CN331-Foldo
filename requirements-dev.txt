@@ -1,0 +1,23 @@
+# ---------------------------------------------------------------------------
+# FOLDO — development-only dependencies
+# ---------------------------------------------------------------------------
+# These packages make local development faster but are NOT needed in
+# production. Install everything with:
+#
+#     pip install -r requirements-dev.txt
+#
+# (This file also pulls in the production requirements below.)
+# ---------------------------------------------------------------------------
+
+-r requirements.txt
+
+# Auto-reload the browser when Python code, templates or static files change.
+# Active only when DEBUG=True (see INSTALLED_APPS/MIDDLEWARE in settings.py).
+# https://github.com/adamchainz/django-browser-reload
+django-browser-reload>=1.21,<2.0
+
+# Efficiency upgrade for runserver's autoreloader: watches files via the OS
+# instead of polling, so much lower CPU usage and faster reloads on macOS.
+# Active only when DEBUG=True (see INSTALLED_APPS in settings.py).
+# https://github.com/adamchainz/django-watchfiles
+django-watchfiles>=1.4,<2.0

@@ -1,0 +1,71 @@
+# ---------------------------------------------------------------------------
+# FOLDO — Git ignore rules
+# ---------------------------------------------------------------------------
+# Keep secrets, virtual environments, caches, local databases, generated
+# files and IDE noise out of version control.
+# ---------------------------------------------------------------------------
+
+# --- Python ---------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# --- Virtual environments -------------------------------------------------
+.venv/
+venv/
+env/
+ENV/
+.python-version
+
+# --- Django ---------------------------------------------------------------
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+/media/
+/staticfiles/
+
+# --- Environment / secrets (commit .env.example ONLY) ---------------------
+.env
+.env.*
+!.env.example
+
+# --- Redis local data -----------------------------------------------------
+redis/dump.rdb
+
+# --- Testing / coverage ---------------------------------------------------
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.tox/
+coverage.xml
+*.cover
+
+# --- Editors / IDEs -------------------------------------------------------
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# --- OS -------------------------------------------------------------------
+Thumbs.db
