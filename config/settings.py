@@ -12,7 +12,7 @@ loaded from a local ``.env`` file when one is present. Never commit ``.env``.
 
 import os
 from pathlib import Path
-
+from config import secretpass
 from dotenv import load_dotenv
 
 # ---------------------------------------------------------------------------
@@ -313,3 +313,18 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Version string surfaced by the health-check endpoint. Kept in settings so it
 # is easy to bump and never leaks anything sensitive.
 FOLDO_VERSION = env_str("FOLDO_VERSION", "0.1.0")
+
+LOGIN_REDIRECT_URL = "/accounts/dashboard/"         # where to go after login
+LOGOUT_REDIRECT_URL = "/accounts/login/"            # where to go after logout
+
+# email setting 
+# for this case use foldoportfolio@gmail.com
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'foldoportfolio@gmail.com'
+EMAIL_HOST_PASSWORD = secretpass.apppass;
+DEFAULT_FROM_EMAIL = 'foldoportfolio@gmail.com'
+

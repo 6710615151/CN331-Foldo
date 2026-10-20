@@ -1,0 +1,2 @@
+# get mail app password your self !
+apppass = "??????"
