@@ -34,6 +34,11 @@ from .forms import BootstrapFormMixin
 from .validators import MAX_SHORT_NAME
 # ------------------------------------------------------------------------
 
+# -------------------FOLDO-10: imports for the 403 page test-------------------
+from django.core.exceptions import PermissionDenied
+from django.urls import include, path
+# ------------------------------------------------------------------------
+
 class LandingViewTests(TestCase):
     """The public landing / dashboard shell must render correctly."""
 
@@ -254,3 +259,26 @@ class FormDisplayTests(SimpleTestCase):
         html = self._render({"name": "<script>alert(1)</script>" * 10})
         self.assertNotIn("<script>alert(1)</script>", html)
         self.assertIn("&lt;script&gt;", html)
+
+# ---------------------------------------------------------------------------
+# FOLDO-10: 403 "access denied" page (templates/403.html)
+# ---------------------------------------------------------------------------
+
+
+def _always_forbidden(request):
+    raise PermissionDenied
+
+
+urlpatterns = [
+    path("", include("apps.core.urls")),
+    path("forbidden/", _always_forbidden),
+]
+
+
+@override_settings(ROOT_URLCONF="apps.core.tests")
+class PermissionDeniedPageTests(TestCase):
+    def test_custom_403_page_is_used(self):
+        response = self.client.get("/forbidden/")
+        self.assertEqual(response.status_code, 403)
+        self.assertTemplateUsed(response, "403.html")
+        self.assertContains(response, "have access to this page", status_code=403)
