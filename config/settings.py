@@ -328,6 +328,8 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'foldoportfolio@gmail.com'
-EMAIL_HOST_PASSWORD = secretpass.apppass;
+# stash password in secretpass
+#EMAIL_HOST_PASSWORD = secretpass.apppass;
+EMAIL_HOST_PASSWORD = "??????";
 DEFAULT_FROM_EMAIL = 'foldoportfolio@gmail.com'
 
