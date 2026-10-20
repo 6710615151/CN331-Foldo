@@ -282,3 +282,30 @@ class PermissionDeniedPageTests(TestCase):
         self.assertEqual(response.status_code, 403)
         self.assertTemplateUsed(response, "403.html")
         self.assertContains(response, "have access to this page", status_code=403)
+
+
+
+# ---------------------------------------------------------------------------
+# FOLDO-10: empty state (templates/partials/empty_state.html)
+# ---------------------------------------------------------------------------
+
+
+class EmptyStateTests(SimpleTestCase):
+    def _render(self, **params):
+        template = Template('{% include "partials/empty_state.html" %}')
+        return template.render(Context(params))
+
+    def test_shows_message_and_button(self):
+        html = self._render(message="No education yet", action_url="/add/", action_label="Add education")
+        self.assertIn("No education yet", html)
+        self.assertIn('href="/add/"', html)
+        self.assertIn("Add education", html)
+
+    def test_button_is_optional(self):
+        html = self._render(message="Nothing here yet")
+        self.assertIn("Nothing here yet", html)
+        self.assertNotIn("<a ", html)
+
+    def test_message_is_escaped(self):
+        html = self._render(message="<b>hi</b>")
+        self.assertIn("&lt;b&gt;hi&lt;/b&gt;", html)
