@@ -18,6 +18,13 @@ from django.views.generic import DetailView
 from .mixins import OwnerRequiredMixin
 # ----------------------------------------------------------
 
+# FOLDO-10: imports for the shared-validator tests
+from django.core.exceptions import ValidationError
+from django.test import SimpleTestCase
+
+from .validators import safe_url_validator
+# ----------------------------------------------------------
+
 class LandingViewTests(TestCase):
     """The public landing / dashboard shell must render correctly."""
 
@@ -126,9 +133,6 @@ class ErrorHandlerTests(TestCase):
 # ---------------------------------------------------------------------------
 # FOLDO-10: data ownership (apps/core/mixins.py)
 # ---------------------------------------------------------------------------
-# No app has private data yet, so these tests use the user table itself:
-# each user "owns" their own account row (owner_field = "pk").
-# Copy this pattern for every new view that shows private data.
 
 
 class _OwnAccountView(OwnerRequiredMixin, DetailView):
@@ -165,3 +169,21 @@ class OwnerRequiredMixinTests(TestCase):
         response = self._open(AnonymousUser(), self.alice.pk)
         self.assertEqual(response.status_code, 302)
         self.assertIn(settings.LOGIN_URL, response.url)
+
+
+
+# ---------------------------------------------------------------------------
+# FOLDO-10: shared validators (apps/core/validators.py)
+# ---------------------------------------------------------------------------
+
+
+class SafeUrlValidatorTests(SimpleTestCase):
+    def test_accepts_http_and_https_links(self):
+        for url in ("http://example.com", "https://github.com/foldo/project"):
+            safe_url_validator(url) 
+
+    def test_rejects_links_that_are_not_http_or_https(self):
+        for url in ("javascript:alert(1)", "data:text/html,hello", "ftp://example.com/cv.pdf"):
+            with self.subTest(url=url):
+                with self.assertRaises(ValidationError):
+                    safe_url_validator(url)
