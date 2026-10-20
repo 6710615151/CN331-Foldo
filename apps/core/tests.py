@@ -8,7 +8,15 @@ from django.conf import settings
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
+# FOLDO-10 initial repeatable tests
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
+from django.http import Http404
+from django.test import RequestFactory
+from django.views.generic import DetailView
 
+from .mixins import OwnerRequiredMixin
+# ----------------------------------------------------------
 
 class LandingViewTests(TestCase):
     """The public landing / dashboard shell must render correctly."""
@@ -114,3 +122,46 @@ class ErrorHandlerTests(TestCase):
         response = self.client.get("/this-page-does-not-exist/")
         self.assertEqual(response.status_code, 404)
         self.assertContains(response, "404", status_code=404)
+
+# ---------------------------------------------------------------------------
+# FOLDO-10: data ownership (apps/core/mixins.py)
+# ---------------------------------------------------------------------------
+# No app has private data yet, so these tests use the user table itself:
+# each user "owns" their own account row (owner_field = "pk").
+# Copy this pattern for every new view that shows private data.
+
+
+class _OwnAccountView(OwnerRequiredMixin, DetailView):
+    """Test-only view: show one account, but only to its owner."""
+
+    model = get_user_model()
+    owner_field = "pk"
+    template_name = "base.html"
+
+
+class OwnerRequiredMixinTests(TestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.alice = User.objects.create_user(username="alice", password="s3cret-pass")
+        self.bobby = User.objects.create_user(username="bobby", password="s3cret-pass")
+        self.factory = RequestFactory()
+
+    def _open(self, user, pk):
+        """Open row `pk` while signed in as `user`."""
+        request = self.factory.get("/")
+        request.user = user
+        return _OwnAccountView.as_view()(request, pk=pk)
+
+    def test_owner_can_open_own_row(self):
+        response = self._open(self.alice, self.alice.pk)
+        self.assertEqual(response.status_code, 200)
+
+    def test_other_user_gets_404_not_403(self):
+        """IDOR: changing the id in the URL must not show someone else's data."""
+        with self.assertRaises(Http404):
+            self._open(self.bobby, self.alice.pk)
+
+    def test_not_signed_in_is_redirected_to_login(self):
+        response = self._open(AnonymousUser(), self.alice.pk)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(settings.LOGIN_URL, response.url)
