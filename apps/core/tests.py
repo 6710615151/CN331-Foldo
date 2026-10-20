@@ -8,7 +8,7 @@ from django.conf import settings
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
-# FOLDO-10 initial repeatable tests
+# ------------------- FOLDO-10 initial repeatable tests ------------------- 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.http import Http404
@@ -16,14 +16,23 @@ from django.test import RequestFactory
 from django.views.generic import DetailView
 
 from .mixins import OwnerRequiredMixin
-# ----------------------------------------------------------
+# -------------------------------------------------------------------------
 
-# FOLDO-10: imports for the shared-validator tests
+# ------------------- FOLDO-10: imports for the shared-validator tests -------------------
 from django.core.exceptions import ValidationError
 from django.test import SimpleTestCase
 
 from .validators import safe_url_validator
-# ----------------------------------------------------------
+# ------------------------------------------------------------------------
+
+
+# ------------------- FOLDO-10: imports for the shared form-display tests -------------------
+from django import forms
+from django.template import Context, Template
+
+from .forms import BootstrapFormMixin
+from .validators import MAX_SHORT_NAME
+# ------------------------------------------------------------------------
 
 class LandingViewTests(TestCase):
     """The public landing / dashboard shell must render correctly."""
@@ -187,3 +196,61 @@ class SafeUrlValidatorTests(SimpleTestCase):
             with self.subTest(url=url):
                 with self.assertRaises(ValidationError):
                     safe_url_validator(url)
+
+# ---------------------------------------------------------------------------
+# FOLDO-10: shared form display (apps/core/forms.py + templates/partials/form_*.html)
+# ---------------------------------------------------------------------------
+
+
+class _SampleForm(BootstrapFormMixin, forms.Form):
+    """Test-only form that uses the shared rules like a real FOLDO form would."""
+
+    name = forms.CharField(label="Name", max_length=MAX_SHORT_NAME)
+    website = forms.URLField(
+        label="Website", required=False, assume_scheme="https",
+        validators=[safe_url_validator],
+    )
+    agree = forms.BooleanField(label="Agree", required=False)
+
+    def clean(self):
+        cleaned = super().clean()
+        if cleaned.get("name") == "taken":
+            raise forms.ValidationError("This name is already used.")
+        return cleaned
+
+
+_FORM_TEMPLATE = Template(
+    '{% include "partials/form_errors.html" %}'
+    '{% for field in form %}{% include "partials/form_field.html" %}{% endfor %}'
+)
+
+
+class FormDisplayTests(SimpleTestCase):
+    def _render(self, data=None):
+        form = _SampleForm(data=data)
+        if data is not None:
+            form.is_valid()
+        return _FORM_TEMPLATE.render(Context({"form": form}))
+
+    def test_fields_get_bootstrap_classes(self):
+        html = self._render()
+        self.assertIn('class="form-control"', html)
+        self.assertIn('class="form-check-input"', html)
+        self.assertNotIn("is-invalid", html)
+
+    def test_field_error_is_shown_under_the_field(self):
+        html = self._render({"name": "", "website": "ftp://example.com"})
+        self.assertIn("is-invalid", html)
+        self.assertIn('aria-invalid="true"', html)
+        self.assertIn('id="id_name_error"', html)  # linked to aria-describedby
+
+    def test_whole_form_error_is_shown_at_the_top(self):
+        html = self._render({"name": "taken"})
+        self.assertIn('class="alert alert-danger"', html)
+        self.assertIn("This name is already used.", html)
+
+    def test_user_input_is_escaped_not_run(self):
+        """XSS: text a user typed must come back as text, never as HTML."""
+        html = self._render({"name": "<script>alert(1)</script>" * 10})
+        self.assertNotIn("<script>alert(1)</script>", html)
+        self.assertIn("&lt;script&gt;", html)
