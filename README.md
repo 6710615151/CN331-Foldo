@@ -213,3 +213,7 @@ models were created — planned models are documented in
 - [docs/GIT_WORKFLOW.md](docs/GIT_WORKFLOW.md) — branching, commits, reviews
 - [docs/DATABASE.md](docs/DATABASE.md) — SQLite vs PostgreSQL, ORM, migrations
 - [docs/DEFINITION_OF_DONE.md](docs/DEFINITION_OF_DONE.md) — acceptance criteria for Issues
+
+## Email config located in config/setting.py
+1. need to be config properly for email base functions its to function properly
+2. for more imformation search for app password
