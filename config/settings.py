@@ -328,8 +328,14 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'foldoportfolio@gmail.com'
+
 # stash password in secretpass
+# in production don't commit this password to git
+# create the secretpass.py
+# apppass = "yourapppass"
+
 #EMAIL_HOST_PASSWORD = secretpass.apppass;
 EMAIL_HOST_PASSWORD = "??????";
+
 DEFAULT_FROM_EMAIL = 'foldoportfolio@gmail.com'
 
