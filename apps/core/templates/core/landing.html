@@ -10,7 +10,7 @@
 
 {% comment %}
   Single-screen landing page, laid out like the brand key visual:
-  large logo → headline → Thai supporting line → Get Started on the left,
+  large logo → headline → Thai supporting line → Get Started + Log in on the left,
   the illustration on the right, lime + orange bands along the bottom-left.
   Logo and illustration are designer slots (see static/images/README.md).
 {% endcomment %}
@@ -37,11 +37,19 @@
         แล้วสร้าง <span lang="en">Portfolio</span> ได้หลายเวอร์ชัน
       </p>
 
-      {# Not wired yet: the app (sign-up, profile) arrives with FOLDO-02 and the authentication Issue. #}
-      <button type="button" class="btn btn-lime btn-lg foldo-hero__cta" disabled aria-describedby="hero-cta-soon">
-        <span lang="en">Get Started</span> <span class="foldo-arrow foldo-arrow--out" aria-hidden="true">&nearr;</span>
-        <span class="foldo-hero__soon" id="hero-cta-soon">เร็วๆ นี้</span>
-      </button>
+      <div class="d-flex flex-wrap align-items-center gap-3">
+        {# Not wired yet: sign-up arrives with FOLDO-02 and the authentication Issue. #}
+        <button type="button" class="btn btn-lime btn-lg foldo-hero__cta" disabled aria-describedby="hero-cta-soon">
+          <span lang="en">Get Started</span> <span class="foldo-arrow foldo-arrow--out" aria-hidden="true">&nearr;</span>
+          <span class="foldo-hero__soon" id="hero-cta-soon">เร็วๆ นี้</span>
+        </button>
+
+        {% if not user.is_authenticated %}
+          <a class="btn btn-outline-light btn-lg" href="{% url 'accounts:login' %}">
+            เข้าสู่ระบบ
+          </a>
+        {% endif %}
+      </div>
     </div>
   </div>
 
