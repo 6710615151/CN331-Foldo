@@ -12,7 +12,6 @@ loaded from a local ``.env`` file when one is present. Never commit ``.env``.
 
 import os
 from pathlib import Path
-from config import secretpass
 from dotenv import load_dotenv
 
 # ---------------------------------------------------------------------------
@@ -331,6 +330,7 @@ EMAIL_HOST_USER = 'foldoportfolio@gmail.com'
 # create the secretpass.py
 # apppass = "yourapppass"
 
+#from config import secretpass
 #EMAIL_HOST_PASSWORD = secretpass.apppass;
 EMAIL_HOST_PASSWORD = "??????";
 
