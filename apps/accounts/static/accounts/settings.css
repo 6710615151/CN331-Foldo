@@ -1,0 +1,198 @@
+/* Account settings page — uses the FOLDO tokens from static/css/styles.css. */
+
+/* Full-width brand glow on the page's <main>: no box edges, fades into the navy canvas. */
+#main-content {
+  background:
+    radial-gradient(ellipse 60% 420px at 8% 0%, rgba(47, 95, 230, 0.32), transparent 100%),
+    radial-gradient(ellipse 45% 360px at 95% 0%, rgba(100, 37, 255, 0.2), transparent 100%);
+  background-repeat: no-repeat;
+}
+
+.foldo-settings__header {
+  margin-bottom: var(--foldo-space-4);
+}
+
+.foldo-settings__eyebrow {
+  margin: 0 0 0.25rem;
+  color: var(--foldo-lime);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.foldo-settings__profile {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: var(--foldo-space-3);
+  margin-bottom: var(--foldo-space-3);
+  border-bottom: 1px solid var(--foldo-border);
+}
+
+.foldo-settings__avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  font-family: var(--foldo-font-display);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--foldo-ink-dark);
+  background: linear-gradient(135deg, var(--foldo-lime), #7ee8a2);
+  box-shadow: 0 0 0 4px rgba(184, 243, 74, 0.18);
+}
+
+.foldo-settings__name {
+  margin: 0;
+  font-family: var(--foldo-font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.foldo-settings__handle {
+  margin: 0;
+  color: var(--foldo-muted);
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
+.foldo-settings__submit {
+  min-width: 10rem;
+}
+
+.foldo-settings__title {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 700;
+}
+
+.foldo-settings__subtitle {
+  color: var(--foldo-muted);
+  margin-bottom: 0;
+}
+
+/* Lime + orange bands echo the landing page key visual. */
+.foldo-settings__bands {
+  display: flex;
+  height: 6px;
+  max-width: 7rem;
+  margin: 0.75rem 0 var(--foldo-space-2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.foldo-settings__bands span:first-child {
+  flex: 2;
+  background: var(--foldo-lime);
+}
+
+.foldo-settings__bands span:last-child {
+  flex: 1;
+  background: var(--foldo-orange);
+}
+
+.foldo-settings__card {
+  background: linear-gradient(160deg, var(--foldo-surface-2), var(--foldo-surface) 55%);
+  border: 1px solid var(--foldo-border);
+  border-radius: var(--foldo-radius-lg);
+  box-shadow: var(--foldo-shadow-md);
+}
+
+.foldo-settings__card .card-title {
+  font-family: var(--foldo-font-display);
+  color: var(--foldo-ink);
+}
+
+.foldo-settings__card--accent {
+  border-top: 4px solid var(--foldo-lime);
+}
+
+.foldo-settings dt {
+  color: var(--foldo-muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.foldo-settings dd {
+  color: var(--foldo-ink);
+  font-weight: 600;
+  margin-bottom: var(--foldo-space-2);
+  overflow-wrap: anywhere;
+}
+
+.foldo-settings .form-label {
+  font-weight: 500;
+}
+
+.foldo-settings .form-control {
+  background-color: var(--foldo-bg-deep);
+  border: 1.5px solid var(--foldo-border-strong);
+  color: var(--foldo-ink);
+  border-radius: 6px;
+  padding: 0.6rem 0.85rem;
+}
+
+.foldo-settings .form-control:focus {
+  background-color: var(--foldo-bg-deep);
+  border-color: var(--foldo-lime);
+  box-shadow: 0 0 0 3px rgba(184, 243, 74, 0.25);
+  color: var(--foldo-ink);
+}
+
+.foldo-settings .form-control.is-invalid {
+  border-color: var(--foldo-pink);
+  background-image: none;
+}
+
+.foldo-settings .invalid-feedback {
+  color: #ff8fd0;
+}
+
+/* Flash messages become a toast popup on this page (CSS only, works without JS).
+   Success auto-hides after a few seconds; errors stay until dismissed. */
+#main-content > .container[role="status"] {
+  position: fixed;
+  top: 5.5rem;
+  right: 1rem;
+  left: auto;
+  z-index: 1080;
+  width: min(24rem, calc(100vw - 2rem));
+  padding: 0;
+  margin: 0;
+  pointer-events: none;
+}
+
+#main-content > .container[role="status"] .alert {
+  pointer-events: auto;
+  margin-bottom: 0.75rem;
+  border-radius: var(--foldo-radius);
+  box-shadow: var(--foldo-shadow-md);
+  animation: foldo-toast-in 0.35s ease-out both;
+}
+
+#main-content > .container[role="status"] .alert-success {
+  border-left: 5px solid var(--foldo-lime);
+  animation:
+    foldo-toast-in 0.35s ease-out both,
+    foldo-toast-out 0.4s ease-in 5s forwards;
+}
+
+#main-content > .container[role="status"] .alert-danger {
+  border-left: 5px solid var(--foldo-pink);
+}
+
+@keyframes foldo-toast-in {
+  from { opacity: 0; transform: translateY(-1rem) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes foldo-toast-out {
+  to { opacity: 0; transform: translateY(-0.5rem); visibility: hidden; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #main-content > .container[role="status"] .alert { animation: none; }
+}
