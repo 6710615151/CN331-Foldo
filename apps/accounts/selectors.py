@@ -14,3 +14,8 @@ def email_is_taken(email: str, *, exclude_pk=None) -> bool:
     if exclude_pk is not None:
         users = users.exclude(pk=exclude_pk)
     return users.exists()
+
+
+def get_account(pk):
+    """Fresh copy of account ``pk``, so form validation never mutates ``request.user``."""
+    return get_user_model().objects.get(pk=pk)
