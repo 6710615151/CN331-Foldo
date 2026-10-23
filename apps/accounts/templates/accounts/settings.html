@@ -1,16 +1,31 @@
 {% extends "base.html" %}
+{% load static %}
 {% block html_lang %}th{% endblock %}
 {% block title %}ตั้งค่าบัญชี · FOLDO{% endblock %}
 
+{% block extra_css %}<link rel="stylesheet" href="{% static 'accounts/settings.css' %}">{% endblock %}
+
 {% block content %}
-<section class="container py-5">
-  <h1 class="h3 mb-4">ตั้งค่าบัญชี</h1>
+<section class="foldo-settings container py-5">
+  <header class="foldo-settings__header">
+    <p class="foldo-settings__eyebrow" lang="en">Account</p>
+    <h1 class="foldo-settings__title">ตั้งค่า<span class="foldo-text-lime">บัญชี</span></h1>
+    <div class="foldo-settings__bands" aria-hidden="true"><span></span><span></span></div>
+    <p class="foldo-settings__subtitle">จัดการข้อมูลบัญชีพื้นฐานของคุณ</p>
+  </header>
 
   <div class="row g-4">
     <div class="col-12 col-lg-5">
-      <div class="card h-100">
+      <div class="card h-100 foldo-settings__card foldo-settings__card--accent">
         <div class="card-body">
-          <h2 class="h5 card-title mb-3">ข้อมูลบัญชี</h2>
+          <div class="foldo-settings__profile">
+            <span class="foldo-settings__avatar" aria-hidden="true">{{ object.username|first|upper }}</span>
+            <div class="min-w-0">
+              <p class="foldo-settings__name">{{ object.get_full_name|default:object.username }}</p>
+              <p class="foldo-settings__handle">@{{ object.username }}</p>
+            </div>
+          </div>
+          <h2 class="visually-hidden">ข้อมูลบัญชี</h2>
           <dl class="mb-0">
             <dt>ชื่อผู้ใช้</dt>
             <dd>{{ object.username }}</dd>
@@ -24,7 +39,7 @@
     </div>
 
     <div class="col-12 col-lg-7">
-      <div class="card h-100">
+      <div class="card h-100 foldo-settings__card">
         <div class="card-body">
           <h2 class="h5 card-title mb-3">แก้ไขข้อมูล</h2>
           <form method="post" novalidate data-loading>
@@ -52,7 +67,7 @@
               </div>
             {% endfor %}
 
-            <button type="submit" class="btn btn-primary" data-loading-text="กำลังบันทึก…">บันทึก</button>
+            <button type="submit" class="btn btn-lime btn-lg foldo-settings__submit" data-loading-text="กำลังบันทึก…">บันทึก</button>
           </form>
         </div>
       </div>
