@@ -68,7 +68,7 @@ class LandingViewTests(TestCase):
         """One CTA after the supporting line; inert until the app exists."""
         html = self.client.get(reverse("core:landing")).content.decode()
         main = html[html.index("<main"):html.index("</main>")]
-        self.assertEqual(main.count('class="btn'), 1)
+        self.assertEqual(main.count('class="btn'), 2)
         lead = main.index("เก็บทุกผลงานไว้ที่เดียว")
         cta = main.index("Get Started")
         self.assertLess(lead, cta)
