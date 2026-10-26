@@ -91,13 +91,19 @@ class LandingViewTests(TestCase):
         self.assertIn("<header", other)
         self.assertIn("<footer", other)
 
-    def test_hero_graphic_is_a_placeholder_behind_the_text(self):
-        """The designer's graphic slot comes first in the markup (behind the copy)."""
+    def test_hero_illustration_sits_behind_the_text(self):
+        """The decorative hero image comes first in the markup (behind the copy)."""
         html = self.client.get(reverse("core:landing")).content.decode()
         main = html[html.index("<main"):html.index("</main>")]
-        self.assertIn('data-asset="Hero illustration', main)
-        self.assertLess(main.index("foldo-hero__placeholder"), main.index('id="hero-heading"'))
-        self.assertNotIn("<img", main)
+        self.assertIn("images/hero-illustration.png", main)
+        self.assertLess(main.index("foldo-hero__art"), main.index('id="hero-heading"'))
+        art = main[main.rindex("<img", 0, main.index("foldo-hero__art")):]
+        self.assertIn('alt=""', art[:art.index(">")])
+
+    def test_hero_logo_uses_the_brand_mark(self):
+        html = self.client.get(reverse("core:landing")).content.decode()
+        self.assertIn("images/logo-mark.png", html)
+        self.assertNotIn("foldo-asset", html[html.index("<main"):html.index("</main>")].replace("foldo-asset-img", ""))
 
 
 class HealthCheckViewTests(TestCase):
