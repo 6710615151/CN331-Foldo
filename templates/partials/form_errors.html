@@ -1,0 +1,9 @@
+{% comment %}
+  Errors that belong to the whole form, not one field (FOLDO-10),
+  e.g. "username or password is incorrect". Put it at the top of the form.
+{% endcomment %}
+{% if form.non_field_errors %}
+<div class="alert alert-danger" role="alert">
+  {% for error in form.non_field_errors %}<p class="mb-0">{{ error }}</p>{% endfor %}
+</div>
+{% endif %}
