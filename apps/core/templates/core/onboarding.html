@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block html_lang %}th{% endblock %}
+{% block title %}เริ่มต้นใช้งาน — FOLDO{% endblock %}
+{% block meta_description %}FOLDO — ทำตาม 3 ขั้นตอนเพื่อสร้างโปรไฟล์หลักและพอร์ตโฟลิโอแรกของคุณ{% endblock %}
+
+{% comment %}
+  First-time entry flow (FOLDO-02 app-shell slice). Reached directly for now;
+  once registration exists it should follow right after sign-up. The three
+  steps come from a mock selector (apps.profiles/apps.portfolios don't exist
+  yet) — see apps/core/selectors.py.
+{% endcomment %}
+
+{% block content %}
+<section class="foldo-section" aria-labelledby="onboarding-heading">
+  <div class="container">
+    <header class="foldo-onboarding__intro">
+      <p class="foldo-eyebrow" lang="en">Welcome to FOLDO</p>
+      <h1 id="onboarding-heading" class="foldo-section__title">เริ่มต้นใช้งาน FOLDO กัน</h1>
+      <p class="foldo-section__subtitle">
+        สามขั้นตอนนี้พาคุณจากโปรไฟล์เปล่า ๆ ไปสู่พอร์ตโฟลิโอที่พร้อมส่งออก
+      </p>
+    </header>
+
+    <ol class="row g-4 list-unstyled foldo-steps">
+      {% for step in steps %}
+      <li class="col-12 col-md-4">
+        <div class="foldo-step h-100">
+          <span class="foldo-step__number" aria-hidden="true">{{ step.number }}</span>
+          <h2 class="foldo-step__title" lang="en">{{ step.title_en }}</h2>
+          <p class="foldo-step__title-th">{{ step.title }}</p>
+          <p class="foldo-step__description mb-0">{{ step.description }}</p>
+        </div>
+      </li>
+      {% endfor %}
+    </ol>
+
+    <a class="btn btn-lime btn-lg foldo-onboarding__cta" href="{% url 'core:dashboard' %}">
+      <span lang="en">Go to dashboard</span>
+      <span class="foldo-arrow foldo-arrow--out" aria-hidden="true">&nearr;</span>
+    </a>
+  </div>
+</section>
+{% endblock %}

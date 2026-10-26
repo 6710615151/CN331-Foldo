@@ -7,7 +7,8 @@ it into multiple tailored portfolios — one for each job or internship they
 apply to. Update the profile once, and every portfolio stays current.
 
 > **Status: project foundation.** This repository currently contains a runnable
-> Django 5.2 foundation (landing page, health check, navigation and tests).
+> Django 5.2 foundation (landing page, health check, navigation, an app-shell
+> preview at `/onboarding/` and `/dashboard/`, and tests).
 > The eight MVP features below are *not* implemented yet;
 > they are developed one GitHub Issue at a time.
 
@@ -134,6 +135,8 @@ Open <http://127.0.0.1:8000/>. Other useful routes:
 | URL | Purpose |
 | --- | --- |
 | `/` | FOLDO landing page |
+| `/onboarding/` | First-time entry flow (mock steps; not gated behind login yet) |
+| `/dashboard/` | Signed-in app shell (mock summary; not gated behind login yet) |
 | `/health/` | JSON health check (200 ok / 503 degraded) |
 | `/admin/` | Django admin (create a superuser to use it) |
 
@@ -193,7 +196,9 @@ Implemented and verified:
 
 - Django 5.2 project with env-based settings and secure production defaults.
 - `accounts` app: `CustomUser` as `AUTH_USER_MODEL` from the first migration.
-- `core` app: landing page, JSON health check, custom 404/500 pages.
+- `core` app: landing page, JSON health check, custom 404/500 pages, and an
+  app-shell preview (`/onboarding/`, `/dashboard/`) rendered against mock data
+  until `profiles`/`portfolios` exist.
 - Responsive Bootstrap 5 UI with FOLDO design tokens and a small ES6 module.
 - Automated tests in each app's `tests.py` (landing, health, user model, forms, 404).
 - Optional PostgreSQL and Redis configuration through environment variables.
@@ -209,6 +214,7 @@ models were created — planned models are documented in
 ## Documentation
 
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — apps, routing, templates, data flow
+- [docs/API_CONVENTIONS.md](docs/API_CONVENTIONS.md) — HTTP status, JSON shape, form/error and mock-data conventions
 - [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) — exact local setup commands
 - [docs/GIT_WORKFLOW.md](docs/GIT_WORKFLOW.md) — branching, commits, reviews
 - [docs/DATABASE.md](docs/DATABASE.md) — SQLite vs PostgreSQL, ORM, migrations
