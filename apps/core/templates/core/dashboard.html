@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block html_lang %}th{% endblock %}
+{% block title %}แดชบอร์ด — FOLDO{% endblock %}
+{% block meta_description %}FOLDO — ภาพรวมโปรไฟล์หลักและพอร์ตโฟลิโอทั้งหมดของคุณ{% endblock %}
+
+{% comment %}
+  Signed-in app shell (FOLDO-02 app-shell slice). Not gated behind login yet
+  — authentication lands with the rest of FOLDO-02. The summary below comes
+  from a mock selector (apps.profiles/apps.portfolios don't exist yet) — see
+  apps/core/selectors.py. Replace each empty state once its owning app lands.
+{% endcomment %}
+
+{% block content %}
+<section class="foldo-section" aria-labelledby="dashboard-heading">
+  <div class="container">
+    <header class="mb-4">
+      <h1 id="dashboard-heading" class="foldo-section__title">แดชบอร์ดของคุณ</h1>
+      <p class="foldo-section__subtitle mb-0">ภาพรวมโปรไฟล์หลักและพอร์ตโฟลิโอทั้งหมด</p>
+    </header>
+
+    <div class="row g-4">
+      <div class="col-12 col-lg-5">
+        <div class="foldo-card h-100">
+          <h2 class="h5" lang="en">Main profile</h2>
+          {% if summary.has_profile %}
+            <p class="foldo-section__subtitle mb-0">กรอกข้อมูลครบแล้ว {{ summary.profile_completeness }}%</p>
+          {% else %}
+            <p class="foldo-section__subtitle">
+              คุณยังไม่ได้สร้างโปรไฟล์หลัก เริ่มต้นได้ที่นี่
+            </p>
+            <a class="btn btn-foldo" href="{% url 'core:onboarding' %}">
+              <span lang="en">Start onboarding</span>
+            </a>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-7">
+        <div class="foldo-card h-100">
+          <h2 class="h5" lang="en">Portfolio versions</h2>
+          {% if summary.portfolios %}
+            <ul class="mb-0">
+              {% for portfolio in summary.portfolios %}
+              <li>{{ portfolio.name }}</li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="foldo-section__subtitle mb-0">
+              ยังไม่มีพอร์ตโฟลิโอ สร้างเวอร์ชันแรกได้หลังจากกรอกโปรไฟล์หลักเสร็จ
+            </p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

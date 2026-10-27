@@ -182,6 +182,28 @@ section[id] {
   flex-wrap: nowrap;
 }
 
+.foldo-nav {
+  gap: 0.25rem;
+}
+
+.foldo-nav__link {
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--foldo-radius);
+  color: var(--foldo-muted);
+  font-weight: 500;
+}
+
+.foldo-nav__link:hover,
+.foldo-nav__link.active {
+  color: var(--foldo-ink);
+  background: var(--foldo-surface);
+}
+
+.foldo-nav__link:focus-visible {
+  outline: 3px solid var(--foldo-lime);
+  outline-offset: 2px;
+}
+
 .btn-foldo,
 .btn-outline-foldo,
 .btn-lime {
@@ -476,6 +498,62 @@ main:has(> .foldo-hero) {
 .foldo-hero__band--orange {
   width: 100%;
   background: var(--foldo-orange);
+}
+
+/* --- App shell: onboarding steps & dashboard cards ---------------------- */
+.foldo-eyebrow {
+  margin-bottom: 0.5rem;
+  color: var(--foldo-blue-text);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.foldo-onboarding__cta {
+  margin-top: var(--foldo-space-3);
+}
+
+.foldo-step,
+.foldo-card {
+  padding: var(--foldo-space-3);
+  border: 1px solid var(--foldo-border);
+  border-radius: var(--foldo-radius-lg);
+  background: var(--foldo-surface);
+}
+
+.foldo-step__number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin-bottom: 0.75rem;
+  border-radius: 50%;
+  background: var(--foldo-lime);
+  color: var(--foldo-ink-dark);
+  font-family: var(--foldo-font-display);
+  font-weight: 700;
+}
+
+.foldo-step__title {
+  margin-bottom: 0.15rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.foldo-step__title-th {
+  margin-bottom: 0.5rem;
+  color: var(--foldo-muted);
+  font-size: 0.9rem;
+}
+
+.foldo-step__description {
+  color: var(--foldo-muted);
+}
+
+.foldo-card h2 {
+  margin-bottom: 0.75rem;
 }
 
 /* --- Error pages (404 / 500) ------------------------------------------- */

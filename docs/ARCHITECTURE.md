@@ -175,13 +175,21 @@ Owns everything that is *not* tied to a specific domain:
 
 - `views.LandingView` — the public landing page: a single hero screen with one
   "Get Started" call to action, layered over a designer graphic slot.
+- `views.OnboardingView` — first-time entry flow: a three-step walkthrough
+  (`/onboarding/`). Not gated behind login yet — real authentication lands
+  with the rest of FOLDO-02.
+- `views.DashboardView` — the signed-in app shell (`/dashboard/`): navigation
+  plus an empty-state summary. Same auth caveat as `OnboardingView`.
 - `views.HealthCheckView` — JSON health endpoint for monitoring.
 - `views.page_not_found` / `views.server_error` — custom error handlers.
 - `selectors.py` — health check (`get_health_report()`, `DatabaseHealthCheck`,
-  `HealthReport`): a pure read with no side effects.
+  `HealthReport`): a pure read with no side effects. Also holds the shell's
+  mock data (`get_mock_onboarding_steps()`, `get_mock_dashboard_summary()`)
+  until `apps.profiles`/`apps.portfolios` exist — see
+  `docs/API_CONVENTIONS.md` for the mock-data convention.
 - `services.py` — empty: the shell performs no mutations.
-- `urls.py` — `""` (landing) and `"health/"`.
-- `templates/core/landing.html` — the landing page template.
+- `urls.py` — `""` (landing), `"health/"`, `"onboarding/"`, `"dashboard/"`.
+- `templates/core/landing.html`, `onboarding.html`, `dashboard.html`.
 
 `core` intentionally has **no models**. Navigation, base template, skip link,
 footer and shared CSS/JS are also part of the core shell.
@@ -217,8 +225,10 @@ its own paths:
 ```text
 config/urls.py
 ├── admin/        → django.contrib.admin
-├── ""            → apps.core.urls        → ""            (landing, name="core:landing")
-│                                            "health/"     (health,  name="core:health")
+├── ""            → apps.core.urls        → ""              (landing,    name="core:landing")
+│                                            "health/"       (health,     name="core:health")
+│                                            "onboarding/"   (onboarding, name="core:onboarding")
+│                                            "dashboard/"    (dashboard,  name="core:dashboard")
 └── "accounts/"   → apps.accounts.urls    → (auth routes arrive with the authentication Issue)
 ```
 
@@ -237,13 +247,16 @@ app's own pages live inside the app, namespaced twice
 `index.html` never collide between apps.
 
 ```text
-apps/core/templates/core/landing.html             # landing page
+apps/core/templates/core/
+├── landing.html               # landing page (no shared navbar/footer)
+├── onboarding.html            # first-time entry flow (mock steps)
+└── dashboard.html             # signed-in app shell (mock summary)
 
 templates/
 ├── base.html                 # <head>, skip link, navbar, main, footer, scripts
 ├── 404.html  500.html        # error pages
 ├── partials/
-│   ├── navbar.html           # accessible responsive navigation
+│   ├── navbar.html           # accessible responsive navigation (brand + Dashboard link)
 │   ├── footer.html
 │   ├── messages.html         # Django messages
 │   ├── logo_mark.html        # logo slot (designer asset)
