@@ -64,17 +64,18 @@ class LandingViewTests(TestCase):
         self.assertEqual(len(re.findall(r"^<section", main, flags=re.MULTILINE)), 1)
         self.assertIn('id="hero-heading"', main)
 
-    def test_get_started_sits_under_the_hero_text_as_coming_soon(self):
-        """One CTA after the supporting line; inert until the app exists."""
+    def test_get_started_sits_under_the_hero_text_and_links_to_dashboard(self):
+        """One CTA after the supporting line; links to the dashboard."""
         html = self.client.get(reverse("core:landing")).content.decode()
         main = html[html.index("<main"):html.index("</main>")]
         self.assertEqual(main.count('class="btn'), 2)
         lead = main.index("เก็บทุกผลงานไว้ที่เดียว")
         cta = main.index("Get Started")
         self.assertLess(lead, cta)
-        button = main[main.rindex("<button", 0, cta):main.index("</button>", cta)]
-        self.assertIn(" disabled", button)
-        self.assertIn("เร็วๆ นี้", button)
+        link = main[main.rindex("<a", 0, cta):main.index("</a>", cta)]
+        self.assertIn(reverse("core:dashboard"), link)
+        self.assertNotIn(" disabled", link)
+        self.assertNotIn("เร็วๆ นี้", link)
 
     def test_landing_page_has_no_placeholder_links(self):
         """Every link must lead somewhere real — no bare "#" stand-ins."""
