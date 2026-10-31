@@ -1,0 +1,26 @@
+{% comment %}
+  One form field: label, input, help text and error messages (FOLDO-10).
+  Use with a form that has BootstrapFormMixin (apps/core/forms.py):
+
+    {% include "partials/form_errors.html" %}
+    {% for field in form %}{% include "partials/form_field.html" %}{% endfor %}
+{% endcomment %}
+{% if field.is_hidden %}
+  {{ field }}
+{% else %}
+<div class="mb-3">
+  <label class="form-label" for="{{ field.id_for_label }}">
+    {{ field.label }}{% if field.field.required %} <span class="text-danger" aria-hidden="true">*</span>{% endif %}
+  </label>
+  {{ field }}
+  {% if field.help_text %}
+    {# help_text is written by developers, never by users, so |safe is allowed here #}
+    <div class="form-text" id="{{ field.auto_id }}_helptext">{{ field.help_text|safe }}</div>
+  {% endif %}
+  {% if field.errors %}
+    <div class="invalid-feedback d-block" id="{{ field.auto_id }}_error">
+      {% for error in field.errors %}<p class="mb-0">{{ error }}</p>{% endfor %}
+    </div>
+  {% endif %}
+</div>
+{% endif %}

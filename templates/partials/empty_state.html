@@ -1,0 +1,17 @@
+{% comment %}
+  Shown when a list has nothing in it yet (FOLDO-10: empty state).
+  Params: message (required), action_url and action_label (optional button).
+
+    {% url "profiles:education_add" as add_url %}
+    {% for item in educations %}
+      ...
+    {% empty %}
+      {% include "partials/empty_state.html" with message="ยังไม่มีข้อมูลการศึกษา" action_url=add_url action_label="เพิ่มการศึกษา" %}
+    {% endfor %}
+{% endcomment %}
+<div class="foldo-state" role="status">
+  <p class="foldo-section__subtitle">{{ message }}</p>
+  {% if action_url %}
+    <a class="btn btn-foldo mt-2" href="{{ action_url }}">{{ action_label|default:"Add" }}</a>
+  {% endif %}
+</div>

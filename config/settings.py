@@ -10,6 +10,7 @@ Environment variables are read through the small ``env_*`` helpers below and
 loaded from a local ``.env`` file when one is present. Never commit ``.env``.
 """
 
+import importlib.util
 import os
 from pathlib import Path
 
@@ -58,6 +59,16 @@ def env_list(name: str, default: list | None = None) -> list:
     if not raw:
         return list(default or [])
     return [item.strip() for item in raw.split(",") if item.strip()]
+
+
+def packages_installed(*modules: str) -> bool:
+    """Return True only when every given module can be imported.
+
+    Used for the optional development extras in ``requirements-dev.txt``: CI and
+    production install ``requirements.txt`` alone, so the DEBUG-only apps must be
+    skipped instead of aborting ``manage.py`` with ModuleNotFoundError.
+    """
+    return all(importlib.util.find_spec(module) is not None for module in modules)
 
 
 # ---------------------------------------------------------------------------
@@ -112,7 +123,15 @@ INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS
 #                           autoreloader (much lower CPU than the default
 #                           StatReloader, especially on macOS).
 #   django_browser_reload — reload the browser when files change.
-if DEBUG:
+# They live in requirements-dev.txt, which is optional, so they are only
+# enabled when those packages are actually installed (see packages_installed).
+# CI installs requirements.txt only and therefore runs without them.
+DEV_TOOLS_INSTALLED = packages_installed(
+    "django_watchfiles",
+    "django_browser_reload",
+)
+
+if DEBUG and DEV_TOOLS_INSTALLED:
     INSTALLED_APPS += [
         "django_watchfiles",
         "django_browser_reload",
@@ -131,8 +150,8 @@ MIDDLEWARE = [
 # In development, inject a script that reloads the browser whenever code,
 # templates or static files change (see requirements-dev.txt). Appended last so
 # it runs after any response-encoding middleware, and gated on DEBUG so it is
-# never active in production.
-if DEBUG:
+# never active in production. Skipped when the optional package is absent.
+if DEBUG and DEV_TOOLS_INSTALLED:
     MIDDLEWARE.append(
         "django_browser_reload.middleware.BrowserReloadMiddleware"
     )

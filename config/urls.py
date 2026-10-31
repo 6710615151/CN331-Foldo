@@ -14,8 +14,9 @@ urlpatterns = [
 ]
 
 # Development-only: endpoint used by django-browser-reload to trigger a refresh
-# when files change (see requirements-dev.txt). Never routed in production.
-if settings.DEBUG:
+# when files change (see requirements-dev.txt). Never routed in production, and
+# skipped when the optional package is not installed (e.g. in CI).
+if settings.DEBUG and settings.DEV_TOOLS_INSTALLED:
     urlpatterns += [path("__reload__/", include("django_browser_reload.urls"))]
 
 # Custom error handlers render friendly, non-technical pages in production
