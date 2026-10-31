@@ -335,7 +335,7 @@ MESSAGE_TAGS = {40: "danger"}
 # is easy to bump and never leaks anything sensitive.
 FOLDO_VERSION = env_str("FOLDO_VERSION", "0.1.0")
 
-LOGIN_REDIRECT_URL = "/accounts/dashboard/"         # where to go after login
+LOGIN_REDIRECT_URL = "/dashboard/"         # where to go after login
 LOGOUT_REDIRECT_URL = "/accounts/login/"            # where to go after logout
 
 # email setting 
