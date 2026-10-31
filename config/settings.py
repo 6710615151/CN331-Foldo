@@ -13,7 +13,6 @@ loaded from a local ``.env`` file when one is present. Never commit ``.env``.
 import importlib.util
 import os
 from pathlib import Path
-
 from dotenv import load_dotenv
 
 # ---------------------------------------------------------------------------
@@ -329,6 +328,33 @@ if not DEBUG:
 # ---------------------------------------------------------------------------
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# Bootstrap has no ``alert-error``; map the error level to ``alert-danger``.
+MESSAGE_TAGS = {40: "danger"}
+
 # Version string surfaced by the health-check endpoint. Kept in settings so it
 # is easy to bump and never leaks anything sensitive.
 FOLDO_VERSION = env_str("FOLDO_VERSION", "0.1.0")
+
+LOGIN_REDIRECT_URL = "/dashboard/"         # where to go after login
+LOGOUT_REDIRECT_URL = "/accounts/login/"            # where to go after logout
+
+# email setting 
+# for this case use foldoportfolio@gmail.com
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'foldoportfolio@gmail.com'
+
+# stash password in secretpass
+# in production don't commit this password to git
+# create the secretpass.py
+# apppass = "yourapppass"
+
+#from config import secretpass
+#EMAIL_HOST_PASSWORD = secretpass.apppass;
+EMAIL_HOST_PASSWORD = "??????";
+
+DEFAULT_FROM_EMAIL = 'foldoportfolio@gmail.com'
+

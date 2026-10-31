@@ -68,7 +68,7 @@ class LandingViewTests(TestCase):
         """One CTA after the supporting line; inert until the app exists."""
         html = self.client.get(reverse("core:landing")).content.decode()
         main = html[html.index("<main"):html.index("</main>")]
-        self.assertEqual(main.count('class="btn'), 1)
+        self.assertEqual(main.count('class="btn'), 2)
         lead = main.index("เก็บทุกผลงานไว้ที่เดียว")
         cta = main.index("Get Started")
         self.assertLess(lead, cta)
@@ -98,6 +98,70 @@ class LandingViewTests(TestCase):
         self.assertIn('data-asset="Hero illustration', main)
         self.assertLess(main.index("foldo-hero__placeholder"), main.index('id="hero-heading"'))
         self.assertNotIn("<img", main)
+
+
+class OnboardingViewTests(TestCase):
+    """The first-time entry flow must render its three mock steps."""
+
+    def test_onboarding_page_returns_200(self):
+        response = self.client.get(reverse("core:onboarding"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_onboarding_page_uses_expected_template(self):
+        response = self.client.get(reverse("core:onboarding"))
+        self.assertTemplateUsed(response, "core/onboarding.html")
+        self.assertTemplateUsed(response, "base.html")
+
+    def test_onboarding_page_shows_all_mock_steps(self):
+        response = self.client.get(reverse("core:onboarding"))
+        for step in response.context["steps"]:
+            self.assertContains(response, step["title_en"])
+        self.assertEqual(len(response.context["steps"]), 3)
+
+    def test_onboarding_cta_leads_to_dashboard(self):
+        response = self.client.get(reverse("core:onboarding"))
+        self.assertContains(response, reverse("core:dashboard"))
+
+    def test_onboarding_page_has_no_placeholder_links(self):
+        response = self.client.get(reverse("core:onboarding"))
+        self.assertNotContains(response, 'href="#"')
+
+    def test_onboarding_page_keeps_the_shared_shell(self):
+        html = self.client.get(reverse("core:onboarding")).content.decode()
+        self.assertIn("<header", html)
+        self.assertIn("<footer", html)
+
+
+class DashboardViewTests(TestCase):
+    """The signed-in app shell must render a sensible empty state."""
+
+    def test_dashboard_page_returns_200(self):
+        response = self.client.get(reverse("core:dashboard"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_dashboard_page_uses_expected_template(self):
+        response = self.client.get(reverse("core:dashboard"))
+        self.assertTemplateUsed(response, "core/dashboard.html")
+        self.assertTemplateUsed(response, "base.html")
+
+    def test_dashboard_shows_empty_profile_state_with_onboarding_link(self):
+        response = self.client.get(reverse("core:dashboard"))
+        self.assertFalse(response.context["summary"]["has_profile"])
+        self.assertContains(response, reverse("core:onboarding"))
+
+    def test_dashboard_shows_empty_portfolio_state(self):
+        response = self.client.get(reverse("core:dashboard"))
+        self.assertEqual(response.context["summary"]["portfolios"], [])
+
+    def test_dashboard_page_has_no_placeholder_links(self):
+        response = self.client.get(reverse("core:dashboard"))
+        self.assertNotContains(response, 'href="#"')
+
+    def test_dashboard_link_is_in_the_shared_navigation(self):
+        html = self.client.get(reverse("core:dashboard")).content.decode()
+        nav = html[html.index("<header"):html.index("</header>")]
+        self.assertIn(reverse("core:dashboard"), nav)
+        self.assertIn('aria-current="page"', nav)
 
 
 class HealthCheckViewTests(TestCase):
