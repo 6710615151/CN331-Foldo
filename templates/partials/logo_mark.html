@@ -1,2 +1,3 @@
-{# Logo mark slot — the designer supplies the real mark (static/images/logo-mark.svg). Pair with visible brand text. #}
-<span class="foldo-asset foldo-asset--logo {{ class|default:'' }}" data-asset="" aria-hidden="true"></span>
+{% load static %}
+{# Logo mark (static/images/logo-mark.png). Decorative: always pair with visible brand text. #}
+<img class="foldo-logo-mark {{ class|default:'' }}" src="{% static 'images/logo-mark.png' %}" alt="" width="32" height="32">
