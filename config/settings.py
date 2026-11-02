@@ -329,6 +329,9 @@ if not DEBUG:
 # ---------------------------------------------------------------------------
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# Bootstrap has no ``alert-error``; map the error level to ``alert-danger``.
+MESSAGE_TAGS = {40: "danger"}
+
 # Version string surfaced by the health-check endpoint. Kept in settings so it
 # is easy to bump and never leaks anything sensitive.
 FOLDO_VERSION = env_str("FOLDO_VERSION", "0.1.0")

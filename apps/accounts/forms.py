@@ -34,3 +34,21 @@ class CustomUserChangeForm(_CleanEmailMixin, UserChangeForm):
     class Meta(UserChangeForm.Meta):
         model = CustomUser
         fields = ("username", "email", "first_name", "last_name")
+
+
+class AccountSettingsForm(_CleanEmailMixin, forms.ModelForm):
+    """Basic account details a signed-in user may edit (username is read-only)."""
+
+    class Meta:
+        model = CustomUser
+        fields = ("first_name", "last_name", "email")
+        labels = {"first_name": "ชื่อ", "last_name": "นามสกุล", "email": "อีเมล"}
+        widgets = {
+            "first_name": forms.TextInput(attrs={"autocomplete": "given-name"}),
+            "last_name": forms.TextInput(attrs={"autocomplete": "family-name"}),
+            "email": forms.EmailInput(attrs={"autocomplete": "email"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["email"].required = True

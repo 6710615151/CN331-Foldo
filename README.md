@@ -135,6 +135,7 @@ Open <http://127.0.0.1:8000/>. Other useful routes:
 | --- | --- |
 | `/` | FOLDO landing page |
 | `/health/` | JSON health check (200 ok / 503 degraded) |
+| `/accounts/settings/` | Account settings (login required; edits the signed-in user only) |
 | `/admin/` | Django admin (create a superuser to use it) |
 
 Create an admin user:
