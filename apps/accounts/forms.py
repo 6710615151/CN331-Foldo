@@ -13,6 +13,9 @@ from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from .models import CustomUser
 from .selectors import email_is_taken
 
+# replace usual User from from django.contrib.auth.models import User to CustomUser
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 class _CleanEmailMixin:
     """Normalise the e-mail and keep it unique across accounts."""
@@ -52,3 +55,25 @@ class AccountSettingsForm(_CleanEmailMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["email"].required = True
+
+
+# simple auth signup
+class SignUpForm(UserCreationForm):
+    """
+    Registration form. Extends Django's built-in UserCreationForm
+    to also require and save an email address.
+    """
+    class Meta:
+        model = User
+        fields = ("username", "email", "password1", "password2")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["email"].required = True
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.email = self.cleaned_data["email"]
+        if commit:
+            user.save()
+        return user
