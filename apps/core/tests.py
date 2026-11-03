@@ -64,18 +64,22 @@ class LandingViewTests(TestCase):
         self.assertEqual(len(re.findall(r"^<section", main, flags=re.MULTILINE)), 1)
         self.assertIn('id="hero-heading"', main)
 
-    def test_get_started_sits_under_the_hero_text_and_links_to_dashboard(self):
-        """One CTA after the supporting line; links to the dashboard."""
+    def _get_started_link(self):
         html = self.client.get(reverse("core:landing")).content.decode()
         main = html[html.index("<main"):html.index("</main>")]
-        self.assertEqual(main.count('class="btn'), 2)
-        lead = main.index("เก็บทุกผลงานไว้ที่เดียว")
         cta = main.index("Get Started")
-        self.assertLess(lead, cta)
-        link = main[main.rindex("<a", 0, cta):main.index("</a>", cta)]
-        self.assertIn(reverse("core:dashboard"), link)
+        self.assertLess(main.index("เก็บทุกผลงานไว้ที่เดียว"), cta)
+        return main[main.rindex("<a", 0, cta):main.index("</a>", cta)]
+
+    def test_get_started_sends_new_visitors_to_sign_up(self):
+        link = self._get_started_link()
+        self.assertIn(reverse("accounts:register"), link)
         self.assertNotIn(" disabled", link)
-        self.assertNotIn("เร็วๆ นี้", link)
+
+    def test_get_started_sends_signed_in_users_to_dashboard(self):
+        user = get_user_model().objects.create_user(username="dev3", password="pw-Foldo-12345")
+        self.client.force_login(user)
+        self.assertIn(reverse("core:dashboard"), self._get_started_link())
 
     def test_landing_page_has_no_placeholder_links(self):
         """Every link must lead somewhere real — no bare "#" stand-ins."""
@@ -107,8 +111,26 @@ class LandingViewTests(TestCase):
         self.assertNotIn("foldo-asset", html[html.index("<main"):html.index("</main>")].replace("foldo-asset-img", ""))
 
 
-class OnboardingViewTests(TestCase):
+class SignedInTestCase(TestCase):
+    """Signs a user in before each test, for pages behind login."""
+
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            username="dev3", password="pw-Foldo-12345"
+        )
+        self.client.force_login(self.user)
+
+
+class OnboardingViewTests(SignedInTestCase):
     """The first-time entry flow must render its three mock steps."""
+
+    def test_onboarding_redirects_visitors_to_login(self):
+        self.client.logout()
+        url = reverse("core:onboarding")
+        response = self.client.get(url)
+        self.assertRedirects(
+            response, f"{reverse('accounts:login')}?next={url}", fetch_redirect_response=False
+        )
 
     def test_onboarding_page_returns_200(self):
         response = self.client.get(reverse("core:onboarding"))
@@ -139,8 +161,16 @@ class OnboardingViewTests(TestCase):
         self.assertIn("<footer", html)
 
 
-class DashboardViewTests(TestCase):
+class DashboardViewTests(SignedInTestCase):
     """The signed-in app shell must render a sensible empty state."""
+
+    def test_dashboard_redirects_visitors_to_login(self):
+        self.client.logout()
+        url = reverse("core:dashboard")
+        response = self.client.get(url)
+        self.assertRedirects(
+            response, f"{reverse('accounts:login')}?next={url}", fetch_redirect_response=False
+        )
 
     def test_dashboard_page_returns_200(self):
         response = self.client.get(reverse("core:dashboard"))
@@ -169,6 +199,39 @@ class DashboardViewTests(TestCase):
         nav = html[html.index("<header"):html.index("</header>")]
         self.assertIn(reverse("core:dashboard"), nav)
         self.assertIn('aria-current="page"', nav)
+
+
+class NavbarTests(TestCase):
+    """The shared navbar shows the right links for visitors and members."""
+
+    def _nav(self):
+        html = self.client.get("/no-such-page/").content.decode()  # 404 keeps the shell
+        return html[html.index("<header"):html.index("</header>")]
+
+    def test_visitor_sees_log_in_and_sign_up_only(self):
+        nav = self._nav()
+        self.assertIn(reverse("accounts:login"), nav)
+        self.assertIn(reverse("accounts:register"), nav)
+        self.assertNotIn(reverse("core:dashboard"), nav)
+        self.assertNotIn(reverse("accounts:logout"), nav)
+
+    def test_member_sees_dashboard_settings_and_log_out(self):
+        user = get_user_model().objects.create_user(username="dev3", password="pw-Foldo-12345")
+        self.client.force_login(user)
+        nav = self._nav()
+        self.assertIn(reverse("core:dashboard"), nav)
+        self.assertIn(reverse("accounts:settings"), nav)
+        self.assertIn(reverse("accounts:logout"), nav)
+        self.assertNotIn(reverse("accounts:register"), nav)
+
+    def test_log_out_is_a_post_form_inside_a_list_item(self):
+        user = get_user_model().objects.create_user(username="dev3", password="pw-Foldo-12345")
+        self.client.force_login(user)
+        nav = self._nav()
+        form = nav.index('action="' + reverse("accounts:logout"))
+        self.assertNotIn("</li>", nav[nav.rindex("<li", 0, form):form])
+        self.assertIn('method="post"', nav[nav.rindex("<form", 0, form):form])
+        self.assertIn("csrfmiddlewaretoken", nav)
 
 
 class HealthCheckViewTests(TestCase):
@@ -342,6 +405,7 @@ def _always_forbidden(request):
 
 urlpatterns = [
     path("", include("apps.core.urls")),
+    path("accounts/", include("apps.accounts.urls")),
     path("forbidden/", _always_forbidden),
 ]
 

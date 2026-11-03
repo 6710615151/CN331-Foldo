@@ -135,8 +135,8 @@ Open <http://127.0.0.1:8000/>. Other useful routes:
 | URL | Purpose |
 | --- | --- |
 | `/` | FOLDO landing page |
-| `/onboarding/` | First-time entry flow (mock steps; not gated behind login yet) |
-| `/dashboard/` | Signed-in app shell (mock summary; not gated behind login yet) |
+| `/onboarding/` | First-time entry flow (mock steps; login required) |
+| `/dashboard/` | Signed-in app shell (mock summary; login required) |
 | `/health/` | JSON health check (200 ok / 503 degraded) |
 | `/accounts/settings/` | Account settings (login required; edits the signed-in user only) |
 | `/admin/` | Django admin (create a superuser to use it) |

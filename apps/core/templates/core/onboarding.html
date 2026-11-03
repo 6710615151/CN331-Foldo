@@ -5,9 +5,9 @@
 {% block meta_description %}FOLDO — ทำตาม 3 ขั้นตอนเพื่อสร้างโปรไฟล์หลักและพอร์ตโฟลิโอแรกของคุณ{% endblock %}
 
 {% comment %}
-  First-time entry flow (FOLDO-02 app-shell slice). Reached directly for now;
-  once registration exists it should follow right after sign-up. The three
-  steps come from a mock selector (apps.profiles/apps.portfolios don't exist
+  First-time entry flow (FOLDO-02 app-shell slice; login required). It should
+  follow right after sign-up — the redirect lives in accounts.register. The
+  three steps come from a mock selector (apps.profiles/apps.portfolios don't exist
   yet) — see apps/core/selectors.py.
 {% endcomment %}
 

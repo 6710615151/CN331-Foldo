@@ -173,13 +173,14 @@ Issue; `urls.py` is mounted at `accounts/` with no routes yet.
 
 Owns everything that is *not* tied to a specific domain:
 
-- `views.LandingView` — the public landing page: a single hero screen with one
-  "Get Started" call to action, layered over a designer graphic slot.
+- `views.LandingView` — the public landing page: a single hero screen whose
+  "Get Started" button goes to sign-up (or to the dashboard when signed in).
 - `views.OnboardingView` — first-time entry flow: a three-step walkthrough
-  (`/onboarding/`). Not gated behind login yet — real authentication lands
-  with the rest of FOLDO-02.
+  (`/onboarding/`). Signed-in users only (`LoginRequiredMixin`).
 - `views.DashboardView` — the signed-in app shell (`/dashboard/`): navigation
-  plus an empty-state summary. Same auth caveat as `OnboardingView`.
+  plus an empty-state summary. Signed-in users only (`LoginRequiredMixin`).
+- `templates/partials/navbar.html` — visitors see Log in / Sign up; signed-in
+  users see Dashboard, Account settings and a POST Log out button.
 - `views.HealthCheckView` — JSON health endpoint for monitoring.
 - `views.page_not_found` / `views.server_error` — custom error handlers.
 - `selectors.py` — health check (`get_health_report()`, `DatabaseHealthCheck`,
