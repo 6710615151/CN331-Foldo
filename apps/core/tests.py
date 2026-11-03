@@ -39,6 +39,12 @@ from django.core.exceptions import PermissionDenied
 from django.urls import include, path
 # ------------------------------------------------------------------------
 
+# -------------------FOLDO-10: imports for the date-order tests-------------------
+from datetime import date
+
+from .validators import validate_date_order
+# ------------------------------------------------------------------------
+
 class LandingViewTests(TestCase):
     """The public landing / dashboard shell must render correctly."""
 
@@ -380,3 +386,45 @@ class EmptyStateTests(SimpleTestCase):
     def test_message_is_escaped(self):
         html = self._render(message="<b>hi</b>")
         self.assertIn("&lt;b&gt;hi&lt;/b&gt;", html)
+
+
+
+# ---------------------------------------------------------------------------
+# FOLDO-10: date order (apps/core/validators.py -> validate_date_order)
+# ---------------------------------------------------------------------------
+
+
+class _DateRangeForm(forms.Form):
+    """Test-only form that uses validate_date_order like a real FOLDO form would."""
+
+    start_date = forms.DateField(required=False)
+    end_date = forms.DateField(required=False)
+
+    def clean(self):
+        cleaned = super().clean()
+        try:
+            validate_date_order(cleaned.get("start_date"), cleaned.get("end_date"))
+        except ValidationError as error:
+            self.add_error("end_date", error)
+        return cleaned
+
+
+class DateOrderTests(SimpleTestCase):
+    def test_end_before_start_is_rejected(self):
+        with self.assertRaises(ValidationError):
+            validate_date_order(date(2026, 5, 1), date(2026, 4, 30))
+
+    def test_same_day_and_later_end_are_allowed(self):
+        validate_date_order(date(2026, 5, 1), date(2026, 5, 1))  # must not raise
+        validate_date_order(date(2026, 5, 1), date(2026, 6, 1))  # must not raise
+
+    def test_empty_dates_are_allowed(self):
+        """Still studying / still working: one or both dates may be blank."""
+        validate_date_order(date(2026, 5, 1), None)
+        validate_date_order(None, date(2026, 5, 1))
+        validate_date_order(None, None)
+
+    def test_form_shows_the_error_under_end_date(self):
+        form = _DateRangeForm(data={"start_date": "2026-05-01", "end_date": "2026-04-30"})
+        self.assertFalse(form.is_valid())
+        self.assertIn("end_date", form.errors)
