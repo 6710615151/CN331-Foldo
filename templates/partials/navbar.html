@@ -19,6 +19,12 @@
             {% if request.resolver_match.url_name == 'dashboard' %}aria-current="page"{% endif %}
             lang="en">Dashboard</a>
         </li>
+        {% if user.is_authenticated %}
+            <form method="post" action="{% url 'accounts:logout' %}">
+                {% csrf_token %}
+              <button type="submit" class="btn foldo-btn-secondary" >Logout</button>
+            </form>
+        {% endif %}
       </ul>
     </div>
   </nav>

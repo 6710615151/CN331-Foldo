@@ -138,6 +138,7 @@ Open <http://127.0.0.1:8000/>. Other useful routes:
 | `/onboarding/` | First-time entry flow (mock steps; not gated behind login yet) |
 | `/dashboard/` | Signed-in app shell (mock summary; not gated behind login yet) |
 | `/health/` | JSON health check (200 ok / 503 degraded) |
+| `/accounts/settings/` | Account settings (login required; edits the signed-in user only) |
 | `/admin/` | Django admin (create a superuser to use it) |
 
 Create an admin user:
@@ -219,4 +220,7 @@ models were created — planned models are documented in
 - [docs/GIT_WORKFLOW.md](docs/GIT_WORKFLOW.md) — branching, commits, reviews
 - [docs/DATABASE.md](docs/DATABASE.md) — SQLite vs PostgreSQL, ORM, migrations
 - [docs/DEFINITION_OF_DONE.md](docs/DEFINITION_OF_DONE.md) — acceptance criteria for Issues
+
 - [docs/CONVENTIONS.md](docs/CONVENTIONS.md) — shared rules for data ownership, validation, errors and tests (FOLDO-10)
+
+

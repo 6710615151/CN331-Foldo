@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block html_lang %}th{% endblock %}
 {% block title %}FOLDO — One Profile. Many Forms.{% endblock %}
@@ -10,19 +11,20 @@
 
 {% comment %}
   Single-screen landing page, laid out like the brand key visual:
-  large logo → headline → Thai supporting line → Get Started on the left,
+  large logo → headline → Thai supporting line → Get Started + Log in on the left,
   the illustration on the right, lime + orange bands along the bottom-left.
-  Logo and illustration are designer slots (see static/images/README.md).
+  Logo and illustration live in static/images/ (see static/images/README.md).
 {% endcomment %}
 
 {% block content %}
 <section class="foldo-hero" aria-labelledby="hero-heading">
-  {# ASSET SLOT: hero illustration (student + University / Career / Creative / Freelance cards). #}
-  <div class="foldo-hero__visual">
-    {% include "partials/asset_slot.html" with label="Hero illustration · 1400 × 1300" class="foldo-hero__placeholder" %}
-  </div>
-
   <div class="container foldo-hero__inner">
+    {# Hero illustration (student + University / Career / Creative / Freelance cards). Decorative; CSS places it in the right column. #}
+    <div class="foldo-hero__visual">
+      <img class="foldo-asset-img foldo-hero__art" src="{% static 'images/hero-illustration.png' %}" alt=""
+           width="1400" height="1300" fetchpriority="high">
+    </div>
+
     <div class="foldo-hero__copy">
       <p class="foldo-hero__logo" lang="en">
         {% include "partials/logo_mark.html" with class="foldo-hero__mark" %}
@@ -37,11 +39,19 @@
         แล้วสร้าง <span lang="en">Portfolio</span> ได้หลายเวอร์ชัน
       </p>
 
-      {# Not wired yet: the app (sign-up, profile) arrives with FOLDO-02 and the authentication Issue. #}
-      <button type="button" class="btn btn-lime btn-lg foldo-hero__cta" disabled aria-describedby="hero-cta-soon">
-        <span lang="en">Get Started</span> <span class="foldo-arrow foldo-arrow--out" aria-hidden="true">&nearr;</span>
-        <span class="foldo-hero__soon" id="hero-cta-soon">เร็วๆ นี้</span>
-      </button>
+      <div class="d-flex flex-wrap align-items-center gap-3">
+        {# Not wired yet: sign-up arrives with FOLDO-02 and the authentication Issue. #}
+        <a class="btn btn-lime btn-lg foldo-hero__cta" href="{% url 'core:dashboard' %}">
+          <span lang="en">Get Started</span>
+          <span class="foldo-arrow foldo-arrow--out" aria-hidden="true">&nearr;</span>
+        </a>
+
+        {% if not user.is_authenticated %}
+          <a class="btn btn-outline-light btn-lg" href="{% url 'accounts:login' %}">
+            เข้าสู่ระบบ
+          </a>
+        {% endif %}
+      </div>
     </div>
   </div>
 

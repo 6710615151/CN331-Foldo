@@ -64,17 +64,18 @@ class LandingViewTests(TestCase):
         self.assertEqual(len(re.findall(r"^<section", main, flags=re.MULTILINE)), 1)
         self.assertIn('id="hero-heading"', main)
 
-    def test_get_started_sits_under_the_hero_text_as_coming_soon(self):
-        """One CTA after the supporting line; inert until the app exists."""
+    def test_get_started_sits_under_the_hero_text_and_links_to_dashboard(self):
+        """One CTA after the supporting line; links to the dashboard."""
         html = self.client.get(reverse("core:landing")).content.decode()
         main = html[html.index("<main"):html.index("</main>")]
-        self.assertEqual(main.count('class="btn'), 1)
+        self.assertEqual(main.count('class="btn'), 2)
         lead = main.index("เก็บทุกผลงานไว้ที่เดียว")
         cta = main.index("Get Started")
         self.assertLess(lead, cta)
-        button = main[main.rindex("<button", 0, cta):main.index("</button>", cta)]
-        self.assertIn(" disabled", button)
-        self.assertIn("เร็วๆ นี้", button)
+        link = main[main.rindex("<a", 0, cta):main.index("</a>", cta)]
+        self.assertIn(reverse("core:dashboard"), link)
+        self.assertNotIn(" disabled", link)
+        self.assertNotIn("เร็วๆ นี้", link)
 
     def test_landing_page_has_no_placeholder_links(self):
         """Every link must lead somewhere real — no bare "#" stand-ins."""
@@ -91,13 +92,19 @@ class LandingViewTests(TestCase):
         self.assertIn("<header", other)
         self.assertIn("<footer", other)
 
-    def test_hero_graphic_is_a_placeholder_behind_the_text(self):
-        """The designer's graphic slot comes first in the markup (behind the copy)."""
+    def test_hero_illustration_sits_behind_the_text(self):
+        """The decorative hero image comes first in the markup (behind the copy)."""
         html = self.client.get(reverse("core:landing")).content.decode()
         main = html[html.index("<main"):html.index("</main>")]
-        self.assertIn('data-asset="Hero illustration', main)
-        self.assertLess(main.index("foldo-hero__placeholder"), main.index('id="hero-heading"'))
-        self.assertNotIn("<img", main)
+        self.assertIn("images/hero-illustration.png", main)
+        self.assertLess(main.index("foldo-hero__art"), main.index('id="hero-heading"'))
+        art = main[main.rindex("<img", 0, main.index("foldo-hero__art")):]
+        self.assertIn('alt=""', art[:art.index(">")])
+
+    def test_hero_logo_uses_the_brand_mark(self):
+        html = self.client.get(reverse("core:landing")).content.decode()
+        self.assertIn("images/logo-mark.png", html)
+        self.assertNotIn("foldo-asset", html[html.index("<main"):html.index("</main>")].replace("foldo-asset-img", ""))
 
 
 class OnboardingViewTests(TestCase):
