@@ -1,0 +1,20 @@
+{% comment %}
+  Project Story (FOLDO-15): Problem, Role, Process, Solution, Outcome.
+  Every part is optional, so only the parts the user filled in are shown.
+  A project with no story at all (e.g. an old project) shows nothing.
+
+  Param: project — any object with problem, role, process, solution, outcome.
+
+    {% include "partials/project_story.html" with project=project %}
+{% endcomment %}
+{% if project.problem or project.role or project.process or project.solution or project.outcome %}
+<section class="foldo-story" aria-label="Project story">
+  <dl class="mb-0">
+    {% if project.problem %}<dt>Problem</dt><dd>{{ project.problem|linebreaksbr }}</dd>{% endif %}
+    {% if project.role %}<dt>Role</dt><dd>{{ project.role|linebreaksbr }}</dd>{% endif %}
+    {% if project.process %}<dt>Process</dt><dd>{{ project.process|linebreaksbr }}</dd>{% endif %}
+    {% if project.solution %}<dt>Solution</dt><dd>{{ project.solution|linebreaksbr }}</dd>{% endif %}
+    {% if project.outcome %}<dt>Outcome</dt><dd>{{ project.outcome|linebreaksbr }}</dd>{% endif %}
+  </dl>
+</section>
+{% endif %}
