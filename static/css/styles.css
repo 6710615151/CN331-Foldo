@@ -179,11 +179,22 @@ section[id] {
 }
 
 .foldo-navbar .container {
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
+  row-gap: 0.5rem;
 }
 
 .foldo-nav {
   gap: 0.25rem;
+}
+
+.foldo-nav .btn {
+  --bs-btn-padding-x: 0.9rem;
+  --bs-btn-padding-y: 0.4rem;
+  --bs-btn-font-size: 0.9rem;
+}
+
+.foldo-nav__form {
+  margin: 0;
 }
 
 .foldo-nav__link {

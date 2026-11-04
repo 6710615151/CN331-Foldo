@@ -40,8 +40,9 @@
       </p>
 
       <div class="d-flex flex-wrap align-items-center gap-3">
-        {# Not wired yet: sign-up arrives with FOLDO-02 and the authentication Issue. #}
-        <a class="btn btn-lime btn-lg foldo-hero__cta" href="{% url 'core:dashboard' %}">
+        {# New visitors sign up first; signed-in users go straight to their dashboard. #}
+        {% if user.is_authenticated %}{% url 'core:dashboard' as cta_url %}{% else %}{% url 'accounts:register' as cta_url %}{% endif %}
+        <a class="btn btn-lime btn-lg foldo-hero__cta" href="{{ cta_url }}">
           <span lang="en">Get Started</span>
           <span class="foldo-arrow foldo-arrow--out" aria-hidden="true">&nearr;</span>
         </a>
