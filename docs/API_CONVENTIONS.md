@@ -6,6 +6,11 @@ AJAX-enhanced endpoint later). Written as the FOLDO-01 team agreement and kept
 current as each Issue lands. If a new endpoint needs something not covered
 here, add it to this document in the same Pull Request.
 
+The code-level rules that implement these conventions — `OwnerRequiredMixin`,
+`BootstrapFormMixin`, `safe_url_validator`, the form/empty-state partials and
+the required privacy tests — live in [CONVENTIONS.md](CONVENTIONS.md). This
+document covers the response surface; that one covers how to build it.
+
 ## 1. Transport
 
 FOLDO is a server-rendered Django monolith (see `docs/ARCHITECTURE.md`). Most
