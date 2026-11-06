@@ -333,3 +333,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Version string surfaced by the health-check endpoint. Kept in settings so it
 # is easy to bump and never leaks anything sensitive.
 FOLDO_VERSION = env_str("FOLDO_VERSION", "0.1.0")
+
+LOGIN_URL = "accounts:login"
+LOGIN_REDIRECT_URL = "core:dashboard"
+#LOGIN_REDIRECT_URL = "profiles:detail"
+LOGOUT_REDIRECT_URL = "accounts:login"
