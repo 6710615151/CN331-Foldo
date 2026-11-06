@@ -1,0 +1,34 @@
+<article class="card profile-card">
+  <header>
+    {% if display.photo_url %}
+      <img class="avatar" src="{{ display.photo_url }}" alt="Photo of {{ display.display_name }}">
+    {% else %}
+      <div class="avatar placeholder" aria-hidden="true">{{ display.initials }}</div>
+    {% endif %}
+    <div>
+      <h2>{{ display.display_name|default:"Unnamed profile" }}</h2>
+      {% if display.headline %}<p class="headline">{{ display.headline }}</p>{% endif %}
+      {% if display.location %}<p class="muted">{{ display.location }}</p>{% endif %}
+    </div>
+  </header>
+
+  {% if display.bio %}<p>{{ display.bio|linebreaksbr }}</p>{% endif %}
+
+  {% if display.contacts %}
+    <ul class="plain">
+      {% for item in display.contacts %}
+        <li><strong>{{ item.label }}:</strong>
+          {% if item.href %}<a href="{{ item.href }}">{{ item.value }}</a>{% else %}{{ item.value }}{% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  {% if display.links %}
+    <ul class="plain">
+      {% for item in display.links %}
+        <li><a href="{{ item.href }}" rel="noopener noreferrer" target="_blank">{{ item.label }}</a></li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+</article>

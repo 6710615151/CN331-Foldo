@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}{% if is_new %}Create{% else %}Edit{% endif %} Main Profile{% endblock %}
+{% block content %}
+<h1>{% if is_new %}Create your Main Profile{% else %}Edit your Main Profile{% endif %}</h1>
+<p class="muted">Only your full name is needed to save. Add the rest now or later. Fields marked <span class="req">*</span> are required.</p>
+
+<form method="post" enctype="multipart/form-data" class="card" novalidate>
+  {% csrf_token %}
+
+  {% if form.non_field_errors %}
+    <div class="alert alert-error" role="alert">
+      {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+    </div>
+  {% endif %}
+
+  <fieldset>
+    <legend>Basic information</legend>
+    {% include "profiles/_field.html" with field=form.full_name %}
+    {% include "profiles/_field.html" with field=form.headline %}
+    {% include "profiles/_field.html" with field=form.bio %}
+    {% include "profiles/_field.html" with field=form.location %}
+  </fieldset>
+
+  <fieldset>
+    <legend>Photo</legend>
+    {% if profile.photo %}
+      <img class="avatar" src="{{ profile.photo.url }}" alt="Current profile photo" style="margin-bottom:12px">
+    {% endif %}
+    {% include "profiles/_field.html" with field=form.photo %}
+  </fieldset>
+
+  <fieldset>
+    <legend>Contact</legend>
+    {% include "profiles/_field.html" with field=form.contact_email %}
+    {% include "profiles/_field.html" with field=form.phone %}
+  </fieldset>
+
+  <fieldset>
+    <legend>Links</legend>
+    {% include "profiles/_field.html" with field=form.website %}
+    {% include "profiles/_field.html" with field=form.linkedin_url %}
+    {% include "profiles/_field.html" with field=form.github_url %}
+  </fieldset>
+
+  <div class="actions">
+    <button type="submit" class="btn">Save profile</button>
+    {% if not is_new %}<a class="btn secondary" href="{% url 'profiles:detail' %}">Cancel</a>{% endif %}
+  </div>
+</form>
+{% endblock %}
