@@ -1,21 +1,26 @@
 {% extends "base.html" %}
 {% block title %}My Main Profile{% endblock %}
 {% block content %}
-<h1>My Main Profile</h1>
+<div class="container py-4" style="max-width: 760px;">
+  <h1 class="h3 mb-3">My Main Profile</h1>
 
-{% if not profile.is_complete %}
-  <div class="alert alert-warning" role="status">
-    <strong>Profile incomplete ({{ profile.completion_percent }}%).</strong>
-    Still needed for your portfolios: {{ profile.missing_fields|join:", " }}.
-    <a href="{% url 'profiles:edit' %}">Finish it now</a>
+  {% if not profile.is_complete %}
+    <div class="alert alert-warning" role="status">
+      <strong>Profile incomplete ({{ profile.completion_percent }}%).</strong>
+      Still needed for your portfolios: {{ profile.missing_fields|join:", " }}.
+      <a class="alert-link" href="{% url 'profiles:edit' %}">Finish it now</a>
+      <div class="progress mt-2" role="progressbar" aria-label="Profile completion"
+           aria-valuenow="{{ profile.completion_percent }}" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-bar" style="width: {{ profile.completion_percent }}%"></div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% include "profiles/_profile_card.html" %}
+
+  <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <span class="small text-body-secondary">Last saved {{ profile.updated_at|date:"j M Y, H:i" }}</span>
+    <a class="btn btn-primary" href="{% url 'profiles:edit' %}">Edit profile</a>
   </div>
-  <div class="meter" aria-hidden="true"><span style="width: {{ profile.completion_percent }}%"></span></div>
-{% endif %}
-
-{% include "profiles/_profile_card.html" %}
-
-<p class="muted">Last saved {{ profile.updated_at|date:"j M Y, H:i" }}.</p>
-<div class="actions">
-  <a class="btn" href="{% url 'profiles:edit' %}">Edit profile</a>
 </div>
 {% endblock %}

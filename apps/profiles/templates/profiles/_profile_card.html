@@ -1,34 +1,38 @@
-<article class="card profile-card">
-  <header>
-    {% if display.photo_url %}
-      <img class="avatar" src="{{ display.photo_url }}" alt="Photo of {{ display.display_name }}">
-    {% else %}
-      <div class="avatar placeholder" aria-hidden="true">{{ display.initials }}</div>
-    {% endif %}
-    <div>
-      <h2>{{ display.display_name|default:"Unnamed profile" }}</h2>
-      {% if display.headline %}<p class="headline">{{ display.headline }}</p>{% endif %}
-      {% if display.location %}<p class="muted">{{ display.location }}</p>{% endif %}
+<article class="card shadow-sm mb-4">
+  <div class="card-body">
+    <div class="d-flex align-items-center gap-3 mb-3">
+      {% if display.photo_url %}
+        <img src="{{ display.photo_url }}" alt="Photo of {{ display.display_name }}"
+             width="112" height="112" class="rounded-circle object-fit-cover flex-shrink-0">
+      {% else %}
+        <div class="rounded-circle bg-secondary-subtle text-secondary-emphasis d-flex align-items-center justify-content-center fw-bold fs-2 flex-shrink-0"
+             style="width:112px;height:112px" aria-hidden="true">{{ display.initials }}</div>
+      {% endif %}
+      <div>
+        <h2 class="h4 mb-1">{{ display.display_name|default:"Unnamed profile" }}</h2>
+        {% if display.headline %}<p class="mb-1 text-body-secondary">{{ display.headline }}</p>{% endif %}
+        {% if display.location %}<p class="mb-0 small text-body-secondary">{{ display.location }}</p>{% endif %}
+      </div>
     </div>
-  </header>
 
-  {% if display.bio %}<p>{{ display.bio|linebreaksbr }}</p>{% endif %}
+    {% if display.bio %}<p>{{ display.bio|linebreaksbr }}</p>{% endif %}
 
-  {% if display.contacts %}
-    <ul class="plain">
-      {% for item in display.contacts %}
-        <li><strong>{{ item.label }}:</strong>
-          {% if item.href %}<a href="{{ item.href }}">{{ item.value }}</a>{% else %}{{ item.value }}{% endif %}
-        </li>
-      {% endfor %}
-    </ul>
-  {% endif %}
+    {% if display.contacts %}
+      <ul class="list-unstyled mb-2">
+        {% for item in display.contacts %}
+          <li><strong>{{ item.label }}:</strong>
+            {% if item.href %}<a href="{{ item.href }}">{{ item.value }}</a>{% else %}{{ item.value }}{% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
 
-  {% if display.links %}
-    <ul class="plain">
-      {% for item in display.links %}
-        <li><a href="{{ item.href }}" rel="noopener noreferrer" target="_blank">{{ item.label }}</a></li>
-      {% endfor %}
-    </ul>
-  {% endif %}
+    {% if display.links %}
+      <div class="d-flex flex-wrap gap-2">
+        {% for item in display.links %}
+          <a class="btn btn-outline-secondary btn-sm" href="{{ item.href }}" target="_blank" rel="noopener noreferrer">{{ item.label }}</a>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
 </article>
