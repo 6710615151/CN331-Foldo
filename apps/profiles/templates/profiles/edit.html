@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-{% block title %}{% if is_new %}Create{% else %}Edit{% endif %} Main Profile{% endblock %}
+{% block title %}{% if is_new %}New profile{% else %}Edit {{ profile.label }}{% endif %}{% endblock %}
 {% block content %}
 <div class="container py-4" style="max-width: 760px;">
-  <h1 class="h3 mb-1">{% if is_new %}Create your Main Profile{% else %}Edit your Main Profile{% endif %}</h1>
+  <h1 class="h3 mb-1">{% if is_new %}Create a profile{% else %}Edit profile{% endif %}</h1>
   <p class="text-body-secondary">
-    Only your full name is needed to save. Add the rest now or later. Fields marked
+    A profile name and your full name are needed to save. Add the rest now or later. Fields marked
     <span class="text-danger">*</span> are required.
   </p>
 
@@ -16,6 +16,13 @@
         {% for error in form.non_field_errors %}{{ error }}{% endfor %}
       </div>
     {% endif %}
+
+    <section class="card mb-4">
+      <div class="card-body">
+        <h2 class="h5 mb-3">Profile</h2>
+        {% include "profiles/_field.html" with field=form.label %}
+      </div>
+    </section>
 
     <section class="card mb-4">
       <div class="card-body">
@@ -59,7 +66,11 @@
 
     <div class="d-flex gap-2">
       <button type="submit" class="btn btn-primary">Save profile</button>
-      {% if not is_new %}<a class="btn btn-outline-secondary" href="{% url 'profiles:detail' %}">Cancel</a>{% endif %}
+      {% if is_new %}
+        <a class="btn btn-outline-secondary" href="{% url 'profiles:list' %}">Cancel</a>
+      {% else %}
+        <a class="btn btn-outline-secondary" href="{% url 'profiles:view' profile.pk %}">Cancel</a>
+      {% endif %}
     </div>
   </form>
 </div>

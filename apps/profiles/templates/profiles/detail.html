@@ -1,14 +1,18 @@
 {% extends "base.html" %}
-{% block title %}My Main Profile{% endblock %}
+{% block title %}{{ profile.label }}{% endblock %}
 {% block content %}
 <div class="container py-4" style="max-width: 760px;">
-  <h1 class="h3 mb-3">My Main Profile</h1>
+  <a class="small" href="{% url 'profiles:list' %}">&larr; All profiles</a>
+  <h1 class="h3 mt-2 mb-3">
+    {{ profile.label }}
+    {% if profile.is_default %}<span class="badge text-bg-primary fs-6 align-middle">Default</span>{% endif %}
+  </h1>
 
   {% if not profile.is_complete %}
     <div class="alert alert-warning" role="status">
       <strong>Profile incomplete ({{ profile.completion_percent }}%).</strong>
       Still needed for your portfolios: {{ profile.missing_fields|join:", " }}.
-      <a class="alert-link" href="{% url 'profiles:edit' %}">Finish it now</a>
+      <a class="alert-link" href="{% url 'profiles:update' profile.pk %}">Finish it now</a>
       <div class="progress mt-2" role="progressbar" aria-label="Profile completion"
            aria-valuenow="{{ profile.completion_percent }}" aria-valuemin="0" aria-valuemax="100">
         <div class="progress-bar" style="width: {{ profile.completion_percent }}%"></div>
@@ -20,7 +24,17 @@
 
   <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
     <span class="small text-body-secondary">Last saved {{ profile.updated_at|date:"j M Y, H:i" }}</span>
-    <a class="btn btn-primary" href="{% url 'profiles:edit' %}">Edit profile</a>
+    <div class="d-flex flex-wrap gap-2">
+      {% if not profile.is_default %}
+        <form method="post" action="{% url 'profiles:make_default' profile.pk %}" class="m-0">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{% url 'profiles:view' profile.pk %}">
+          <button type="submit" class="btn btn-outline-secondary">Make default</button>
+        </form>
+      {% endif %}
+      <a class="btn btn-outline-danger" href="{% url 'profiles:delete' profile.pk %}">Delete</a>
+      <a class="btn btn-primary" href="{% url 'profiles:update' profile.pk %}">Edit profile</a>
+    </div>
   </div>
 </div>
 {% endblock %}

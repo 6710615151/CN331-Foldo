@@ -2,8 +2,10 @@
 Public interface of the profiles module.
 
 Other apps (portfolio versions, exports, ...) should import from here, never touch
-MainProfile fields directly. `get_profile_display` never raises for missing data and
+MainProfile fields directly. `build_display` never raises for missing data and
 always returns a fully populated structure, so templates need no defensive logic.
+
+Every lookup is scoped to the given user, so one user can never read another's profile.
 """
 from __future__ import annotations
 
@@ -38,18 +40,40 @@ class ProfileDisplay:
         return "".join(p[0] for p in parts).upper() or "?"
 
 
-def get_profile(user) -> MainProfile | None:
-    """Return the user's own profile, or None. Anonymous users never get one."""
-    if user is None or not getattr(user, "is_authenticated", False):
-        return None
-    return MainProfile.objects.filter(owner=user).first()
+def _is_authenticated(user) -> bool:
+    return user is not None and getattr(user, "is_authenticated", False)
+
+
+def get_profiles(user):
+    """All of this user's profiles (default first). Empty for anonymous users."""
+    if not _is_authenticated(user):
+        return MainProfile.objects.none()
+    return MainProfile.objects.filter(owner=user)
+
+
+def get_default_profile(user) -> MainProfile | None:
+    profiles = get_profiles(user)
+    # Falls back to the most recently updated one if no row is flagged as default.
+    return profiles.filter(is_default=True).first() or profiles.order_by("-updated_at").first()
+
+
+def get_profile(user, pk=None) -> MainProfile | None:
+    """The user's profile with this id, or their default when pk is None. None if not theirs."""
+    if pk is None:
+        return get_default_profile(user)
+    return get_profiles(user).filter(pk=pk).first()
 
 
 def get_or_create_profile(user) -> MainProfile:
-    profile = get_profile(user)
+    profile = get_default_profile(user)
     if profile is None:
         profile = MainProfile.objects.create(owner=user, full_name=user.get_username())
     return profile
+
+
+def set_default_profile(profile: MainProfile) -> None:
+    profile.is_default = True
+    profile.save(update_fields=["is_default"])
 
 
 def _photo_url(profile: MainProfile) -> str:
@@ -60,11 +84,11 @@ def _photo_url(profile: MainProfile) -> str:
 
 
 def build_display(user, profile: MainProfile | None = None) -> ProfileDisplay:
-    """Render-safe view of a profile; pass `profile` to skip a query if you already have it."""
+    """Render-safe view of a profile. Without `profile`, the user's default is used."""
     if profile is None:
-        profile = get_profile(user)
+        profile = get_default_profile(user)
 
-    fallback_name = user.get_username() if getattr(user, "is_authenticated", False) else ""
+    fallback_name = user.get_username() if _is_authenticated(user) else ""
     if profile is None:
         return ProfileDisplay(
             exists=False,
