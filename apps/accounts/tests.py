@@ -10,6 +10,7 @@ from django.urls import reverse
 
 from . import services
 from .models import CustomUser
+from django.shortcuts import resolve_url
 
 
 class CustomUserModelTests(TestCase):
@@ -95,16 +96,18 @@ class AccountSettingsViewTests(TestCase):
     def test_anonymous_get_redirects_to_login(self):
         self.client.logout()
         response = self.client.get(self.url)
+        expected_url = f"{resolve_url(settings.LOGIN_URL)}?next={self.url}"
         self.assertRedirects(
-            response, f"{settings.LOGIN_URL}?next={self.url}", fetch_redirect_response=False
+            response, expected_url, fetch_redirect_response=False
         )
 
     def test_anonymous_post_redirects_and_changes_nothing(self):
         self.client.logout()
         response = self._post(email="hacked@example.com", first_name="Hacked")
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(response["Location"].startswith(settings.LOGIN_URL))
+        self.assertTrue(response["Location"].startswith(resolve_url(settings.LOGIN_URL)))
         self._assert_alice_unchanged()
+
 
     def test_get_shows_own_account(self):
         response = self.client.get(self.url)
