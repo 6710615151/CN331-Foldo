@@ -1,12 +1,38 @@
 {% extends "base.html" %}
+
+{% block title %}Create an Account — FOLDO{% endblock %}
+
 {% block content %}
-<h2>Create an Account</h2>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-6 col-lg-5">
+      
+      <div class="card shadow border-0 mb-4">
+        <div class="card-body p-4 p-md-5">
+          <h2 class="h3 mb-4 text-center fw-bold">Create an Account</h2>
 
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Sign Up</button>
-</form>
+          <form method="post">
+            {% csrf_token %}
+            
+            <div class="mb-4">
+              {{ form.as_p }}
+            </div>
+            
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary py-2 fw-semibold">Sign Up</button>
+            </div>
+          </form>
+          
+        </div>
+      </div>
 
-<p>Already have an account? <a href="{% url 'accounts:login' %}">Log in</a></p>
+      <div class="text-center">
+        <p>
+          Already have an account? <a href="{% url 'accounts:login' %}" class="text-decoration-none fw-bold">Log in</a>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
 {% endblock %}

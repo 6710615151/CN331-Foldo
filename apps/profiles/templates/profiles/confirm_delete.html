@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Delete {{ profile.label }}{% endblock %}
+{% block content %}
+<div class="container py-4" style="max-width: 560px;">
+  <h1 class="h3 mb-3">Delete this profile?</h1>
+  <div class="card card-body mb-3">
+    <p class="mb-1"><strong>{{ profile.label }}</strong></p>
+    <p class="mb-0 text-body-secondary">{{ profile.full_name }}{% if profile.headline %} &middot; {{ profile.headline }}{% endif %}</p>
+  </div>
+  <p>This permanently deletes the profile and its photo. This can't be undone.
+    {% if profile.is_default %}Your most recently edited remaining profile will become the default.{% endif %}</p>
+  <form method="post" class="d-flex gap-2">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Yes, delete it</button>
+    <a class="btn btn-outline-secondary" href="{% url 'profiles:view' profile.pk %}">Cancel</a>
+  </form>
+</div>
+{% endblock %}

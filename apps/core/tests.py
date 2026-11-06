@@ -7,6 +7,7 @@ from unittest import mock
 from django.conf import settings
 from django.test import TestCase, override_settings
 from django.urls import reverse
+from django.shortcuts import resolve_url
 
 # ------------------- FOLDO-10 initial repeatable tests ------------------- 
 from django.contrib.auth import get_user_model
@@ -316,7 +317,8 @@ class OwnerRequiredMixinTests(TestCase):
     def test_not_signed_in_is_redirected_to_login(self):
         response = self._open(AnonymousUser(), self.alice.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertIn(settings.LOGIN_URL, response.url)
+        self.assertIn(resolve_url(settings.LOGIN_URL), response.url)
+        
 
 
 

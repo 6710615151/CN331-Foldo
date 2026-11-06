@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}{% if is_new %}New profile{% else %}Edit {{ profile.label }}{% endif %}{% endblock %}
+{% block content %}
+<div class="container py-4" style="max-width: 760px;">
+  <h1 class="h3 mb-1">{% if is_new %}Create a profile{% else %}Edit profile{% endif %}</h1>
+  <p class="text-body-secondary">
+    A profile name and your full name are needed to save. Add the rest now or later. Fields marked
+    <span class="text-danger">*</span> are required.
+  </p>
+
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger" role="alert">
+        {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+      </div>
+    {% endif %}
+
+    <section class="card mb-4">
+      <div class="card-body">
+        <h2 class="h5 mb-3">Profile</h2>
+        {% include "profiles/_field.html" with field=form.label %}
+      </div>
+    </section>
+
+    <section class="card mb-4">
+      <div class="card-body">
+        <h2 class="h5 mb-3">Basic information</h2>
+        {% include "profiles/_field.html" with field=form.full_name %}
+        {% include "profiles/_field.html" with field=form.headline %}
+        {% include "profiles/_field.html" with field=form.bio %}
+        {% include "profiles/_field.html" with field=form.location %}
+      </div>
+    </section>
+
+    <section class="card mb-4">
+      <div class="card-body">
+        <h2 class="h5 mb-3">Photo</h2>
+        {% if profile.photo %}
+          <img src="{{ profile.photo.url }}" alt="Current profile photo" width="96" height="96"
+               class="rounded-circle object-fit-cover mb-3">
+        {% endif %}
+        {% include "profiles/_field.html" with field=form.photo %}
+      </div>
+    </section>
+
+    <section class="card mb-4">
+      <div class="card-body">
+        <h2 class="h5 mb-3">Contact</h2>
+        <div class="row">
+          <div class="col-md-6">{% include "profiles/_field.html" with field=form.contact_email %}</div>
+          <div class="col-md-6">{% include "profiles/_field.html" with field=form.phone %}</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card mb-4">
+      <div class="card-body">
+        <h2 class="h5 mb-3">Links</h2>
+        {% include "profiles/_field.html" with field=form.website %}
+        {% include "profiles/_field.html" with field=form.linkedin_url %}
+        {% include "profiles/_field.html" with field=form.github_url %}
+      </div>
+    </section>
+
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-primary">Save profile</button>
+      {% if is_new %}
+        <a class="btn btn-outline-secondary" href="{% url 'profiles:list' %}">Cancel</a>
+      {% else %}
+        <a class="btn btn-outline-secondary" href="{% url 'profiles:view' profile.pk %}">Cancel</a>
+      {% endif %}
+    </div>
+  </form>
+</div>
+{% endblock %}

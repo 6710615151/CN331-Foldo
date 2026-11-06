@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}My profiles{% endblock %}
+{% block content %}
+<div class="container py-4" style="max-width: 900px;">
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+    <h1 class="h3 mb-0">My profiles</h1>
+    {% if can_create %}
+      <a class="btn btn-primary" href="{% url 'profiles:create' %}">New profile</a>
+    {% else %}
+      <span class="small text-body-secondary">Limit of {{ max_profiles }} profiles reached</span>
+    {% endif %}
+  </div>
+
+  {% if profiles %}
+    <div class="row g-3">
+      {% for profile in profiles %}
+        <div class="col-md-6">
+          <article class="card h-100">
+            <div class="card-body d-flex flex-column">
+              <div class="d-flex align-items-start gap-3 mb-2">
+                {% if profile.photo %}
+                  <img src="{{ profile.photo.url }}" alt="" width="56" height="56"
+                       class="rounded-circle object-fit-cover flex-shrink-0">
+                {% endif %}
+                <div class="flex-grow-1">
+                  <h2 class="h5 mb-1">
+                    {{ profile.label }}
+                    {% if profile.is_default %}<span class="badge text-bg-primary ms-1">Default</span>{% endif %}
+                  </h2>
+                  <p class="mb-0">{{ profile.full_name }}</p>
+                  {% if profile.headline %}<p class="mb-0 small text-body-secondary">{{ profile.headline }}</p>{% endif %}
+                </div>
+              </div>
+
+              {% if not profile.is_complete %}
+                <p class="small text-warning-emphasis mb-2">
+                  Incomplete ({{ profile.completion_percent }}%): needs {{ profile.missing_fields|join:", " }}
+                </p>
+              {% endif %}
+
+              <div class="d-flex flex-wrap gap-2 mt-auto pt-2">
+                <a class="btn btn-sm btn-outline-primary" href="{% url 'profiles:view' profile.pk %}">View</a>
+                <a class="btn btn-sm btn-outline-secondary" href="{% url 'profiles:update' profile.pk %}">Edit</a>
+                {% if not profile.is_default %}
+                  <form method="post" action="{% url 'profiles:make_default' profile.pk %}" class="m-0">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-secondary">Make default</button>
+                  </form>
+                {% endif %}
+                <a class="btn btn-sm btn-outline-danger ms-auto" href="{% url 'profiles:delete' profile.pk %}">Delete</a>
+              </div>
+            </div>
+          </article>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="card card-body text-center py-5">
+      <p class="mb-3">You don't have a profile yet.</p>
+      <div><a class="btn btn-primary" href="{% url 'profiles:create' %}">Create your first profile</a></div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
