@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}{{ heading }}{% endblock %}
+{% block content %}
+<div class="container py-4" style="max-width: 640px;">
+  <h1 class="h3 mb-3">{{ heading }}</h1>
+  <p>Delete <strong>{{ item_label }}</strong>? This can't be undone.</p>
+
+  <form method="post" data-loading>
+    {% csrf_token %}
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-danger" data-loading-text="Deleting…">Delete</button>
+      <a class="btn btn-outline-secondary" href="{{ cancel_url }}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
