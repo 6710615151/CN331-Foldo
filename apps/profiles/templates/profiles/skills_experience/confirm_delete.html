@@ -1,8 +1,12 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}{{ heading }}{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'profiles/skills_experience.css' %}">{% endblock %}
 {% block content %}
-<div class="container py-4" style="max-width: 640px;">
-  <h1 class="h3 mb-3">{{ heading }}</h1>
+<div class="foldo-se container py-5" style="max-width: 640px;">
+  <a class="foldo-back" href="{{ cancel_url }}"><span aria-hidden="true">&larr;</span> Skills &amp; experience</a>
+  <h1 class="foldo-se__title mt-3 mb-1">{{ heading }}</h1>
+  <div class="foldo-se__bands" aria-hidden="true"><span></span><span></span></div>
   <p>Delete <strong>{{ item_label }}</strong>? This can't be undone.</p>
 
   <form method="post" data-loading>
