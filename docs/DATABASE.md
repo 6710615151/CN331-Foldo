@@ -86,9 +86,9 @@ Planned models are documented in the source and arrive with their Issues:
 | --- | ----- | ----- | ------- |
 | `profiles` | `Profile` | FOLDO-02 | One-to-one with `AUTH_USER_MODEL`; personal details. |
 | `profiles` | `Education` | FOLDO-03 | Institution, degree, field, dates. |
-| `profiles` | `Skill` | FOLDO-03 | Name, category, proficiency. |
+| `profiles` | `Skill` | FOLDO-04 | Implemented. FK to `MainProfile`; name (unique per profile, ignoring case), proficiency. |
 | `profiles` | `Project` | FOLDO-03 | Title, description, link, dates. |
-| `profiles` | `Experience` | FOLDO-03 | Organisation, role, description, dates. |
+| `profiles` | `Experience` | FOLDO-04 | Implemented. FK to `MainProfile`; company, job title, description, start date, optional end date (empty = present). |
 | `portfolios` | `PortfolioVersion` | FOLDO-04 | Title, target role/company, template. |
 | `portfolios` | `PortfolioSectionItem` | FOLDO-05 | Ordered references to profile content. |
 | `portfolios` | `TemplateChoice` | FOLDO-06 | Template key → renderer. |
