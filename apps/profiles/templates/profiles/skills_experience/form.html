@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}{{ heading }}{% endblock %}
+{% block content %}
+<div class="container py-4" style="max-width: 640px;">
+  <a class="small" href="{{ cancel_url }}">&larr; Skills &amp; experience</a>
+  <h1 class="h3 mt-2 mb-4">{{ heading }}</h1>
+
+  <form method="post" novalidate data-loading>
+    {% csrf_token %}
+    {% include "partials/form_errors.html" %}
+    {% for field in form %}{% include "partials/form_field.html" %}{% endfor %}
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-primary" data-loading-text="Saving…">{{ submit_label }}</button>
+      <a class="btn btn-outline-secondary" href="{{ cancel_url }}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
