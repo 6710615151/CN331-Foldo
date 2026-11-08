@@ -9,7 +9,7 @@ from django.template import Context, Template
 from django.test import TestCase
 
 from ..models import MainProfile, Project
-
+from .forms import ProjectForm
 
 class ProjectTestCase(TestCase):
     """Two users, each with one profile, ready for project tests."""
@@ -100,3 +100,47 @@ class ProjectStoryPartialTests(ProjectTestCase):
 
     def test_real_project_without_story_shows_nothing(self):
         self.assertNotIn("<section", self._render(self.make_project()))
+
+    
+
+class ProjectFormTests(ProjectTestCase):
+    def test_name_alone_is_enough(self):
+        form = ProjectForm(data={"project_name": "FOLDO"})
+        self.assertTrue(form.is_valid(), form.errors)
+
+    def test_blank_or_spaces_only_name_is_rejected(self):
+        form = ProjectForm(data={"project_name": "   "})
+        self.assertFalse(form.is_valid())
+        self.assertIn("project_name", form.errors)
+
+    def test_end_date_before_start_date_shows_under_end_date(self):
+        form = ProjectForm(data={"project_name": "FOLDO", "start_date": "2026-05-01", "end_date": "2026-04-30"})
+        self.assertFalse(form.is_valid())
+        self.assertIn("end_date", form.errors)
+
+    def test_link_without_scheme_becomes_https(self):
+        form = ProjectForm(data={"project_name": "FOLDO", "project_url": "github.com/me/foldo"})
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data["project_url"], "https://github.com/me/foldo")
+
+    def test_non_web_link_is_rejected(self):
+        form = ProjectForm(data={"project_name": "FOLDO", "project_url": "ftp://example.com/cv.pdf"})
+        self.assertFalse(form.is_valid())
+        self.assertIn("project_url", form.errors)
+
+    def test_story_parts_are_saved(self):
+        form = ProjectForm(data={"project_name": "FOLDO", "problem": "Slow sign-up", "outcome": "2x"})
+        self.assertTrue(form.is_valid(), form.errors)
+        project = form.save(commit=False)
+        project.profile = self.alice_profile
+        project.save()
+        project.refresh_from_db()
+        self.assertEqual((project.problem, project.outcome), ("Slow sign-up", "2x"))
+
+    def test_profile_cannot_be_chosen_in_the_form(self):
+        """The profile comes from the URL + signed-in user, never from posted data."""
+        self.assertNotIn("profile", ProjectForm().fields)
+
+    def test_fields_use_the_shared_bootstrap_look(self):
+        html = str(ProjectForm()["project_name"])
+        self.assertIn("form-control", html)
