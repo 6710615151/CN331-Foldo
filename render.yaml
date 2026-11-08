@@ -24,6 +24,16 @@ services:
         value: "true"
       - key: WEB_CONCURRENCY
         value: "2"
+      # Password-reset email. Without EMAIL_HOST, Django only prints mails to the
+      # log, so "ลืมรหัสผ่าน" sends nothing. Gmail: smtp.gmail.com + an App Password.
+      - key: EMAIL_HOST
+        sync: false
+      - key: EMAIL_HOST_USER
+        sync: false
+      - key: EMAIL_HOST_PASSWORD
+        sync: false
+      - key: DEFAULT_FROM_EMAIL
+        sync: false
       # Optional first admin account (set the password in the dashboard).
       - key: DJANGO_SUPERUSER_USERNAME
         sync: false
