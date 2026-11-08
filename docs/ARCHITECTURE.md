@@ -250,7 +250,17 @@ anything.
 - `dna.py` — `build_dna(profile)`. For every item: which versions use it,
   which items are unused or reused, and selections that point at deleted
   items.
-- Route: `/insights/profiles/<pk>/dna/` (owner only).
+- `quality.py` — `run_quality_check(profile, theme_key, selected=None)`.
+  Rule-based checks produce findings with a severity: **error** (blocks
+  sharing: empty portfolio, invalid link, unknown or failing template),
+  **warning** (should fix: missing headline/contact e-mail, empty section,
+  selected item deleted, photo file missing) or **info** (tips: no bio/photo,
+  long bio, project without description, partial story). Every finding links
+  to the page that fixes it. Each check runs in isolation; a crash becomes a
+  "could not run" finding instead of an error page.
+- Routes: `/insights/profiles/<pk>/dna/` and
+  `/insights/profiles/<pk>/quality/?theme=<key>&version=<id>` (owner only,
+  GET only — re-running is reloading the page).
 
 ### Planned apps (not created yet)
 
@@ -294,6 +304,7 @@ config/urls.py
 ├── "templates/"  → apps.rendering.urls   → ""                       (gallery, name="rendering:gallery")
 │                                            "<theme>/profiles/<pk>/" (preview, name="rendering:preview")
 └── "insights/"   → apps.insights.urls    → "profiles/<pk>/dna/"     (dna,     name="insights:dna")
+                                             "profiles/<pk>/quality/" (quality, name="insights:quality")
 ```
 
 All app URLconfs use `app_name` namespaces, so templates reverse URLs safely
