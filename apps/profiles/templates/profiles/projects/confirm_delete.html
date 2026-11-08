@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}ลบ {{ project.project_name }} — FOLDO{% endblock %}
+{% block content %}
+<section class="foldo-section foldo-profile" aria-labelledby="delete-heading">
+  <div class="container foldo-profile__narrow">
+    <h1 id="delete-heading" class="foldo-section__title">ลบโปรเจกต์นี้?</h1>
+    <div class="foldo-card mb-3">
+      <p class="mb-0"><strong>{{ project.project_name }}</strong></p>
+    </div>
+    <p>โปรเจกต์และ Project Story จะถูกลบถาวร กู้คืนไม่ได้</p>
+    <form method="post" class="d-flex gap-2" data-loading>
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger" data-loading-text="กำลังลบ…">ยืนยันลบ</button>
+      <a class="btn btn-outline-foldo" href="{% url 'profiles:project_detail' project.pk %}">ยกเลิก</a>
+    </form>
+  </div>
+</section>
+{% endblock %}

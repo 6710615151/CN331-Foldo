@@ -9,6 +9,7 @@ from django.db import models, transaction
 from django.db.models.functions import Lower
 from django.urls import reverse
 
+from apps.core.validators import MAX_URL, safe_url_validator, validate_date_order 
 from apps.core.validators import MAX_LONG_TEXT, MAX_SHORT_NAME, MAX_SHORT_TEXT
 
 logger = logging.getLogger(__name__)
@@ -228,3 +229,54 @@ class Experience(models.Model):
 
     def __str__(self):
         return f"{self.job_title} at {self.company}"
+
+class Project(models.Model):
+    """One project on a main profile (FOLDO-04) with an optional Project Story (FOLDO-15).
+
+    The five story parts are stored on the project itself, so a project without
+    a story (for example one created before FOLDO-15) simply has them blank.
+    """
+
+    STORY_FIELDS = ("problem", "role", "process", "solution", "outcome")
+
+    profile = models.ForeignKey(MainProfile, on_delete=models.CASCADE, related_name="projects")
+    project_name = models.CharField(max_length=MAX_SHORT_TEXT)
+    description = models.TextField(max_length=MAX_LONG_TEXT, blank=True)
+    project_url = models.URLField(max_length=MAX_URL, blank=True, validators=[safe_url_validator])
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
+
+    # Project Story (FOLDO-15): every part is optional.
+    problem = models.TextField(max_length=MAX_LONG_TEXT, blank=True)
+    role = models.TextField(max_length=MAX_LONG_TEXT, blank=True)
+    process = models.TextField(max_length=MAX_LONG_TEXT, blank=True)
+    solution = models.TextField(max_length=MAX_LONG_TEXT, blank=True)
+    outcome = models.TextField(max_length=MAX_LONG_TEXT, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = [models.F("start_date").desc(nulls_last=True), "-pk"]
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(start_date__isnull=True)
+                | models.Q(end_date__isnull=True)
+                | models.Q(end_date__gte=models.F("start_date")),
+                name="project_end_not_before_start",
+            ),
+        ]
+
+    def __str__(self):
+        return self.project_name
+
+    def clean(self):
+        super().clean()
+        try:
+            validate_date_order(self.start_date, self.end_date)
+        except ValidationError as error:
+            raise ValidationError({"end_date": error.messages}) from error
+
+    @property
+    def has_story(self):
+        return any((getattr(self, name) or "").strip() for name in self.STORY_FIELDS)

@@ -41,6 +41,17 @@ from django.core.exceptions import PermissionDenied
 from django.urls import include, path
 # ------------------------------------------------------------------------
 
+# -------------------FOLDO-10: imports for the date-order tests-------------------
+from datetime import date
+
+from .validators import validate_date_order
+# ------------------------------------------------------------------------
+
+
+# -------------------FOLDO-15: imports for the project-story display tests-------------------
+from types import SimpleNamespace
+# ------------------------------------------------------------------------
+
 class LandingViewTests(TestCase):
     """The public landing / dashboard shell must render correctly."""
 
@@ -482,3 +493,91 @@ class EmptyStateTests(SimpleTestCase):
     def test_message_is_escaped(self):
         html = self._render(message="<b>hi</b>")
         self.assertIn("&lt;b&gt;hi&lt;/b&gt;", html)
+
+
+
+# ---------------------------------------------------------------------------
+# FOLDO-10: date order (apps/core/validators.py -> validate_date_order)
+# ---------------------------------------------------------------------------
+
+
+class _DateRangeForm(forms.Form):
+    """Test-only form that uses validate_date_order like a real FOLDO form would."""
+
+    start_date = forms.DateField(required=False)
+    end_date = forms.DateField(required=False)
+
+    def clean(self):
+        cleaned = super().clean()
+        try:
+            validate_date_order(cleaned.get("start_date"), cleaned.get("end_date"))
+        except ValidationError as error:
+            self.add_error("end_date", error)
+        return cleaned
+
+
+class DateOrderTests(SimpleTestCase):
+    def test_end_before_start_is_rejected(self):
+        with self.assertRaises(ValidationError):
+            validate_date_order(date(2026, 5, 1), date(2026, 4, 30))
+
+    def test_same_day_and_later_end_are_allowed(self):
+        validate_date_order(date(2026, 5, 1), date(2026, 5, 1))  # must not raise
+        validate_date_order(date(2026, 5, 1), date(2026, 6, 1))  # must not raise
+
+    def test_empty_dates_are_allowed(self):
+        """Still studying / still working: one or both dates may be blank."""
+        validate_date_order(date(2026, 5, 1), None)
+        validate_date_order(None, date(2026, 5, 1))
+        validate_date_order(None, None)
+
+    def test_form_shows_the_error_under_end_date(self):
+        form = _DateRangeForm(data={"start_date": "2026-05-01", "end_date": "2026-04-30"})
+        self.assertFalse(form.is_valid())
+        self.assertIn("end_date", form.errors)
+
+
+
+# ---------------------------------------------------------------------------
+# FOLDO-15: Project Story display (templates/partials/project_story.html)
+# ---------------------------------------------------------------------------
+# No Project model yet, so a SimpleNamespace stands in for a project.
+
+
+def _project(**story):
+    fields = {"problem": "", "role": "", "process": "", "solution": "", "outcome": ""}
+    fields.update(story)
+    return SimpleNamespace(**fields)
+
+
+class ProjectStoryDisplayTests(SimpleTestCase):
+    def _render(self, project):
+        template = Template('{% include "partials/project_story.html" with project=project %}')
+        return template.render(Context({"project": project}))
+
+    def test_full_story_shows_all_five_parts_in_order(self):
+        html = self._render(_project(
+            problem="Slow sign-up", role="Backend dev", process="Interviews",
+            solution="One-page form", outcome="2x more sign-ups",
+        ))
+        positions = [html.index(label) for label in ("Problem", "Role", "Process", "Solution", "Outcome")]
+        self.assertEqual(positions, sorted(positions))
+
+    def test_only_filled_parts_are_shown(self):
+        html = self._render(_project(problem="Slow sign-up", outcome="2x more sign-ups"))
+        self.assertIn("Problem", html)
+        self.assertIn("Outcome", html)
+        self.assertNotIn("<dt>Role</dt>", html)
+        self.assertNotIn("<dt>Process</dt>", html)
+        self.assertNotIn("<dt>Solution</dt>", html)
+
+    def test_old_project_without_story_shows_nothing(self):
+        """Old projects have no story data: the page must still work."""
+        html = self._render(_project())
+        self.assertNotIn("<section", html)
+
+    def test_story_text_is_escaped_and_keeps_line_breaks(self):
+        html = self._render(_project(problem="<script>x</script>\nsecond line"))
+        self.assertNotIn("<script>x</script>", html)
+        self.assertIn("&lt;script&gt;", html)
+        self.assertIn("<br>", html)

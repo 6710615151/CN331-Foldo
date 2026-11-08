@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}โปรเจกต์ · {{ profile.label }} — FOLDO{% endblock %}
+{% block content %}
+<section class="foldo-section foldo-profile" aria-labelledby="projects-heading">
+  <div class="container foldo-profile__narrow">
+    <a class="foldo-profile__back" href="{% url 'profiles:view' profile.pk %}">&larr; {{ profile.label }}</a>
+    <header class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-2 mb-4">
+      <div>
+        <p class="foldo-eyebrow mb-1" lang="en">Projects</p>
+        <h1 id="projects-heading" class="foldo-section__title mb-0">โปรเจกต์</h1>
+      </div>
+      {% if projects %}
+        <a class="btn btn-primary" href="{% url 'profiles:project_add' profile.pk %}">เพิ่มโปรเจกต์</a>
+      {% endif %}
+    </header>
+
+    {% for project in projects %}
+      <article class="foldo-card mb-3">
+        <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
+          <div>
+            <h2 class="h5 mb-1">
+              <a href="{% url 'profiles:project_detail' project.pk %}">{{ project.project_name }}</a>
+            </h2>
+            {% if project.start_date %}
+              <p class="mb-1 small text-body-secondary">
+                {{ project.start_date|date:"M Y" }} &ndash; {% if project.end_date %}{{ project.end_date|date:"M Y" }}{% else %}Present{% endif %}
+              </p>
+            {% endif %}
+            {% if project.description %}<p class="mb-0">{{ project.description|truncatechars:160 }}</p>{% endif %}
+          </div>
+          {% if project.has_story %}<span class="badge foldo-badge">Project Story</span>{% endif %}
+        </div>
+      </article>
+    {% empty %}
+      {% url 'profiles:project_add' profile.pk as add_url %}
+      {% include "partials/empty_state.html" with message="ยังไม่มีโปรเจกต์ เพิ่มโปรเจกต์ที่อยากให้อยู่ใน Portfolio" action_url=add_url action_label="เพิ่มโปรเจกต์แรก" %}
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
