@@ -105,7 +105,6 @@ def render_pdf(portfolio, *, request, page_size: str = DEFAULT_PAGE_SIZE) -> byt
     try:
         from weasyprint import CSS, HTML, default_url_fetcher
 
-
     except (ImportError, OSError) as exc:  # OSError: Pango/GLib libraries missing
         raise PdfUnavailable(str(exc)) from exc
 

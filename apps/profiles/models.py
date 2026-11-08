@@ -275,6 +275,7 @@ class Experience(models.Model):
     def __str__(self):
         return f"{self.job_title} at {self.company}"
 
+
 class Project(models.Model):
     """One project on a main profile (FOLDO-04) with an optional Project Story (FOLDO-15).
 

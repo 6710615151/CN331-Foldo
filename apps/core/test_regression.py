@@ -19,6 +19,8 @@ from apps.rendering.themes import THEMES
 User = get_user_model()
 
 PASSWORD = "Str0ng-pass!23"
+
+
 def _pdf_libraries_available():
     """True only if WeasyPrint *and* its system libraries (Pango) load. Quiet: WeasyPrint prints a banner on failure."""
     try:

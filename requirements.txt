@@ -36,3 +36,11 @@ weasyprint>=62,<68
 # writes SVG and PNG directly.
 segno>=1.6,<2.0
 
+
+# --- Production serving (Render) ---------------------------------------------
+# Multi-process WSGI server; `manage.py runserver` is for development only.
+gunicorn>=23.0,<24.0
+# Serves collected static files from the app itself (compressed, cache-busted).
+whitenoise>=6.7,<7.0
+# Reads the single DATABASE_URL that hosted PostgreSQL providers hand out.
+dj-database-url>=2.2,<4.0
