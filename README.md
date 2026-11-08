@@ -139,6 +139,7 @@ Open <http://127.0.0.1:8000/>. Other useful routes:
 | `/dashboard/` | Signed-in app shell: Main Profile status (login required) |
 | `/profiles/` | Main Profile: create, view, edit, delete (login required) |
 | `/health/` | JSON health check (200 ok / 503 degraded) |
+| `/profiles/<id>/education/` | Education of one of your profiles: add, edit, delete (login required; owner only, others get 404) |
 | `/accounts/settings/` | Account settings (login required; edits the signed-in user only) |
 | `/admin/` | Django admin (create a superuser to use it) |
 

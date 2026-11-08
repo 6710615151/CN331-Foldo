@@ -90,6 +90,21 @@ without a user-model swap. Always refer to it via `settings.AUTH_USER_MODEL` /
 | `website`, `linkedin_url`, `github_url` | Optional links (http/https) |
 | `created_at`, `updated_at` | Timestamps |
 
+**`profiles.Education`** (FOLDO-04) — the ER diagram's `PROFILE_EDUCATIONS`:
+
+| Field | Notes |
+| ----- | ----- |
+| `profile` | FK → `MainProfile` (`related_name="educations"`), `on_delete=CASCADE`. Owner path: `profile__owner` |
+| `institution` | Required, ≤ `MAX_SHORT_TEXT` (200) |
+| `degree`, `field_of_study` | Optional, ≤ 200 |
+| `start_date` | Required; 1900-01-01 … today (form) |
+| `end_date` | Optional; empty = still studying ("Present"); may be up to 10 years ahead (expected graduation). DB check constraint `education_end_not_before_start` |
+| `grade` | Optional, ≤ 50 (e.g. GPA) |
+| `description` | Optional, ≤ `MAX_LONG_TEXT` (5000) |
+| `created_at`, `updated_at` | Timestamps |
+
+Ordered current studies first, then by most recent end/start date.
+
 "Complete" means `full_name`, `headline` and `contact_email` are filled in
 (`MainProfile.REQUIRED_FOR_PORTFOLIO`). Saving an incomplete profile is
 allowed and shows a warning.
@@ -110,7 +125,6 @@ Planned models arrive with their Issues:
 
 | App | Model (ER table) | Issue | Purpose |
 | --- | ---------------- | ----- | ------- |
-| `profiles` | `Education` (`PROFILE_EDUCATIONS`) | FOLDO-04 | Institution, degree, field of study, dates. |
 | `profiles` | `Skill` (`PROFILE_SKILLS`) | FOLDO-04 | Skill name, proficiency. |
 | `profiles` | `Experience` (`PROFILE_EXPERIENCES`) | FOLDO-04 | Company, job title, description, dates. |
 | `profiles` | `Project` (`PROFILE_PROJECTS`) | FOLDO-04 | Project name, description, URL, dates. |
