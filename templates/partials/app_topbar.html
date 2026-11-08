@@ -2,7 +2,7 @@
   Signed-in top bar: menu button (phones/tablets), where-am-I label, a quick
   create action, reminders (real to-dos from shell.todos) and the account menu.
 {% endcomment %}
-<div class="foldo-topbar" data-topbar>
+<div class="foldo-topbar" data-topbar role="region" aria-label="แถบด้านบน">
   <button type="button" class="btn btn-outline-foldo btn-icon btn-sm d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#foldo-sidebar" aria-controls="foldo-sidebar" aria-label="เปิดเมนู">
     {% include "partials/icon.html" with name="menu" %}
   </button>
