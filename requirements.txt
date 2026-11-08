@@ -28,6 +28,11 @@ python-dotenv>=1.0,<2.0
 # The photo field on MainProfile is a Django ImageField, and Django needs Pillow to validate uploaded images.
 Pillow>=10.0
 
+# PDF export
+weasyprint>=62,<68
+
+
 # QR codes for the Share Kit (FOLDO-17). Pure Python with no dependencies of its own,
 # writes SVG and PNG directly.
 segno>=1.6,<2.0
+

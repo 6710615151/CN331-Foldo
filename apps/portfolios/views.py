@@ -4,6 +4,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import DatabaseError, transaction
 from django.http import Http404, HttpResponse
+from django.utils.text import slugify
+from .pdf import PdfUnavailable, render_pdf
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.clickjacking import xframe_options_sameorigin
@@ -147,4 +149,25 @@ def portfolio_preview_frame(request, pk):
         logger.exception("Failed rendering preview of portfolio %s for user %s", pk, request.user.pk)
         response = render(request, "portfolios/preview_error.html", {"portfolio": portfolio}, status=500)
     response["X-Robots-Tag"] = "noindex"
+    return response
+
+
+@login_required
+def portfolio_pdf(request, pk):
+    portfolio = _owned_or_404(request, pk)
+    try:
+        pdf = render_pdf(portfolio, request=request)
+    except PdfUnavailable:
+        logger.warning("PDF export unavailable: WeasyPrint or Pango missing", exc_info=True)
+        messages.error(request, "PDF export isn't set up on this server yet.")
+        return redirect("portfolios:list")
+    except Exception:
+        logger.exception("PDF export failed for portfolio %s", pk)
+        messages.error(request, "Couldn't create the PDF. Please try again.")
+        return redirect("portfolios:list")
+
+    filename = f"{slugify(portfolio.title) or 'portfolio'}.pdf"
+    disposition = "inline" if request.GET.get("inline") else "attachment"
+    response = HttpResponse(pdf, content_type="application/pdf")
+    response["Content-Disposition"] = f'{disposition}; filename="{filename}"'
     return response
