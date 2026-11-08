@@ -83,10 +83,7 @@ SECRET_KEY = env_str(
 
 DEBUG = env_bool("DJANGO_DEBUG", default=True)
 
-ALLOWED_HOSTS = env_list(
-    "DJANGO_ALLOWED_HOSTS",
-    default=["localhost", "127.0.0.1", "[::1]"],
-)
+ALLOWED_HOSTS = ['cn331-foldo.onrender.com', 'localhost', '127.0.0.1']
 
 # Needed when Django runs behind a TLS-terminating reverse proxy.
 CSRF_TRUSTED_ORIGINS = env_list("DJANGO_CSRF_TRUSTED_ORIGINS", default=[])
