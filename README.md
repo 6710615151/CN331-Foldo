@@ -138,6 +138,7 @@ Open <http://127.0.0.1:8000/>. Other useful routes:
 | `/onboarding/` | First-time entry flow (mock steps; login required) |
 | `/dashboard/` | Signed-in app shell: Main Profile status (login required) |
 | `/profiles/` | Main Profile: create, view, edit, delete (login required) |
+| `/templates/` | Portfolio templates gallery and preview with your profile (login required) |
 | `/health/` | JSON health check (200 ok / 503 degraded) |
 | `/accounts/settings/` | Account settings (login required; edits the signed-in user only) |
 | `/admin/` | Django admin (create a superuser to use it) |

@@ -1,0 +1,39 @@
+{% load static %}<!DOCTYPE html>
+{% comment %}
+  Standalone portfolio document (FOLDO-07). It does not extend base.html on
+  purpose: the same page is the template preview, the public portfolio
+  (FOLDO-09) and the PDF source (FOLDO-11), so it carries no app navigation.
+  Every theme extends this file and fills the "portfolio" block.
+{% endcomment %}
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ profile.display_name|default:"Portfolio" }} — Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'rendering/portfolio.css' %}">
+</head>
+<body class="pf pf--{{ theme.key }}">
+  {% if toolbar %}
+    <nav class="pf-toolbar" aria-label="ตัวอย่างเทมเพลต">
+      <a class="pf-toolbar__back" href="{{ toolbar.back_url }}">&larr; เทมเพลตทั้งหมด</a>
+      <ul class="pf-toolbar__themes">
+        {% for key, name, url in toolbar.switch %}
+          <li><a href="{{ url }}"{% if key == toolbar.current %} aria-current="page"{% endif %}>{{ name }}</a></li>
+        {% endfor %}
+      </ul>
+    </nav>
+  {% endif %}
+
+  <main class="pf-page">
+    {% if content.is_empty %}
+      <p class="pf-empty" role="status">
+        ยังไม่มีเนื้อหาให้แสดง เพิ่มประวัติย่อ การศึกษา ทักษะ หรือผลงานในโปรไฟล์ก่อน
+      </p>
+    {% endif %}
+    {% block portfolio %}{% endblock %}
+  </main>
+</body>
+</html>
