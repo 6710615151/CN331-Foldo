@@ -27,3 +27,4 @@ python-dotenv>=1.0,<2.0
 
 # The photo field on MainProfile is a Django ImageField, and Django needs Pillow to validate uploaded images.
 Pillow>=10.0
+weasyprint>=62,<68

@@ -13,4 +13,5 @@ urlpatterns = [
     path("<int:pk>/edit/", views.portfolio_edit, name="update"),
     path("<int:pk>/delete/", views.portfolio_delete, name="delete"),
     path("p/<slug:slug>/", views.portfolio_public, name="public"),
+    path("<int:pk>/pdf/", views.portfolio_pdf, name="pdf"),
 ]

@@ -38,6 +38,7 @@
 
               <div class="d-flex flex-wrap gap-2 mt-auto pt-2">
                 <a class="btn btn-sm btn-outline-primary" href="{% url 'portfolios:preview' portfolio.pk %}">Preview</a>
+                <a class="btn btn-sm btn-outline-secondary" href="{% url 'portfolios:pdf' portfolio.pk %}">PDF</a>
                 <a class="btn btn-sm btn-outline-primary" href="{% url 'portfolios:device_preview' portfolio.pk %}">Desktop / Mobile</a>
                 <a class="btn btn-sm btn-outline-secondary" href="{% url 'portfolios:update' portfolio.pk %}">Edit</a>
                 <a class="btn btn-sm btn-outline-danger ms-auto" href="{% url 'portfolios:delete' portfolio.pk %}">Delete</a>
