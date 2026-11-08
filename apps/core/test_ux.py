@@ -162,7 +162,7 @@ class BuilderStepperTests(_Signed):
 
     def test_stepper_reflects_real_state(self):
         url = reverse("portfolios:share", args=[self.portfolio.pk])
-        self.assertContains(self.client.get(url), "ยังเป็นฉบับร่าง")
+        self.assertContains(self.client.get(url), "ยังไม่เผยแพร่")
         self.assertContains(self.client.get(url), "แสดงทุกอย่าง")
         PortfolioContentSetup.objects.create(portfolio=self.portfolio)
         self.portfolio.is_published = True
@@ -246,7 +246,7 @@ class GalleryUsageTests(_Signed):
         Portfolio.objects.create(owner=self.other, title="C", template_key="classic")
         response = self.client.get(reverse("rendering:gallery"))
         self.assertEqual(response.context["theme_usage"], {"modern": 2})
-        self.assertContains(response, "ใช้อยู่ใน 2 เวอร์ชัน")
+        self.assertContains(response, "ใช้อยู่ใน 2 พอร์ตโฟลิโอ")
 
 
 class UnsavedGuardMarkupTests(_Signed):

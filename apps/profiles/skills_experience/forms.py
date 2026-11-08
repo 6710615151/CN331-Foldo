@@ -21,10 +21,10 @@ class SkillForm(BootstrapFormMixin, forms.ModelForm):
     def clean_name(self):
         name = " ".join(self.cleaned_data["name"].split())
         if not name:
-            raise forms.ValidationError("Enter a skill name.")
+            raise forms.ValidationError("ต้องกรอกชื่อทักษะ")
         clash = Skill.objects.filter(profile=self.profile, name__iexact=name).exclude(pk=self.instance.pk)
         if clash.exists():
-            raise forms.ValidationError("You already have this skill on this profile.")
+            raise forms.ValidationError("มีทักษะนี้ในโปรไฟล์อยู่แล้ว แก้ระดับความชำนาญจากรายการเดิมได้")
         return name
 
 
@@ -37,9 +37,12 @@ class ExperienceForm(BootstrapFormMixin, forms.ModelForm):
             "job_title": "ตำแหน่ง",
             "start_date": "วันที่เริ่ม",
             "end_date": "วันที่สิ้นสุด",
-            "description": "สิ่งที่ทำ / ผลงาน",
+            "description": "สิ่งที่ทำและผลลัพธ์",
         }
-        help_texts = {"end_date": "เว้นว่างไว้ถ้ายังทำงานที่นี่อยู่"}
+        help_texts = {
+            "end_date": "เว้นว่างถ้ายังทำงานที่นี่อยู่",
+            "description": "ขึ้นต้นแต่ละข้อด้วยคำกริยา เช่น “พัฒนา API จองห้องประชุม ใช้งานจริง 200 คน”",
+        }
         widgets = {
             "start_date": forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"),
             "end_date": forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"),
@@ -51,10 +54,10 @@ class ExperienceForm(BootstrapFormMixin, forms.ModelForm):
         self.profile = profile
 
     def clean_company(self):
-        return self._required_text("company", "Enter the company or organisation.")
+        return self._required_text("company", "ต้องกรอกชื่อบริษัทหรือองค์กร")
 
     def clean_job_title(self):
-        return self._required_text("job_title", "Enter your job title.")
+        return self._required_text("job_title", "ต้องกรอกตำแหน่ง")
 
     def _required_text(self, field, message):
         value = " ".join(self.cleaned_data[field].split())
@@ -69,5 +72,5 @@ class ExperienceForm(BootstrapFormMixin, forms.ModelForm):
         cleaned = super().clean()
         start, end = cleaned.get("start_date"), cleaned.get("end_date")
         if start and end and end < start:
-            self.add_error("end_date", "End date can't be before the start date.")
+            self.add_error("end_date", "วันที่สิ้นสุดต้องไม่อยู่ก่อนวันที่เริ่ม")
         return cleaned

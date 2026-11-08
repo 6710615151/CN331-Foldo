@@ -4,10 +4,10 @@
 {% block confirm_title_en %}Delete this portfolio?{% endblock %}
 {% block confirm_item %}
   <div class="foldo-confirm__thumb">{% include "partials/theme_thumb.html" with key=portfolio.template_key %}</div>
-  <div class="min-w-0"><strong>{{ portfolio.title }}</strong><span>{% if portfolio.is_published %}เผยแพร่อยู่{% else %}ส่วนตัว{% endif %} · {{ portfolio.get_template_key_display }}</span></div>
+  <div class="min-w-0"><strong>{{ portfolio.title }}</strong><span>{% if portfolio.is_published %}เผยแพร่แล้ว{% else %}ยังไม่เผยแพร่{% endif %} · {{ portfolio.get_template_key_display }}</span></div>
 {% endblock %}
 {% block confirm_body %}
-  พอร์ตโฟลิโอเวอร์ชันนี้จะถูกลบถาวร{% if portfolio.is_published %} และลิงก์สาธารณะกับ QR code จะใช้ไม่ได้อีก{% endif %} โปรไฟล์ของคุณไม่ได้รับผลกระทบ
+  พอร์ตโฟลิโอนี้จะถูกลบถาวร{% if portfolio.is_published %} และลิงก์สาธารณะกับ QR code จะใช้ไม่ได้อีก{% endif %} โปรไฟล์ของคุณไม่ได้รับผลกระทบ
 {% endblock %}
-{% block confirm_button %}ยืนยันลบ{% endblock %}
+{% block confirm_button %}ลบพอร์ตโฟลิโอ{% endblock %}
 {% block cancel_url %}{% url 'portfolios:list' %}{% endblock %}

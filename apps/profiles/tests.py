@@ -239,7 +239,7 @@ class CompletenessTests(ProfileTestCase):
         response = self.client.post(
             reverse("profiles:create"), profile_form_data(headline="", contact_email=""), follow=True
         )
-        self.assertContains(response, "incomplete")
+        self.assertContains(response, "แต่พอร์ตโฟลิโอยังต้องใช้")
         self.assertIn("warning", [m.level_tag for m in response.context["messages"]])
 
 
@@ -291,7 +291,7 @@ class DeleteTests(ProfileTestCase):
     def test_get_asks_for_confirmation_and_deletes_nothing(self):
         profile = make_profile(self.alice)
         response = self.client.get(reverse("profiles:delete", args=[profile.pk]))
-        self.assertContains(response, "Delete this profile?")
+        self.assertContains(response, "ลบโปรไฟล์นี้?")
         self.assertTrue(MainProfile.objects.filter(pk=profile.pk).exists())
 
     def test_post_deletes_and_returns_to_list(self):

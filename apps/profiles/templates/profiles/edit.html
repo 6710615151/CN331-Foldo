@@ -11,9 +11,9 @@
 
   <div class="foldo-page-head">
     <div class="foldo-page-head__text tone-blue">
-      {% if is_new %}<p class="foldo-eyebrow" lang="en">Main profile</p>{% else %}<p class="foldo-eyebrow foldo-eyebrow--plain"><span class="foldo-badge tone-blue me-1">{% include "partials/icon.html" with name="edit" %}กำลังแก้ไข</span>{{ profile.label }}</p>{% endif %}
-      <h1 id="profile-form-heading" class="foldo-page-title">{% if is_new %}สร้าง<em>โปรไฟล์หลัก</em>{% else %}แก้ไข<em>โปรไฟล์</em>{% endif %}</h1>
-      <p class="foldo-page-lead">ต้องมีชื่อโปรไฟล์และชื่อ-นามสกุลจึงจะบันทึกได้ ที่เหลือกรอกตอนนี้หรือทีหลังก็ได้ ช่องที่มี <span class="foldo-required">*</span> ต้องกรอก</p>
+      {% if is_new %}<p class="foldo-eyebrow foldo-eyebrow--plain">โปรไฟล์</p>{% else %}<p class="foldo-eyebrow foldo-eyebrow--plain"><span class="foldo-badge tone-blue me-1">{% include "partials/icon.html" with name="edit" %}กำลังแก้ไข</span>{{ profile.label }}</p>{% endif %}
+      <h1 id="profile-form-heading" class="foldo-page-title">{% if is_new %}สร้าง<em>โปรไฟล์</em>{% else %}แก้ไข<em>โปรไฟล์</em>{% endif %}</h1>
+      <p class="foldo-page-lead">กรอกแค่ช่องที่มี <span class="foldo-required">*</span> ก็บันทึกได้ ที่เหลือกลับมาเติมทีหลังได้</p>
     </div>
   </div>
 
@@ -117,10 +117,6 @@
         </div>
         <div class="foldo-live-card__lines" aria-hidden="true"><i></i><i></i><i></i></div>
         <p class="small foldo-muted mb-0">พิมพ์ชื่อและหัวข้อในฟอร์ม ตัวอย่างนี้จะเปลี่ยนตาม</p>
-      </div>
-      <div class="foldo-tip tone-purple">
-        {% include "partials/icon.html" with name="info" %}
-        <p class="mb-0"><strong>เคล็ดลับ</strong> Headline ที่ดีบอกทั้งบทบาทและความสนใจ เช่น “นักศึกษาวิศวะคอมฯ สนใจ Backend และ DevOps”</p>
       </div>
     </aside>
   </div>

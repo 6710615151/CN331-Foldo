@@ -5,9 +5,9 @@
 <div class="foldo-page">
   <div class="foldo-page-head">
     <div class="foldo-page-head__text tone-blue">
-      <p class="foldo-eyebrow" lang="en">Main profile</p>
+      <p class="foldo-eyebrow foldo-eyebrow--plain">โปรไฟล์</p>
       <h1 id="profiles-heading" class="foldo-page-title">โปรไฟล์<em>ของฉัน</em></h1>
-      <p class="foldo-page-lead">เก็บข้อมูลแนะนำตัวได้หลายชุด เช่น สายเทคกับสายออกแบบ ทุกพอร์ตโฟลิโอดึงข้อมูลจากที่นี่ แก้ครั้งเดียวอัปเดตทุกเวอร์ชัน</p>
+      <p class="foldo-page-lead">ส่วนใหญ่ใช้โปรไฟล์เดียวก็พอ สร้างเพิ่มเมื่อสมัครงานต่างสายกันมาก เช่น สายเทคกับสายออกแบบ แก้โปรไฟล์ครั้งเดียว ทุกพอร์ตโฟลิโอที่ใช้โปรไฟล์นั้นเปลี่ยนตาม</p>
     </div>
     <div class="foldo-page-head__actions">
       {% if can_create %}
@@ -31,7 +31,7 @@
             {% include "partials/avatar.html" with photo_url=profile.photo|file_url initials=profile.full_name|initial size="lg" %}
             <h2 class="foldo-id-card__label">
               <a class="foldo-card__link" href="{% url 'profiles:view' profile.pk %}">{{ profile.label }}</a>
-              {% if profile.is_default %}<span class="foldo-badge foldo-badge--solid tone-lime">Default</span>{% endif %}
+              {% if profile.is_default %}<span class="foldo-badge foldo-badge--solid tone-lime">โปรไฟล์หลัก</span>{% endif %}
             </h2>
             <p class="foldo-id-card__name">{{ profile.full_name }}</p>
             <p class="foldo-id-card__headline">{{ profile.headline|default:"ยังไม่มีหัวข้อแนะนำตัว" }}</p>
@@ -43,7 +43,7 @@
               <div class="progress" role="progressbar" aria-label="ความครบของ {{ profile.label }}" aria-valuenow="{{ profile.completion_percent }}" aria-valuemin="0" aria-valuemax="100">
                 <div class="progress-bar" style="width: {{ profile.completion_percent }}%"></div>
               </div>
-              {% if not profile.is_complete %}<p class="foldo-id-card__missing">ยังขาด: {{ profile.missing_fields|join:", " }}</p>{% endif %}
+              {% if not profile.is_complete %}<p class="foldo-id-card__missing">ยังขาด: {{ profile|missing_th|join:", " }}</p>{% endif %}
             </div>
 
             <div class="foldo-id-card__actions foldo-above-link">
@@ -52,7 +52,7 @@
               {% if not profile.is_default %}
                 <form method="post" action="{% url 'profiles:make_default' profile.pk %}" class="m-0">
                   {% csrf_token %}
-                  <button type="submit" class="btn btn-sm btn-outline-foldo">ตั้งเป็น Default</button>
+                  <button type="submit" class="btn btn-sm btn-outline-foldo">ตั้งเป็นโปรไฟล์หลัก</button>
                 </form>
               {% endif %}
               <a class="btn btn-sm btn-ghost btn-icon ms-auto" href="{% url 'profiles:delete' profile.pk %}" title="ลบ">
@@ -73,7 +73,7 @@
       {% endif %}
     </ul>
   {% else %}
-    {% include "partials/empty_state.html" with title="เริ่มจากโปรไฟล์หลัก" message="คุณยังไม่มีโปรไฟล์หลัก กรอกชื่อและหัวข้อแนะนำตัวก่อน ที่เหลือค่อยเติมทีหลังได้" action_url=create_url action_label="สร้างโปรไฟล์แรก" %}
+    {% include "partials/empty_state.html" with title="ยังไม่มีโปรไฟล์" message="เริ่มจากชื่อและหัวข้อแนะนำตัว ที่เหลือเติมทีหลังได้" action_url=create_url action_label="สร้างโปรไฟล์" %}
   {% endif %}
 </div>
 {% endblock %}

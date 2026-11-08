@@ -69,7 +69,7 @@ class LandingViewTests(TestCase):
         self.assertContains(response, "FOLDO")
         self.assertContains(response, "One Profile.")
         self.assertContains(response, "Many Forms.")
-        self.assertContains(response, "เก็บทุกผลงานไว้ที่เดียว")
+        self.assertContains(response, "เก็บโปรไฟล์ไว้ที่เดียว")
 
     def test_landing_page_is_a_single_hero_screen(self):
         html = self.client.get(reverse("core:landing")).content.decode()
@@ -80,8 +80,8 @@ class LandingViewTests(TestCase):
     def _get_started_link(self):
         html = self.client.get(reverse("core:landing")).content.decode()
         main = html[html.index("<main"):html.index("</main>")]
-        cta = main.index("Get Started")
-        self.assertLess(main.index("เก็บทุกผลงานไว้ที่เดียว"), cta)
+        cta = main.index("foldo-hero__cta")
+        self.assertLess(main.index("เก็บโปรไฟล์ไว้ที่เดียว"), cta)
         return main[main.rindex("<a", 0, cta):main.index("</a>", cta)]
 
     def test_get_started_sends_new_visitors_to_sign_up(self):
@@ -157,7 +157,7 @@ class OnboardingViewTests(SignedInTestCase):
     def test_onboarding_page_shows_all_steps(self):
         response = self.client.get(reverse("core:onboarding"))
         for step in response.context["steps"]:
-            self.assertContains(response, step["title_en"])
+            self.assertContains(response, step["title"])
         self.assertEqual(len(response.context["steps"]), 3)
 
     def test_step_one_links_to_create_when_user_has_no_profile(self):
@@ -465,7 +465,7 @@ class PermissionDeniedPageTests(TestCase):
         response = self.client.get("/forbidden/")
         self.assertEqual(response.status_code, 403)
         self.assertTemplateUsed(response, "403.html")
-        self.assertContains(response, "have access to this page", status_code=403)
+        self.assertContains(response, "คุณไม่มีสิทธิ์เข้าถึงหน้านี้", status_code=403)
 
 
 
@@ -560,16 +560,16 @@ class ProjectStoryDisplayTests(SimpleTestCase):
             problem="Slow sign-up", role="Backend dev", process="Interviews",
             solution="One-page form", outcome="2x more sign-ups",
         ))
-        positions = [html.index(label) for label in ("Problem", "Role", "Process", "Solution", "Outcome")]
+        positions = [html.index(label) for label in ("ปัญหา", "บทบาท", "วิธีทำ", "ทางออก", "ผลลัพธ์")]
         self.assertEqual(positions, sorted(positions))
 
     def test_only_filled_parts_are_shown(self):
         html = self._render(_project(problem="Slow sign-up", outcome="2x more sign-ups"))
-        self.assertIn("Problem", html)
-        self.assertIn("Outcome", html)
-        self.assertNotIn("<dt>Role</dt>", html)
-        self.assertNotIn("<dt>Process</dt>", html)
-        self.assertNotIn("<dt>Solution</dt>", html)
+        self.assertIn("ปัญหา", html)
+        self.assertIn("ผลลัพธ์", html)
+        self.assertNotIn("บทบาท", html)
+        self.assertNotIn("วิธีทำ", html)
+        self.assertNotIn("ทางออก", html)
 
     def test_old_project_without_story_shows_nothing(self):
         """Old projects have no story data: the page must still work."""

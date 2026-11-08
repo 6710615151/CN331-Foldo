@@ -35,7 +35,7 @@
       <li class="foldo-flow__step tone-lime{% if current == 'share' %} is-current{% endif %}{% if portfolio.is_published %} is-done{% endif %}">
         <a href="{% url 'portfolios:share' portfolio.pk %}"{% if current == 'share' %} aria-current="step"{% endif %}>
           <span class="foldo-flow__num">{% if portfolio.is_published %}&check;{% else %}5{% endif %}</span>
-          <span class="foldo-flow__text"><strong>เผยแพร่และแชร์</strong><small>{% if portfolio.is_published %}เผยแพร่แล้ว{% else %}ยังเป็นฉบับร่าง{% endif %}</small></span>
+          <span class="foldo-flow__text"><strong>เผยแพร่และแชร์</strong><small>{% if portfolio.is_published %}เผยแพร่แล้ว{% else %}ยังไม่เผยแพร่{% endif %}</small></span>
         </a>
       </li>
     {% else %}

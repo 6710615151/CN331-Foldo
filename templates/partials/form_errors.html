@@ -13,7 +13,7 @@
     <div class="min-w-0">
       {% for error in form.non_field_errors %}<p class="mb-1">{{ error }}</p>{% endfor %}
       {% if bad %}
-        <p class="foldo-error-summary__title">ยังบันทึกไม่ได้ — แก้ {{ bad|length }} ช่องนี้ก่อน ข้อมูลอื่นที่กรอกไว้ยังอยู่ครบ</p>
+        <p class="foldo-error-summary__title">แก้ {{ bad|length }} ช่องนี้ แล้วกดบันทึกอีกครั้ง</p>
         <ul class="foldo-error-summary__list">
           {% for field in bad %}
             <li><a href="#{{ field|field_anchor }}">{{ field.label }}</a> — {{ field.errors.0 }}</li>

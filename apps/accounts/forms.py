@@ -34,7 +34,7 @@ class _CleanEmailMixin:
     def clean_email(self):
         email = (self.cleaned_data.get("email") or "").strip().lower()
         if email and email_is_taken(email, exclude_pk=self.instance.pk):
-            raise forms.ValidationError("อีเมลนี้ถูกใช้งานแล้ว")
+            raise forms.ValidationError("อีเมลนี้มีบัญชีอยู่แล้ว ลองเข้าสู่ระบบ หรือใช้อีเมลอื่น")
         return email
 
 
@@ -131,7 +131,7 @@ class SignUpForm(BootstrapFormMixin, ThaiPasswordMixin, UserCreationForm):
         """Same rule as Django's (no case-only duplicates), with a Thai message."""
         username = self.cleaned_data.get("username")
         if username and User.objects.filter(username__iexact=username).exists():
-            raise forms.ValidationError("ชื่อผู้ใช้นี้ถูกใช้แล้ว")
+            raise forms.ValidationError("ชื่อผู้ใช้นี้มีคนใช้แล้ว ลองชื่ออื่น")
         return username
 
     def save(self, commit=True):
@@ -145,7 +145,7 @@ class SignUpForm(BootstrapFormMixin, ThaiPasswordMixin, UserCreationForm):
 class LoginForm(BootstrapFormMixin, AuthenticationForm):
     error_messages = {
         "invalid_login": "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง (ตัวพิมพ์เล็ก–ใหญ่มีผล)",
-        "inactive": "บัญชีนี้ถูกปิดการใช้งาน",
+        "inactive": "บัญชีนี้ถูกปิดใช้งาน ติดต่อผู้ดูแลระบบ",
     }
 
     def __init__(self, *args, **kwargs):
@@ -170,6 +170,7 @@ class ThaiSetPasswordForm(BootstrapFormMixin, ThaiPasswordMixin, SetPasswordForm
         self.fields["new_password1"].label = "รหัสผ่านใหม่"
         self.fields["new_password1"].help_text = PASSWORD_HINT
         self.fields["new_password2"].label = "ยืนยันรหัสผ่านใหม่"
+        self.fields["new_password2"].help_text = "พิมพ์รหัสผ่านใหม่อีกครั้งให้ตรงกัน"
 
 
 class ThaiPasswordChangeForm(BootstrapFormMixin, ThaiPasswordMixin, PasswordChangeForm):
@@ -184,3 +185,4 @@ class ThaiPasswordChangeForm(BootstrapFormMixin, ThaiPasswordMixin, PasswordChan
         self.fields["new_password1"].label = "รหัสผ่านใหม่"
         self.fields["new_password1"].help_text = PASSWORD_HINT
         self.fields["new_password2"].label = "ยืนยันรหัสผ่านใหม่"
+        self.fields["new_password2"].help_text = "พิมพ์รหัสผ่านใหม่อีกครั้งให้ตรงกัน"

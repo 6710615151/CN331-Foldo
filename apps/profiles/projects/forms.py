@@ -39,19 +39,20 @@ class ProjectForm(BootstrapFormMixin, forms.ModelForm):
             "description": "คำอธิบายสั้น ๆ",
             "start_date": "วันที่เริ่ม",
             "end_date": "วันที่สิ้นสุด",
-            "problem": "Problem · ปัญหา",
-            "role": "Role · บทบาทของคุณ",
-            "process": "Process · วิธีทำ",
-            "solution": "Solution · ทางออก",
-            "outcome": "Outcome · ผลลัพธ์",
+            "problem": "ปัญหา",
+            "role": "บทบาทของคุณ",
+            "process": "วิธีทำ",
+            "solution": "ทางออก",
+            "outcome": "ผลลัพธ์",
         }
         help_texts = {
-            "end_date": "เว้นว่างถ้าโปรเจกต์ยังดำเนินอยู่",
+            "description": "1–2 ประโยค ว่าโปรเจกต์นี้คืออะไร ใช้ทำอะไร",
+            "end_date": "เว้นว่างถ้ายังทำอยู่",
             "problem": "โปรเจกต์นี้แก้ปัญหาอะไร ให้ใคร",
             "role": "คุณรับผิดชอบส่วนไหน",
             "process": "ทำอย่างไร ใช้เครื่องมือหรือวิธีไหน",
             "solution": "สร้างหรือตัดสินใจอะไรออกมา",
-            "outcome": "เกิดผลอะไรขึ้น ใส่ตัวเลขได้ยิ่งดี",
+            "outcome": "เกิดผลอะไรขึ้น ถ้ามีตัวเลข เช่น จำนวนผู้ใช้ เวลาที่ลดลง ให้ใส่ด้วย",
         }
         widgets = {
             "start_date": forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"),
@@ -67,5 +68,5 @@ class ProjectForm(BootstrapFormMixin, forms.ModelForm):
     def clean_project_name(self):
         name = " ".join(self.cleaned_data["project_name"].split())
         if not name:
-            raise forms.ValidationError("Enter a project name.")
+            raise forms.ValidationError("ต้องกรอกชื่อโปรเจกต์")
         return name

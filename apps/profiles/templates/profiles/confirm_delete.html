@@ -6,12 +6,13 @@
 {% block confirm_item %}
   {% include "partials/avatar.html" with photo_url=profile.photo|file_url initials=profile.full_name|initial size="lg" %}
   <div class="min-w-0">
-    <strong>{{ profile.label }}</strong>{% if profile.is_default %} <span class="foldo-badge tone-lime">Default</span>{% endif %}
+    <strong>{{ profile.label }}</strong>{% if profile.is_default %} <span class="foldo-badge tone-lime">โปรไฟล์หลัก</span>{% endif %}
     <span>{{ profile.full_name }}{% if profile.headline %} · {{ profile.headline }}{% endif %}</span>
   </div>
 {% endblock %}
 {% block confirm_body %}
   โปรไฟล์ รูป การศึกษา ทักษะ ประสบการณ์ และโปรเจกต์ทั้งหมดในโปรไฟล์นี้จะถูกลบถาวร กู้คืนไม่ได้
-  {% if profile.is_default %}โปรไฟล์ที่แก้ไขล่าสุดจะกลายเป็น Default แทน{% endif %}
+  {% if profile.is_default %}โปรไฟล์ที่แก้ไขล่าสุดจะเป็นโปรไฟล์หลักแทน{% endif %}
 {% endblock %}
 {% block cancel_url %}{% url 'profiles:view' profile.pk %}{% endblock %}
+{% block confirm_button %}ลบโปรไฟล์{% endblock %}

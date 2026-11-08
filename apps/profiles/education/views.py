@@ -26,11 +26,8 @@ from .forms import EducationForm
 logger = logging.getLogger(__name__)
 
 FORM_TEMPLATE = "profiles/education/form.html"
-NOT_SAVED = "Not saved. Please fix the highlighted fields. Everything else you typed has been kept."
-SAVE_FAILED = (
-    "We couldn't save this because of a temporary problem. "
-    "Your entries are still in the form below. Please try again."
-)
+NOT_SAVED = "ยังไม่ได้บันทึก — แก้ช่องที่ไฮไลต์ ข้อมูลอื่นที่กรอกไว้ยังอยู่ครบ"
+SAVE_FAILED = "บันทึกไม่สำเร็จเพราะระบบขัดข้องชั่วคราว ข้อมูลที่กรอกยังอยู่ในฟอร์ม ลองกดบันทึกอีกครั้ง"
 
 
 def list_url(profile_pk):
@@ -65,7 +62,7 @@ class _EducationFormMixin:
     form_class = EducationForm
     template_name = FORM_TEMPLATE
     heading = ""
-    submit_label = "Save"
+    submit_label = "บันทึก"
 
     def get_profile(self):
         raise NotImplementedError
@@ -94,9 +91,9 @@ class _EducationFormMixin:
         except DatabaseError:
             logger.exception("Failed saving education for user %s", self.request.user.pk)
             form.add_error(None, SAVE_FAILED)
-            messages.error(self.request, "Not saved. Please try again.")
+            messages.error(self.request, "บันทึกไม่สำเร็จ ลองอีกครั้ง")
             return self.render_to_response(self.get_context_data(form=form))
-        messages.success(self.request, f"“{education.institution}” saved.")
+        messages.success(self.request, f"บันทึก “{education.institution}” แล้ว")
         return HttpResponseRedirect(list_url(education.profile_id))
 
     def form_invalid(self, form):
@@ -106,8 +103,8 @@ class _EducationFormMixin:
 
 class EducationCreateView(AddAnotherMixin, OwnedProfileMixin, _EducationFormMixin, CreateView):
     add_another_url_name = "profiles:education_add"
-    heading = "Add education"
-    submit_label = "Add education"
+    heading = "เพิ่มการศึกษา"
+    submit_label = "เพิ่มการศึกษา"
 
     def get_profile(self):
         return self.profile
@@ -118,7 +115,7 @@ class EducationCreateView(AddAnotherMixin, OwnedProfileMixin, _EducationFormMixi
 
 class EducationUpdateView(OwnerRequiredMixin, _EducationFormMixin, UpdateView):
     owner_field = "profile__owner"
-    heading = "Edit education"
+    heading = "แก้ไขการศึกษา"
 
     def get_queryset(self):
         return super().get_queryset().select_related("profile")
@@ -150,7 +147,7 @@ class EducationDeleteView(OwnerRequiredMixin, DeleteView):
             services.delete_education(education=self.object)
         except DatabaseError:
             logger.exception("Failed deleting education %s for user %s", self.object.pk, self.request.user.pk)
-            messages.error(self.request, "Couldn't delete that entry. Please try again.")
+            messages.error(self.request, "ลบไม่สำเร็จ ลองอีกครั้ง")
             return HttpResponseRedirect(success_url)
-        messages.success(self.request, f"“{name}” deleted.")
+        messages.success(self.request, f"ลบ “{name}” แล้ว")
         return HttpResponseRedirect(success_url)

@@ -19,7 +19,7 @@
 
     <nav class="foldo-sidebar__nav" aria-label="เมนูหลัก">
       <ul class="foldo-nav-group">
-        <li><span class="foldo-nav-group__label">เวิร์กสเปซ</span></li>
+        <li><span class="foldo-nav-group__label">หน้าหลัก</span></li>
         <li>
           <a class="foldo-nav-item tone-lime{% if s == 'dashboard' %} active{% endif %}" href="{% url 'core:dashboard' %}"{% if s == 'dashboard' %} aria-current="page"{% endif %}>
             <span class="foldo-nav-item__icon">{% include "partials/icon.html" with name="home" %}</span>
@@ -75,7 +75,7 @@
         <li>
           <a class="foldo-nav-item tone-magenta{% if s == 'portfolios' %} active{% endif %}" href="{% url 'portfolios:list' %}"{% if s == 'portfolios' %} aria-current="page"{% endif %}>
             <span class="foldo-nav-item__icon">{% include "partials/icon.html" with name="layers" %}</span>
-            <span>เวอร์ชันพอร์ตโฟลิโอ</span>
+            <span>พอร์ตโฟลิโอของฉัน</span>
           </a>
         </li>
         <li>
@@ -98,8 +98,8 @@
     </nav>
 
     <div class="foldo-sidebar__promo">
-      <strong>งานใหม่ = เวอร์ชันใหม่</strong>
-      <p>สร้างพอร์ตโฟลิโอที่เลือกเนื้อหาให้ตรงกับแต่ละตำแหน่ง จากโปรไฟล์เดียว</p>
+      <strong>สมัครงานใหม่?</strong>
+      <p>สร้างพอร์ตโฟลิโอที่เลือกเนื้อหาให้ตรงกับงานนั้น จากโปรไฟล์เดิม</p>
       <a class="btn btn-lime btn-sm w-100" href="{% url 'portfolios:create' %}">{% include "partials/icon.html" with name="plus" %}สร้างพอร์ตโฟลิโอ</a>
     </div>
 

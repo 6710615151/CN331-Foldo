@@ -11,9 +11,8 @@
     {% include "partials/geo_art.html" with variant="error" %}
   </div>
   <div class="foldo-error__copy">
-    <p class="foldo-eyebrow tone-pink" lang="en">Error {% block error_code_label %}{% endblock %}</p>
+    <p class="foldo-eyebrow foldo-eyebrow--plain tone-pink">รหัสข้อผิดพลาด {% block error_code_label %}{% endblock %}</p>
     <h1 class="foldo-page-title">{% block error_title %}{% endblock %}</h1>
-    <p class="foldo-error__en" lang="en">{% block error_title_en %}{% endblock %}</p>
     <p class="foldo-page-lead">{% block error_message %}{% endblock %}</p>
     <div class="foldo-error__actions">
       {% block error_actions %}

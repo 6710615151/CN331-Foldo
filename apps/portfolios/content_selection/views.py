@@ -52,10 +52,10 @@ class ContentSelectionView(LoginRequiredMixin, View):
     def post(self, request, pk):
         if "reset" in request.POST:
             services.reset_selection(self.portfolio)
-            messages.success(request, "This version now shows all of your profile content.")
+            messages.success(request, "พอร์ตโฟลิโอนี้กลับมาแสดงทุกอย่างในโปรไฟล์แล้ว")
         else:
             ignored = services.save_selection(self.portfolio, parse_selection(request.POST))
-            messages.success(request, f"Content for “{self.portfolio.title}” saved.")
+            messages.success(request, f"บันทึกเนื้อหาของ “{self.portfolio.title}” แล้ว")
             if ignored:
-                messages.warning(request, f"{ignored} item(s) were no longer available and were skipped.")
+                messages.warning(request, f"ข้าม {ignored} รายการที่ถูกลบออกจากโปรไฟล์ไปแล้ว")
         return redirect("portfolios:content", pk=self.portfolio.pk)

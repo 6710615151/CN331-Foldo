@@ -5,12 +5,12 @@
   <a class="foldo-back" href="{{ cancel_url }}">{% include "partials/icon.html" with name="arrow-left" %}ทักษะและประสบการณ์</a>
   <div class="foldo-page-head">
     <div class="foldo-page-head__text {% if form.company %}tone-magenta{% else %}tone-purple{% endif %}">
-      <p class="foldo-eyebrow" lang="en">{{ heading }}</p>
+      <p class="foldo-eyebrow foldo-eyebrow--plain">ทักษะและประสบการณ์</p>
       <h1 id="se-form-heading" class="foldo-page-title">
         {% if form.instance.pk %}แก้ไข{% else %}เพิ่ม{% endif %}<em>{% if form.company %}ประสบการณ์{% else %}ทักษะ{% endif %}</em>
       </h1>
       <p class="foldo-page-lead">
-        {% if form.company %}งานประจำ ฝึกงาน หรืองานอาสา ถ้ายังทำอยู่ให้เว้นวันที่สิ้นสุดไว้{% else %}ชื่อทักษะและระดับความชำนาญ ชื่อซ้ำในโปรไฟล์เดียวกันไม่ได้{% endif %}
+        {% if form.company %}งานประจำ ฝึกงาน พาร์ตไทม์ หรืองานอาสา ถ้ายังทำอยู่ เว้นวันที่สิ้นสุดไว้{% else %}หนึ่งทักษะต่อหนึ่งรายการ เลือกระดับตามที่ทำได้จริง{% endif %}
       </p>
     </div>
   </div>

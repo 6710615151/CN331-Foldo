@@ -1,8 +1,7 @@
 {% extends "layouts/auth.html" %}
 {% block title %}เข้าสู่ระบบ — FOLDO{% endblock %}
-{% block auth_eyebrow %}Welcome back{% endblock %}
 {% block auth_title %}เข้าสู่ระบบ{% endblock %}
-{% block auth_lead %}กลับมาจัดการโปรไฟล์และพอร์ตโฟลิโอของคุณต่อ{% endblock %}
+{% block auth_lead %}ใช้ชื่อผู้ใช้และรหัสผ่านที่ตั้งไว้ตอนสมัคร{% endblock %}
 {% block auth_body %}
 <form method="post" novalidate data-loading>
   {% csrf_token %}
@@ -16,4 +15,4 @@
   <button type="submit" class="btn btn-lime btn-lg w-100" data-loading-text="กำลังเข้าสู่ระบบ…">เข้าสู่ระบบ<span class="foldo-arrow" aria-hidden="true">&rarr;</span></button>
 </form>
 {% endblock %}
-{% block auth_footer %}ยังไม่มีบัญชี? <a href="{% url 'accounts:register' %}">สมัครสมาชิกฟรี</a>{% endblock %}
+{% block auth_footer %}ยังไม่มีบัญชี? <a href="{% url 'accounts:register' %}">สมัครสมาชิก</a>{% endblock %}
