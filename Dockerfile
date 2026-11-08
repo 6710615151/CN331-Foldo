@@ -25,5 +25,8 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 # Copy the rest of your Django project
 COPY . /app/
 
+# Bundle static files for production
+RUN python manage.py collectstatic --noinput
+
 # Apply database migrations and start the production WSGI server
 CMD python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT

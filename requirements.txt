@@ -38,3 +38,4 @@ segno>=1.6,<2.0
 # Docker 
 gunicorn>=23.0
 dj-database-url>=2.1.0
+whitenoise>=6.0
