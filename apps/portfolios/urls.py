@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import include, path
 
 from . import views
 
@@ -11,4 +11,6 @@ urlpatterns = [
     path("<int:pk>/edit/", views.portfolio_edit, name="update"),
     path("<int:pk>/delete/", views.portfolio_delete, name="delete"),
     path("p/<slug:slug>/", views.portfolio_public, name="public"),
+    # FOLDO-06: per-version content selection (Dev 2)
+    path("", include("apps.portfolios.content_selection.urls")),
 ]
