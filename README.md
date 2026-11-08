@@ -24,16 +24,25 @@ opportunity. FOLDO removes the copy-paste work of maintaining several CVs.
 **Team:** five student developers (each contributes as a Developer), a Scrum
 Master who rotates every Sprint, and the instructor as Product Owner.
 
-| Issue   | Feature                                   | Status |
-| ------- | ----------------------------------------- | ------ |
-| FOLDO-01 | Define MVP Scope and Product Goal        | Backlog |
-| FOLDO-02 | Create and Edit Main Profile             | Backlog |
-| FOLDO-03 | Manage Education, Skills and Projects    | Backlog |
-| FOLDO-04 | Create Multiple Portfolio Versions       | Backlog |
-| FOLDO-05 | Select Content for Each Portfolio Version| Backlog |
-| FOLDO-06 | Choose Portfolio Templates               | Backlog |
-| FOLDO-07 | Preview Portfolio                        | Backlog |
-| FOLDO-08 | Export Portfolio to PDF                  | Backlog |
+| Issue    | Feature                                                   | Status |
+| -------- | --------------------------------------------------------- | ------ |
+| FOLDO-01 | Product scope, architecture and acceptance standards      | Done |
+| FOLDO-02 | Authentication and first-time onboarding                  | Done |
+| FOLDO-03 | Create and manage Main Profile                            | Done |
+| FOLDO-04 | Education, skills, projects and experience                | Done |
+| FOLDO-05 | Multiple portfolio versions                               | Done |
+| FOLDO-06 | Select content per portfolio version                      | Done |
+| FOLDO-07 | Templates and portfolio rendering                         | Done |
+| FOLDO-08 | Preview (desktop / mobile)                                | Done |
+| FOLDO-09 | Publish and unpublish                                     | In progress (republish snapshot pending) |
+| FOLDO-10 | Persistence, validation, security and recovery states     | Done |
+| FOLDO-11 | Export a portfolio version as PDF                         | Done |
+| FOLDO-12 | Account settings                                          | Done |
+| FOLDO-13 | Responsive UI and end-to-end release readiness            | In progress |
+| FOLDO-14 | Portfolio DNA                                             | Done |
+| FOLDO-15 | Project Story Builder                                     | Done |
+| FOLDO-16 | Portfolio Quality Check                                   | Done |
+| FOLDO-17 | Share Kit and QR code                                     | Done |
 
 ---
 
@@ -98,6 +107,11 @@ and the business apps clearly separated.
   and verified with **Python 3.11.16**.
 - **pip** and the standard `venv` module.
 - *(Optional)* **Git** and a GitHub account for collaboration.
+- *(Optional, for PDF export)* the **Pango** system libraries used by WeasyPrint.
+  Without them the whole site still runs; only "Export PDF" reports that it isn't
+  available. Install: Ubuntu/Debian `sudo apt install libpango-1.0-0 libpangoft2-1.0-0 libharfbuzz-subset0`,
+  macOS `brew install pango`, Windows: see the
+  [WeasyPrint installation guide](https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#installation).
 
 > ⚠️ The default `python3` on older macOS installs can be 3.9, which Django 5.x
 > does **not** support. Check with `python3 --version` and install a newer Python
@@ -195,29 +209,22 @@ protection checklist are in [docs/GIT_WORKFLOW.md](docs/GIT_WORKFLOW.md).
 
 ---
 
-## Current foundation scope
+## Current scope
 
-Implemented and verified:
+Implemented and verified (see the table above for what is still in progress):
 
-- Django 5.2 project with env-based settings and secure production defaults.
-- `accounts` app: `CustomUser` as `AUTH_USER_MODEL` from the first migration.
-- `accounts` app: register, log in/out, password reset, account settings.
-- `core` app: landing page, JSON health check, custom 403/404/500 pages,
-  onboarding (`/onboarding/`) and the dashboard (`/dashboard/`), which shows
-  the user's Main Profile status.
-- `profiles` app: Main Profile create/view/edit/delete with photo, contact
-  details, links and a completeness indicator (`/profiles/`).
-- Responsive Bootstrap 5 UI with FOLDO design tokens and a small ES6 module.
-- Automated tests in each app's `tests.py` (landing, health, user model, forms, 404).
-- Optional PostgreSQL and Redis configuration through environment variables.
-- Five documents under `docs/` plus GitHub templates and a CI workflow.
-
-**Not implemented yet:** profile sections (education, skills, experience,
-projects, project story), portfolio versioning, template selection, preview
-and PDF export. No placeholder database
-models were created — planned models are documented in
-`apps/*/models.py` and will arrive with their Issues.
-
+- `accounts`: register, log in/out, password reset, account settings (`CustomUser`).
+- `core`: landing page, JSON health check, custom 403/404/500 pages, onboarding and dashboard.
+- `profiles`: up to 10 Main Profiles per user (one default) with photo, contact details and a
+  completeness indicator; education, skills, experience and projects with an optional
+  Project Story (problem, role, process, solution, outcome).
+- `portfolios`: portfolio versions, per-version content selection, template choice,
+  preview (incl. desktop / mobile), publish / unpublish with a public link, Share Kit with
+  QR code, PDF export and Quality Check.
+- `rendering`: three portfolio templates shared by preview, public page and PDF.
+- `insights`: Portfolio DNA (which versions reuse each profile item).
+- Tests in every app, plus end-to-end and regression tests in `apps/core/test_e2e*.py`
+  and `apps/core/test_regression.py`. CI runs `check`, missing-migration check and tests.
 ---
 
 ## Documentation
@@ -231,4 +238,4 @@ models were created — planned models are documented in
 
 - [docs/CONVENTIONS.md](docs/CONVENTIONS.md) — shared rules for data ownership, validation, errors and tests (FOLDO-10)
 
-
+- [docs/RELEASE_CHECKLIST.md](docs/RELEASE_CHECKLIST.md) — what to check before a release or deploy (FOLDO-13)
