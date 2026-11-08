@@ -111,8 +111,8 @@ Planned models arrive with their Issues:
 | App | Model (ER table) | Issue | Purpose |
 | --- | ---------------- | ----- | ------- |
 | `profiles` | `Education` (`PROFILE_EDUCATIONS`) | FOLDO-04 | Institution, degree, field of study, dates. |
-| `profiles` | `Skill` (`PROFILE_SKILLS`) | FOLDO-04 | Skill name, proficiency. |
-| `profiles` | `Experience` (`PROFILE_EXPERIENCES`) | FOLDO-04 | Company, job title, description, dates. |
+| `profiles` | `Skill` (`PROFILE_SKILLS`) | FOLDO-04 | Implemented. Name (unique per profile, ignoring case), proficiency. |
+| `profiles` | `Experience` (`PROFILE_EXPERIENCES`) | FOLDO-04 | Implemented. Company, job title, description, start date, optional end date (empty = present). |
 | `profiles` | `Project` (`PROFILE_PROJECTS`) | FOLDO-04 | Project name, description, URL, dates. |
 | `profiles` | `ProjectStory` (`PROJECT_STORIES`) | FOLDO-15 | Optional problem / role / process / solution / outcome (0..1 per project). |
 | `profiles` | `ProjectEvidence` (`PROJECT_EVIDENCE`) | FOLDO-15 | Evidence links and images per project. |

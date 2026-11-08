@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}{{ heading }} — FOLDO{% endblock %}
+{% block content %}
+<section class="foldo-section foldo-profile" aria-labelledby="project-form-heading">
+  <div class="container foldo-profile__narrow">
+    <a class="foldo-profile__back" href="{{ cancel_url }}">&larr; กลับ</a>
+    <header class="mt-2 mb-4">
+      <p class="foldo-eyebrow" lang="en">{{ profile.label }}</p>
+      <h1 id="project-form-heading" class="foldo-section__title">{{ heading }}</h1>
+      <p class="foldo-section__subtitle mb-0">ต้องมีชื่อโปรเจกต์จึงจะบันทึกได้ ที่เหลือกรอกตอนนี้หรือทีหลังก็ได้</p>
+    </header>
+
+    <form method="post" novalidate data-loading>
+      {% csrf_token %}
+      {% include "partials/form_errors.html" %}
+
+      <section class="foldo-card mb-4" aria-labelledby="sec-project">
+        <h2 id="sec-project" class="h5">ข้อมูลโปรเจกต์</h2>
+        {% include "partials/form_field.html" with field=form.project_name %}
+        {% include "partials/form_field.html" with field=form.description %}
+        {% include "partials/form_field.html" with field=form.project_url %}
+        <div class="row">
+          <div class="col-sm-6">{% include "partials/form_field.html" with field=form.start_date %}</div>
+          <div class="col-sm-6">{% include "partials/form_field.html" with field=form.end_date %}</div>
+        </div>
+      </section>
+
+      <section class="foldo-card mb-4" aria-labelledby="sec-story">
+        <h2 id="sec-story" class="h5">Project Story <span class="small text-body-secondary fw-normal">(ไม่บังคับ)</span></h2>
+        <p class="small text-body-secondary">เล่าว่าโปรเจกต์นี้แก้ปัญหาอะไร คุณทำอะไร และได้ผลอะไร กรอกเฉพาะส่วนที่มีก็ได้</p>
+        {% include "partials/form_field.html" with field=form.problem %}
+        {% include "partials/form_field.html" with field=form.role %}
+        {% include "partials/form_field.html" with field=form.process %}
+        {% include "partials/form_field.html" with field=form.solution %}
+        {% include "partials/form_field.html" with field=form.outcome %}
+      </section>
+
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary" data-loading-text="กำลังบันทึก…">{{ submit_label }}</button>
+        <a class="btn btn-outline-secondary" href="{{ cancel_url }}">ยกเลิก</a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

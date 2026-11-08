@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}{{ project.project_name }} — FOLDO{% endblock %}
+{% block content %}
+<section class="foldo-section foldo-profile" aria-labelledby="project-heading">
+  <div class="container foldo-profile__narrow">
+    <a class="foldo-profile__back" href="{% url 'profiles:projects' profile.pk %}">&larr; โปรเจกต์ทั้งหมด</a>
+    <header class="mt-2 mb-4">
+      <p class="foldo-eyebrow" lang="en">{{ profile.label }}</p>
+      <h1 id="project-heading" class="foldo-section__title">{{ project.project_name }}</h1>
+      {% if project.start_date %}
+        <p class="foldo-section__subtitle mb-0">
+          {{ project.start_date|date:"M Y" }} &ndash; {% if project.end_date %}{{ project.end_date|date:"M Y" }}{% else %}Present{% endif %}
+        </p>
+      {% endif %}
+    </header>
+
+    <div class="foldo-card mb-4">
+      {% if project.description %}<p>{{ project.description|linebreaksbr }}</p>{% endif %}
+      {% if project.project_url %}
+        <p class="mb-0"><a href="{{ project.project_url }}" target="_blank" rel="noopener noreferrer">{{ project.project_url }}</a></p>
+      {% endif %}
+      {% if not project.description and not project.project_url %}
+        <p class="mb-0 text-body-secondary">ยังไม่มีรายละเอียด</p>
+      {% endif %}
+    </div>
+
+    {% if project.has_story %}
+      <div class="foldo-card mb-4">
+        <h2 class="h5">Project Story</h2>
+        {% include "partials/project_story.html" with project=project %}
+      </div>
+    {% else %}
+      <div class="foldo-card mb-4">
+        <h2 class="h5">Project Story</h2>
+        <p class="mb-0 text-body-secondary">ยังไม่ได้เล่า Project Story <a href="{% url 'profiles:project_edit' project.pk %}">เพิ่มตอนนี้</a></p>
+      </div>
+    {% endif %}
+
+    <div class="d-flex flex-wrap gap-2 justify-content-end">
+      <a class="btn btn-outline-secondary" href="{% url 'profiles:projects' profile.pk %}">Projects</a>
+      <a class="btn btn-outline-danger" href="{% url 'profiles:project_delete' project.pk %}">ลบ</a>
+      <a class="btn btn-primary" href="{% url 'profiles:project_edit' project.pk %}">แก้ไข</a>
+    </div>
+  </div>
+</section>
+{% endblock %}
