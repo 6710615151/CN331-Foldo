@@ -120,6 +120,7 @@ Planned models arrive with their Issues:
 | `portfolios` | `PortfolioContentSelection` | FOLDO-06 | References to profile content per version. |
 | `portfolios` | `PortfolioTemplate` | FOLDO-07 | Template key → renderer. |
 
+
 Relationships (planned): `User 1─* MainProfile 1─* {Education, Skill, Project,
 Experience}` (or `1─1` if the open decision above goes that way),
 `Project 1─0..1 ProjectStory`, and `MainProfile 1─* PortfolioVersion`.

@@ -634,6 +634,27 @@ main:has(> .foldo-hero) {
   --bs-alert-color: var(--foldo-ink);
 }
 
+/* --- Template gallery (FOLDO-07) --------------------------------------- */
+.foldo-theme__swatch {
+  display: flex;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+}
+
+.foldo-theme__swatch span {
+  flex: 1;
+  height: 2.5rem;
+  border-radius: 6px;
+}
+
+.foldo-theme--classic .foldo-theme__swatch span { background: #f5f7fb; }
+.foldo-theme--classic .foldo-theme__swatch span:first-child { background: #0b1530; flex: 0.3; }
+.foldo-theme--modern .foldo-theme__swatch span { background: #f5f7fb; }
+.foldo-theme--modern .foldo-theme__swatch span:first-child { background: #0b1530; flex: 0.6; }
+.foldo-theme--creative .foldo-theme__swatch span { background: #1a34d8; }
+.foldo-theme--creative .foldo-theme__swatch span:nth-child(2) { background: var(--foldo-lime); }
+.foldo-theme--creative .foldo-theme__swatch span:last-child { background: var(--foldo-orange); }
+
 /* --- Error pages (404 / 500) ------------------------------------------- */
 .foldo-state {
   max-width: 34rem;

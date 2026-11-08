@@ -1,0 +1,17 @@
+{% extends "rendering/portfolio_base.html" %}
+{% comment %} Creative: bold colour hero, projects first as cards, then the rest. {% endcomment %}
+{% block portfolio %}
+<header class="pf-hero">
+  {% include "rendering/partials/identity.html" with size="lg" %}
+  {% if profile.bio %}<p class="pf-hero__bio">{{ profile.bio|linebreaksbr }}</p>{% endif %}
+  {% include "rendering/partials/contact.html" %}
+  <div class="pf-hero__bands" aria-hidden="true"><span></span><span></span></div>
+</header>
+
+{% for section in content.sections %}
+  {% if section.key == "projects" %}{% include "rendering/partials/section.html" with card="1" %}{% endif %}
+{% endfor %}
+{% for section in content.sections %}
+  {% if section.key != "projects" %}{% include "rendering/partials/section.html" %}{% endif %}
+{% endfor %}
+{% endblock %}
