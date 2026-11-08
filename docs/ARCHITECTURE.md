@@ -238,6 +238,20 @@ Turns profile data into a finished portfolio page. It owns **no models**:
 - Routes: `/templates/` (gallery) and `/templates/<theme>/profiles/<pk>/`
   (owner-only preview with a theme switcher).
 
+### `apps.insights` — Portfolio DNA (FOLDO-14) and Quality Check (FOLDO-16)
+
+Read-only analysis of a profile. It owns **no models** and never edits
+anything.
+
+- `sources.py` — source items (same section contract as rendering) and
+  portfolio versions, read through the FOLDO-05/06 contract in
+  `docs/CONVENTIONS.md` §8 (`profile.portfolio_versions` →
+  `version.selections`). Until those models exist the version list is empty.
+- `dna.py` — `build_dna(profile)`. For every item: which versions use it,
+  which items are unused or reused, and selections that point at deleted
+  items.
+- Route: `/insights/profiles/<pk>/dna/` (owner only).
+
 ### Planned apps (not created yet)
 
 Domain apps are created together with the Issue that first needs them, never
@@ -277,8 +291,9 @@ config/urls.py
                                              "<pk>/"         (view,   name="profiles:view")
                                              "<pk>/edit/"    (edit,   name="profiles:update")
                                              "<pk>/delete/"  (delete, name="profiles:delete")
-└── "templates/"  → apps.rendering.urls   → ""                       (gallery, name="rendering:gallery")
-                                             "<theme>/profiles/<pk>/" (preview, name="rendering:preview")
+├── "templates/"  → apps.rendering.urls   → ""                       (gallery, name="rendering:gallery")
+│                                            "<theme>/profiles/<pk>/" (preview, name="rendering:preview")
+└── "insights/"   → apps.insights.urls    → "profiles/<pk>/dna/"     (dna,     name="insights:dna")
 ```
 
 All app URLconfs use `app_name` namespaces, so templates reverse URLs safely
