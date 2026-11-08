@@ -181,36 +181,6 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
-
-# ---------------------------------------------------------------------------
-# Database
-# ---------------------------------------------------------------------------
-# SQLite is the zero-setup default for local development. Setting DB_ENGINE to
-# "postgresql" switches to PostgreSQL using the documented DB_* variables.
-DB_ENGINE = env_str("DB_ENGINE", "sqlite").lower()
-
-if DB_ENGINE in {"postgres", "postgresql"}:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": env_str("DB_NAME", "foldo"),
-            "USER": env_str("DB_USER", "foldo"),
-            "PASSWORD": env_str("DB_PASSWORD"),
-            "HOST": env_str("DB_HOST", "localhost"),
-            "PORT": env_str("DB_PORT", "5432"),
-            # Reuse connections for a short time to reduce per-request overhead.
-            "CONN_MAX_AGE": env_int("DB_CONN_MAX_AGE", 60),
-        }
-    }
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
-    }
-
-
 # ---------------------------------------------------------------------------
 # Cache
 # ---------------------------------------------------------------------------
