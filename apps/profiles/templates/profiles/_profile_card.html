@@ -1,17 +1,17 @@
-<article class="card shadow-sm mb-4">
-  <div class="card-body">
+<article class="foldo-card foldo-profile-card mb-4">
+  <div>
     <div class="d-flex align-items-center gap-3 mb-3">
       {% if display.photo_url %}
         <img src="{{ display.photo_url }}" alt="Photo of {{ display.display_name }}"
              width="112" height="112" class="rounded-circle object-fit-cover flex-shrink-0">
       {% else %}
-        <div class="rounded-circle bg-secondary-subtle text-secondary-emphasis d-flex align-items-center justify-content-center fw-bold fs-2 flex-shrink-0"
+        <div class="rounded-circle foldo-profile-card__initials d-flex align-items-center justify-content-center fw-bold fs-2 flex-shrink-0"
              style="width:112px;height:112px" aria-hidden="true">{{ display.initials }}</div>
       {% endif %}
       <div>
         <h2 class="h4 mb-1">{{ display.display_name|default:"Unnamed profile" }}</h2>
-        {% if display.headline %}<p class="mb-1 text-body-secondary">{{ display.headline }}</p>{% endif %}
-        {% if display.location %}<p class="mb-0 small text-body-secondary">{{ display.location }}</p>{% endif %}
+        {% if display.headline %}<p class="mb-1 foldo-section__subtitle">{{ display.headline }}</p>{% endif %}
+        {% if display.location %}<p class="mb-0 small foldo-section__subtitle">{{ display.location }}</p>{% endif %}
       </div>
     </div>
 
@@ -30,7 +30,7 @@
     {% if display.links %}
       <div class="d-flex flex-wrap gap-2">
         {% for item in display.links %}
-          <a class="btn btn-outline-secondary btn-sm" href="{{ item.href }}" target="_blank" rel="noopener noreferrer">{{ item.label }}</a>
+          <a class="btn btn-outline-foldo btn-sm" href="{{ item.href }}" target="_blank" rel="noopener noreferrer">{{ item.label }}</a>
         {% endfor %}
       </div>
     {% endif %}

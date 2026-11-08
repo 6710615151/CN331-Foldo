@@ -17,13 +17,3 @@ def profile_card(user, profile=None):
     Safe when the profile is missing or partly filled in.
     """
     return {"display": build_display(user, profile)}
-
-
-@register.filter
-def add_class(bound_field, css):
-    """Render a form field with extra CSS classes, keeping any the widget already has.
-
-        {{ field|add_class:"form-control" }}
-    """
-    existing = bound_field.field.widget.attrs.get("class", "")
-    return bound_field.as_widget(attrs={"class": f"{existing} {css}".strip()})
