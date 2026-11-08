@@ -99,7 +99,8 @@ DJANGO_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "cloudinary_storage",
+    "cloudinary_storage",          # Add this
+    "cloudinary",                  # Add this
 ]
 
 # One Django app per bounded context (modular monolith). Dependencies point
