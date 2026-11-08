@@ -1,73 +1,86 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Choose content · {{ portfolio.title }}{% endblock %}
-{% block extra_css %}<link rel="stylesheet" href="{% static 'portfolios/content_selection.css' %}">{% endblock %}
+{% block title %}เลือกเนื้อหา · {{ portfolio.title }} — FOLDO{% endblock %}
 
 {% block content %}
-<div class="foldo-cs container py-5" style="max-width: 760px;">
-  <a class="foldo-back" href="{% url 'portfolios:list' %}"><span aria-hidden="true">&larr;</span> My portfolios</a>
+<div class="foldo-page foldo-page--medium foldo-cs">
+  <a class="foldo-back" href="{% url 'portfolios:list' %}">{% include "partials/icon.html" with name="arrow-left" %}พอร์ตโฟลิโอทั้งหมด</a>
 
-  <header class="foldo-cs__header">
-    <p class="foldo-cs__eyebrow" lang="en">{{ portfolio.title }}</p>
-    <h1 class="foldo-cs__title">Choose <span class="foldo-text-lime">content</span></h1>
-    <div class="foldo-cs__bands" aria-hidden="true"><span></span><span></span></div>
-    <p class="foldo-cs__subtitle">
-      Only ticked items appear in this version. Unticking never deletes anything from your profile
-      and never changes your other versions.
-    </p>
-    {% if customised %}
-      <span class="foldo-cs__status foldo-cs__status--on">Custom selection</span>
-    {% else %}
-      <span class="foldo-cs__status">Showing everything (not customised yet)</span>
-    {% endif %}
-  </header>
-
-  {% if not has_content %}
-    <div class="foldo-cs__empty">
-      <p class="mb-3">Nothing to choose from yet. Add education, skills or experience to your profile first.</p>
-      <a class="btn btn-primary" href="{% url 'profiles:list' %}">Go to my profiles</a>
+  <div class="foldo-page-head">
+    <div class="foldo-page-head__text tone-blue">
+      <p class="foldo-eyebrow foldo-eyebrow--plain">{{ portfolio.title }}</p>
+      <h1 class="foldo-page-title">เลือก<em>เนื้อหา</em></h1>
+      <p class="foldo-page-lead">เฉพาะรายการที่ติ๊กจะแสดงในเวอร์ชันนี้ คัดเฉพาะที่ตรงกับงานที่สมัคร การเอาติ๊กออกไม่ลบอะไรจากโปรไฟล์ และไม่เปลี่ยนเวอร์ชันอื่น</p>
     </div>
-  {% else %}
-  <form method="post" data-loading>
-    {% csrf_token %}
-    {% for section in sections %}
-      <fieldset class="foldo-cs__card card card-body{% if not section.items %} foldo-cs__card--empty{% endif %}" data-cs-section>
-        <div class="foldo-cs__card-head">
-          <div>
-            <legend class="foldo-cs__card-title">{{ section.title }}</legend>
-            {% if section.items %}<span class="foldo-cs__count" data-cs-count aria-live="polite">{{ section.items|length }}</span>{% endif %}
-          </div>
-          {% if section.items %}
-            <div class="foldo-cs__bulk" data-cs-bulk hidden>
-              <button type="button" data-cs-set="all">All</button>
-              <button type="button" data-cs-set="none">None</button>
-            </div>
-          {% endif %}
-        </div>
-
-        {% for item in section.items %}
-          <label class="foldo-cs__item" for="{{ section.key }}-{{ item.id }}">
-            <input type="checkbox" name="{{ section.key }}" value="{{ item.id }}"
-                   id="{{ section.key }}-{{ item.id }}" {% if item.checked %}checked{% endif %}>
-            <span>
-              <span class="foldo-cs__label">{{ item.label }}</span>
-              {% if item.detail %}<span class="foldo-cs__detail">{{ item.detail }}</span>{% endif %}
-            </span>
-          </label>
-        {% empty %}
-          <p class="foldo-cs__none">Nothing in this section yet.</p>
-        {% endfor %}
-      </fieldset>
-    {% endfor %}
-
-    <div class="foldo-cs__actions">
-      <button type="submit" class="btn btn-primary" data-loading-text="Saving…">Save selection</button>
-      <a class="btn btn-outline-secondary" href="{% url 'portfolios:preview' portfolio.pk %}">Preview</a>
+    <div class="foldo-page-head__actions">
       {% if customised %}
-        <button type="submit" name="reset" value="1" class="btn btn-outline-danger ms-auto">Show everything again</button>
+        <span class="foldo-badge tone-lime">{% include "partials/icon.html" with name="sliders" %}เลือกเนื้อหาเองแล้ว</span>
+      {% else %}
+        <span class="foldo-badge tone-muted">แสดงทุกอย่าง (ยังไม่ได้ปรับ)</span>
       {% endif %}
     </div>
+  </div>
+
+  {% include "portfolios/_workflow.html" with current="content" %}
+
+  {% if not has_content %}
+    {% with source=portfolio.profile|default:shell.profile %}
+      {% if source %}{% url 'profiles:view' source.pk as profiles_url %}{% else %}{% url 'profiles:list' as profiles_url %}{% endif %}
+      {% include "partials/empty_state.html" with title="ยังไม่มีเนื้อหาให้เลือก" message="Nothing to choose from yet · เพิ่มการศึกษา ทักษะ ประสบการณ์ หรือโปรเจกต์ในโปรไฟล์ที่เวอร์ชันนี้ใช้ก่อน แล้วกลับมาเลือกที่นี่" action_url=profiles_url action_label="ไปเพิ่มข้อมูลในโปรไฟล์" %}
+    {% endwith %}
+  {% else %}
+  <form method="post" data-loading data-unsaved-guard>
+    {% csrf_token %}
+    <div class="foldo-cs__sections">
+      {% for section in sections %}
+        <fieldset class="foldo-cs__card {% cycle 'tone-magenta' 'tone-blue' 'tone-pink' 'tone-purple' %}{% if not section.items %} is-empty{% endif %}" data-cs-section>
+          <div class="foldo-cs__head">
+            <legend class="foldo-cs__title">
+              <span class="foldo-icon-tile foldo-icon-tile--sm foldo-icon-tile--solid">{% if section.key == "experience" %}{% include "partials/icon.html" with name="briefcase" %}{% elif section.key == "education" %}{% include "partials/icon.html" with name="cap" %}{% elif section.key == "projects" %}{% include "partials/icon.html" with name="code" %}{% else %}{% include "partials/icon.html" with name="spark" %}{% endif %}</span>
+              {% if section.key == "experience" %}ประสบการณ์{% elif section.key == "education" %}การศึกษา{% elif section.key == "projects" %}โปรเจกต์{% else %}ทักษะ{% endif %}
+              <span class="visually-hidden" lang="en">{{ section.title }}</span>
+            </legend>
+            {% if section.items %}<span class="foldo-cs__count" data-cs-count aria-live="polite">{{ section.items|length }}</span>{% endif %}
+            {% if section.items %}
+              <div class="foldo-cs__bulk" data-cs-bulk hidden>
+                <button type="button" class="btn btn-ghost btn-sm" data-cs-set="all">เลือกทั้งหมด</button>
+                <button type="button" class="btn btn-ghost btn-sm" data-cs-set="none">ไม่เลือก</button>
+              </div>
+            {% endif %}
+          </div>
+
+          {% if section.items %}
+            <div class="foldo-cs__items">
+              {% for item in section.items %}
+                <label class="foldo-cs__item" for="{{ section.key }}-{{ item.id }}">
+                  <input type="checkbox" class="form-check-input" name="{{ section.key }}" value="{{ item.id }}"
+                         id="{{ section.key }}-{{ item.id }}" {% if item.checked %}checked{% endif %}>
+                  <span class="min-w-0">
+                    <span class="foldo-cs__label">{{ item.label }}</span>
+                    {% if item.detail %}<span class="foldo-cs__detail">{{ item.detail }}</span>{% endif %}
+                  </span>
+                </label>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="foldo-cs__none">ยังไม่มีรายการในส่วนนี้</p>
+          {% endif %}
+        </fieldset>
+      {% endfor %}
+    </div>
+
+    <div class="foldo-form-actions">
+      <button type="submit" class="btn btn-lime" data-loading-text="กำลังบันทึก…">{% include "partials/icon.html" with name="check" %}บันทึกการเลือก</button>
+      <a class="btn btn-outline-foldo" href="{% url 'portfolios:device_preview' portfolio.pk %}">{% include "partials/icon.html" with name="eye" %}ดูตัวอย่าง</a>
+      {% if customised %}
+        <button type="submit" name="reset" value="1" class="btn btn-outline-danger ms-auto" data-loading-text="กำลังรีเซ็ต…">แสดงทุกอย่างอีกครั้ง</button>
+      {% endif %}
+      <p class="foldo-form-actions__note w-100 m-0" data-unsaved-note>การเลือกจะมีผลหลังกด “บันทึกการเลือก”</p>
+    </div>
   </form>
+
+  {% url 'portfolios:device_preview' portfolio.pk as next_url %}
+  {% include "portfolios/_workflow_next.html" with url=next_url label="ดูตัวอย่าง" hint="บันทึกการเลือกแล้ว ดูว่าเวอร์ชันนี้ออกมาเป็นอย่างไรบนจอคอมและมือถือ" tone="lime" %}
   {% endif %}
 </div>
 {% endblock %}

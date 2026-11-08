@@ -1,21 +1,24 @@
 {% comment %}
-  Template choice as cards (FOLDO-07). Params: field (a bound choice field whose
-  values are theme keys), themes (apps.rendering.themes.THEMES).
+  Template choice as visual cards (FOLDO-07). Params: field (a bound choice field
+  whose values are theme keys), themes (apps.rendering.themes.THEMES).
   Plain radio inputs, so it works without JavaScript and with the keyboard.
 {% endcomment %}
-<fieldset class="mb-3"{% if field.help_text or field.errors %} aria-describedby="{% if field.help_text %}{{ field.auto_id }}_helptext{% endif %}{% if field.errors %} {{ field.auto_id }}_error{% endif %}"{% endif %}>
+<fieldset class="mb-2" id="{{ field.auto_id }}" tabindex="-1"{% if field.help_text or field.errors %} aria-describedby="{% if field.help_text %}{{ field.auto_id }}_helptext{% endif %}{% if field.errors %} {{ field.auto_id }}_error{% endif %}"{% endif %}>
   <legend class="form-label fs-6 mb-2">
-    {{ field.label }}{% if field.field.required %} <span class="text-danger" aria-hidden="true">*</span>{% endif %}
+    เลือกเทมเพลต <span lang="en">({{ field.label }})</span>{% if field.field.required %} <span class="foldo-required" aria-hidden="true">*</span>{% endif %}
   </legend>
   <div class="foldo-theme-picker">
     {% for theme in themes %}
-      <label class="foldo-theme-option foldo-theme--{{ theme.key }}" for="{{ field.auto_id }}_{{ theme.key }}">
-        <input type="radio" class="form-check-input" name="{{ field.html_name }}" value="{{ theme.key }}"
+      <label class="foldo-theme-option" for="{{ field.auto_id }}_{{ theme.key }}">
+        <input type="radio" class="foldo-theme-option__input" name="{{ field.html_name }}" value="{{ theme.key }}"
                id="{{ field.auto_id }}_{{ theme.key }}"{% if field.value == theme.key %} checked{% endif %}{% if field.field.required %} required{% endif %}>
-        <span class="foldo-theme__swatch" aria-hidden="true"><span></span><span></span><span></span></span>
-        <span class="small text-body-secondary">{{ theme.category }}</span>
-        <strong>{{ theme.name }}</strong>
-        <span class="small">{{ theme.description }}</span>
+        {% include "partials/theme_thumb.html" with key=theme.key %}
+        <span class="foldo-theme-option__check" aria-hidden="true">{% include "partials/icon.html" with name="check" %}</span>
+        <span class="foldo-theme-option__text">
+          <span class="foldo-theme-option__cat">{{ theme.category }}</span>
+          <strong>{{ theme.name }}</strong>
+          <span class="foldo-theme-option__desc">{{ theme.description }}</span>
+        </span>
       </label>
     {% endfor %}
   </div>
@@ -27,5 +30,12 @@
       {% for error in field.errors %}<p class="mb-0">{{ error }}</p>{% endfor %}
     </div>
   {% endif %}
-  <a class="small" href="{% url 'rendering:gallery' %}" target="_blank" rel="noopener">ดูตัวอย่างทุกเทมเพลตกับโปรไฟล์ของฉัน</a>
+  {% if shell.profile %}
+    <p class="foldo-theme-try small mt-2 mb-0">
+      {% include "partials/icon.html" with name="eye" %}<span>ลองดูกับข้อมูลจริงของคุณ (เปิดแท็บใหม่):</span>
+      {% for theme in themes %}<a href="{% url 'rendering:preview' theme.key shell.profile.pk %}" target="_blank" rel="noopener">{{ theme.name }}<span class="visually-hidden"> (เปิดในแท็บใหม่)</span></a>{% endfor %}
+    </p>
+  {% else %}
+    <a class="small d-inline-flex align-items-center gap-1 mt-2" href="{% url 'rendering:gallery' %}" target="_blank" rel="noopener">{% include "partials/icon.html" with name="external" %}ดูตัวอย่างทุกเทมเพลตกับโปรไฟล์ของฉัน</a>
+  {% endif %}
 </fieldset>

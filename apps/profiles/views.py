@@ -95,6 +95,11 @@ class ProfileDetailView(OwnProfileMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["display"] = services.build_display(self.request.user, self.object)
+        # What would make *this* profile stronger (portfolio steps live on the dashboard).
+        from apps.core.selectors import get_next_steps
+
+        steps = get_next_steps(self.request.user, profile=self.object)
+        context["next_steps"] = [step for step in steps if step["key"] not in ("portfolio", "publish")][:3]
         return context
 
 

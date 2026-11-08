@@ -1,59 +1,25 @@
 {% comment %}
-  Shared navigation for every page except the landing page, which replaces
-  this header with its own full-bleed hero (see its "header" block).
-  Links wrap under the logo on narrow screens, so no JavaScript toggle is needed.
+  Visitor navigation (signed-out pages such as 404 / 403). Signed-in pages use
+  partials/app_sidebar.html instead; the landing and auth pages carry their own.
+  Only core + accounts URLs here: error pages may render with a reduced URLconf.
 {% endcomment %}
-{% with current=request.resolver_match.url_name app=request.resolver_match.app_name %}
-<header class="sticky-top">
-  <nav class="navbar navbar-expand foldo-navbar" aria-label="เมนูหลัก">
-    <div class="container">
-      <a class="navbar-brand foldo-brand" href="{% url 'core:landing' %}" lang="en">
-        {% include "partials/logo_mark.html" %}
-        <span class="foldo-brand__name">Foldo</span>
-      </a>
-
-      <ul class="navbar-nav foldo-nav ms-auto flex-row flex-wrap align-items-center">
-        {% if user.is_authenticated %}
-          
-          <li class="nav-item">
-            <a class="nav-link foldo-nav__link{% if current == 'dashboard' %} active{% endif %}"
-               href="{% url 'core:dashboard' %}"
-               {% if current == 'dashboard' %}aria-current="page"{% endif %}
-               lang="en">Dashboard</a>
-          </li>
-                    <li class="nav-item">
-            <a class="nav-link foldo-nav__link{% if app == 'profiles' or app == 'education' %} active{% endif %}"
-               href="{% url 'profiles:list' %}"
-               {% if app == 'profiles' or app == 'education' %}aria-current="page"{% endif %}>โปรไฟล์</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link foldo-nav__link{% if app == 'portfolios' %} active{% endif %}"
-               href="{% url 'portfolios:list' %}"
-               {% if app == 'portfolios' %}aria-current="page"{% endif %}>พอร์ตโฟลิโอ</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link foldo-nav__link{% if current == 'settings' and app == 'accounts' %} active{% endif %}"
-               href="{% url 'accounts:settings' %}"
-               {% if current == 'settings' and app == 'accounts' %}aria-current="page"{% endif %}>ตั้งค่าบัญชี</a>
-          </li>
-          <li class="nav-item">
-            <form method="post" action="{% url 'accounts:logout' %}" class="foldo-nav__form">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-outline-foldo btn-sm">ออกจากระบบ</button>
-            </form>
-          </li>
-        {% else %}
-          <li class="nav-item">
-            <a class="nav-link foldo-nav__link{% if current == 'login' %} active{% endif %}"
-               href="{% url 'accounts:login' %}"
-               {% if current == 'login' %}aria-current="page"{% endif %}>เข้าสู่ระบบ</a>
-          </li>
-          <li class="nav-item">
-            <a class="btn btn-lime btn-sm" href="{% url 'accounts:register' %}">สมัครสมาชิก</a>
-          </li>
-        {% endif %}
+{% with current=request.resolver_match.url_name %}
+<header class="foldo-navbar" data-topbar>
+  <div class="container foldo-navbar__inner">
+    <a class="foldo-brand" href="{% url 'core:landing' %}" lang="en">
+      {% include "partials/logo_mark.html" %}
+      <span>Foldo</span>
+    </a>
+    <nav aria-label="เมนูหลัก">
+      <ul class="foldo-nav">
+        <li>
+          <a class="foldo-nav__link{% if current == 'login' %} active{% endif %}" href="{% url 'accounts:login' %}"{% if current == 'login' %} aria-current="page"{% endif %}>เข้าสู่ระบบ</a>
+        </li>
+        <li>
+          <a class="btn btn-lime btn-sm" href="{% url 'accounts:register' %}">สมัครสมาชิก</a>
+        </li>
       </ul>
-    </div>
-  </nav>
+    </nav>
+  </div>
 </header>
 {% endwith %}

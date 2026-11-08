@@ -1,0 +1,6 @@
+{% comment %}
+  Icon (24 × 24 stroke drawing, coloured by currentColor). Decorative: pair it
+  with visible text or a visually-hidden label. Drawings live in static/css/icons.css.
+    {% include "partials/icon.html" with name="plus" %}
+  Params: name (required), class (extra classes).
+{% endcomment %}<span class="foldo-icon foldo-icon--{{ name }} {{ class|default:'' }}" aria-hidden="true"></span>

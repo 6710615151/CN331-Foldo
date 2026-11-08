@@ -1,23 +1,14 @@
-{% extends "base.html" %}
+{% extends "layouts/confirm_delete.html" %}
+{% load foldo_tags %}
 {% block title %}ลบ {{ education.institution }} — FOLDO{% endblock %}
-{% block content %}
-<section class="foldo-section foldo-profile" aria-labelledby="delete-heading">
-  <div class="container foldo-profile__narrow">
-    <h1 id="delete-heading" class="foldo-section__title">ลบข้อมูลการศึกษานี้?</h1>
-    <p class="visually-hidden" lang="en">Delete this education entry?</p>
-    <div class="foldo-card mb-3">
-      <p class="mb-1"><strong>{{ education.institution }}</strong></p>
-      <p class="mb-0 foldo-section__subtitle">
-        {% if education.degree %}{{ education.degree }} &middot; {% endif %}{{ education.start_date|date:"M Y" }} &ndash;
-        {% if education.is_current %}ปัจจุบัน{% else %}{{ education.end_date|date:"M Y" }}{% endif %}
-      </p>
-    </div>
-    <p>ข้อมูลนี้จะถูกลบออกจากโปรไฟล์ “{{ profile.label }}” ถาวร กู้คืนไม่ได้</p>
-    <form method="post" class="d-flex gap-2" data-loading>
-      {% csrf_token %}
-      <button type="submit" class="btn btn-danger" data-loading-text="กำลังลบ…">ยืนยันลบ</button>
-      <a class="btn btn-outline-foldo" href="{{ cancel_url }}">ยกเลิก</a>
-    </form>
+{% block confirm_title %}ลบข้อมูลการศึกษานี้?{% endblock %}
+{% block confirm_title_en %}Delete this education entry?{% endblock %}
+{% block confirm_item %}
+  <span class="foldo-icon-tile foldo-icon-tile--lg foldo-icon-tile--solid tone-blue">{% include "partials/icon.html" with name="cap" %}</span>
+  <div class="min-w-0">
+    <strong>{{ education.institution }}</strong>
+    <span>{% if education.degree %}{{ education.degree }} · {% endif %}{{ education.start_date|th_month }} – {% if education.is_current %}ปัจจุบัน{% else %}{{ education.end_date|th_month }}{% endif %}</span>
   </div>
-</section>
 {% endblock %}
+{% block confirm_body %}ข้อมูลนี้จะถูกลบออกจากโปรไฟล์ “{{ profile.label }}” ถาวร กู้คืนไม่ได้{% endblock %}
+{% block cancel_url %}{{ cancel_url }}{% endblock %}

@@ -5,43 +5,46 @@
 {% block meta_description %}FOLDO — ทำตาม 3 ขั้นตอนเพื่อสร้างโปรไฟล์หลักและพอร์ตโฟลิโอแรกของคุณ{% endblock %}
 
 {% comment %}
-  First-time entry flow (login required). It should follow right after
-  sign-up (redirect in accounts.register, see #26). Step 1 reads the user's
-  Main Profile; steps 2–3 get actions once portfolio versions exist.
+  First-time walkthrough (login required). Each step's done / action comes from
+  apps/core/selectors.get_onboarding_steps, i.e. the user's real progress.
 {% endcomment %}
 
 {% block content %}
-<section class="foldo-section" aria-labelledby="onboarding-heading">
-  <div class="container">
-    <header class="foldo-onboarding__intro">
+<div class="foldo-page foldo-page--medium foldo-onboard">
+  <div class="foldo-page-head">
+    <div class="foldo-page-head__text tone-orange">
       <p class="foldo-eyebrow" lang="en">Welcome to FOLDO</p>
-      <h1 id="onboarding-heading" class="foldo-section__title">เริ่มต้นใช้งาน FOLDO กัน</h1>
-      <p class="foldo-section__subtitle">
-        สามขั้นตอนนี้พาคุณจากโปรไฟล์เปล่า ๆ ไปสู่พอร์ตโฟลิโอที่พร้อมส่งออก
-      </p>
-    </header>
+      <h1 id="onboarding-heading" class="foldo-page-title">เริ่มต้นใช้งาน <em lang="en">FOLDO</em> กัน</h1>
+      <p class="foldo-page-lead">สามขั้นตอนนี้พาคุณจากโปรไฟล์เปล่า ๆ ไปสู่พอร์ตโฟลิโอที่พร้อมส่งออกและแชร์</p>
+      <div class="foldo-bands" aria-hidden="true"><span></span><span></span><span></span></div>
+    </div>
+  </div>
 
-    <ol class="row g-4 list-unstyled foldo-steps">
-      {% for step in steps %}
-      <li class="col-12 col-md-4">
-        <div class="foldo-step h-100{% if step.done %} foldo-step--done{% endif %}">
-          <span class="foldo-step__number" aria-hidden="true">{% if step.done %}&check;{% else %}{{ step.number }}{% endif %}</span>
-          <h2 class="foldo-step__title" lang="en">{{ step.title_en }}</h2>
-          <p class="foldo-step__title-th">{{ step.title }}</p>
+  <ol class="foldo-steps" aria-labelledby="onboarding-heading">
+    {% for step in steps %}
+      <li class="foldo-step {% cycle 'tone-blue' 'tone-purple' 'tone-pink' %}{% if step.done %} foldo-step--done{% endif %}">
+        <span class="foldo-step__number" aria-hidden="true">{% if step.done %}&check;{% else %}{{ step.number }}{% endif %}</span>
+        <div class="foldo-step__body">
+          <p class="foldo-step__title-en" lang="en">{{ step.title_en }}</p>
+          <h2 class="foldo-step__title">{{ step.title }}</h2>
           <p class="foldo-step__description">{{ step.description }}</p>
-          {% if step.done %}<p class="foldo-step__status mb-2">เสร็จแล้ว</p>{% endif %}
+        </div>
+        <div class="foldo-step__side">
+          {% if step.done %}<span class="foldo-badge tone-lime foldo-step__status">{% include "partials/icon.html" with name="check" %}เสร็จแล้ว</span>{% endif %}
           {% if step.action_url %}
-            <a class="btn btn-outline-foldo btn-sm" href="{{ step.action_url }}">{{ step.action_label }}</a>
+            <a class="btn {% if step.done %}btn-outline-foldo{% else %}btn-lime{% endif %}" href="{{ step.action_url }}">{{ step.action_label }}</a>
+          {% else %}
+            <span class="foldo-step__locked">{% include "partials/icon.html" with name="lock" %}ทำขั้นก่อนหน้าให้เสร็จก่อน</span>
           {% endif %}
         </div>
       </li>
-      {% endfor %}
-    </ol>
+    {% endfor %}
+  </ol>
 
-    <a class="btn btn-lime btn-lg foldo-onboarding__cta" href="{% url 'core:dashboard' %}">
-      <span lang="en">Go to dashboard</span>
-      <span class="foldo-arrow foldo-arrow--out" aria-hidden="true">&nearr;</span>
+  <div class="foldo-onboard__footer">
+    <a class="btn btn-lime btn-lg" href="{% url 'core:dashboard' %}">
+      <span lang="en">Go to dashboard</span><span class="foldo-arrow foldo-arrow--out" aria-hidden="true">&nearr;</span>
     </a>
   </div>
-</section>
+</div>
 {% endblock %}

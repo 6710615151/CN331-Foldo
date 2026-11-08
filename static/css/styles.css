@@ -1,95 +1,151 @@
+/* ==========================================================================
+   FOLDO design system — "Creative Blue × Electric Color × 3D Geometric"
+
+   1. Tokens            6. Feedback (alerts, toasts, modals, dropdowns)
+   2. Base              7. App shell (sidebar, top bar, footer)
+   3. Bootstrap bridge  8. Public navbar
+   4. Buttons           9. Page layout (page head, back link, sections)
+   5. Forms            10. Components (cards, tones, badges, chips, rings,
+                           icon tiles, empty state, geo art, theme thumbs)
+                       11. Landing hero  12. Motion & responsive
+
+   Page-specific compositions live in pages.css.
+   ========================================================================== */
+
+/* --- 1. Tokens ----------------------------------------------------------- */
 :root,
 [data-bs-theme="dark"] {
-  /* Surfaces — deep navy canvas with slightly lifted panels. */
-  --foldo-bg: #0b1530;
-  --foldo-bg-deep: #08102a;
-  --foldo-surface: #111d40;
-  --foldo-surface-2: #17264f;
-  --foldo-border: rgba(126, 146, 255, 0.18);
-  --foldo-border-strong: rgba(126, 146, 255, 0.45);
+  /* Canvas */
+  --foldo-bg: #06143d;
+  --foldo-bg-2: #081b50;
+  --foldo-bg-deep: #040e2e;
+  --foldo-surface: #0d2460;
+  --foldo-surface-2: #11307a;
+  --foldo-surface-3: #173c95;
+
+  /* Thin blue lines + glows */
+  --foldo-line: rgba(61, 120, 255, 0.26);
+  --foldo-line-strong: rgba(61, 120, 255, 0.55);
+  --foldo-line-soft: rgba(175, 192, 232, 0.1);
+
+  /* Brand colour */
+  --foldo-blue: #145bff;
+  --foldo-blue-2: #3d78ff;
+  --foldo-blue-text: #8fb0ff;
+  --foldo-lime: #c4f500;
+  --foldo-lime-2: #d8ff3d;
+  --foldo-purple: #702eff;
+  --foldo-purple-text: #b99bff;
+  --foldo-magenta: #ec20b8;
+  --foldo-pink: #ff3d9a;
+  --foldo-pink-text: #ff8cc6;
+  --foldo-orange: #ff6a2b;
+  --foldo-danger: #ff4d6d;
+  --foldo-warning: #ffb020;
 
   /* Text */
-  --foldo-ink: #f5f7fb;
-  --foldo-muted: #a9b4d0;
-  --foldo-ink-dark: #0b1530;
-  --foldo-muted-dark: #5b6183;
+  --foldo-ink: #ffffff;
+  --foldo-muted: #afc0e8;
+  --foldo-subtle: #8197cc;
+  --foldo-ink-dark: #06143d;
 
-  /* Brand palette */
-  --foldo-blue: #1d4ed8;
-  --foldo-blue-strong: #2f5fe6;
-  --foldo-blue-text: #7ea2ff;
-  --foldo-lime: #b8f34a;
-  --foldo-lime-strong: #a3dd33;
-  --foldo-pink: #f725a8;
-  --foldo-purple: #6425ff;
-  --foldo-violet: #8a5cff;
-  --foldo-orange: #ff6a2b;
+  /* Type */
+  --foldo-font-sans: "Inter", "Noto Sans Thai", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --foldo-font-display: "Prompt", "Inter", "Noto Sans Thai", system-ui, sans-serif;
+  --foldo-fs-xs: 0.75rem;
+  --foldo-fs-sm: 0.875rem;
+  --foldo-fs-md: 1rem;
+  --foldo-fs-lg: 1.125rem;
+  --foldo-fs-xl: 1.375rem;
+  --foldo-fs-2xl: 1.75rem;
+  --foldo-fs-3xl: clamp(2rem, 3.2vw, 2.75rem);
+  --foldo-fs-display: clamp(2.4rem, 4.6vw, 3.9rem);
 
-  /* Legacy aliases used by other pages. */
-  --foldo-accent: var(--foldo-blue);
-  --foldo-accent-strong: var(--foldo-blue-strong);
-  --foldo-accent-soft: rgba(29, 78, 216, 0.16);
-
-  --foldo-radius: 10px;
-  --foldo-radius-lg: 16px;
-
+  /* Space (4px grid) */
   --foldo-space-1: 0.5rem;
   --foldo-space-2: 1rem;
   --foldo-space-3: 1.5rem;
   --foldo-space-4: 2.5rem;
-  --foldo-space-5: 5rem;
+  --foldo-space-5: 4rem;
 
-  --foldo-shadow-sm: 0 2px 6px rgba(3, 6, 30, 0.35);
-  --foldo-shadow-md: 0 18px 40px rgba(3, 6, 30, 0.5);
+  /* Shape */
+  --foldo-radius-sm: 8px;
+  --foldo-radius: 12px;
+  --foldo-radius-lg: 20px;
+  --foldo-radius-xl: 28px;
 
-  --foldo-font-sans: "Inter", "Noto Sans Thai", system-ui, -apple-system,
-    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --foldo-font-display: "Prompt", "Inter", "Noto Sans Thai", system-ui, sans-serif;
+  /* Depth */
+  --foldo-shadow-sm: 0 2px 8px rgba(2, 8, 30, 0.35);
+  --foldo-shadow-md: 0 24px 48px -24px rgba(2, 8, 30, 0.8);
+  --foldo-glow-blue: 0 0 0 1px rgba(20, 91, 255, 0.55), 0 14px 40px -14px rgba(20, 91, 255, 0.7);
+  --foldo-glow-lime: 0 12px 32px -12px rgba(196, 245, 0, 0.6);
+  --foldo-glow-pink: 0 12px 32px -12px rgba(255, 61, 154, 0.6);
 
-  /* Bootstrap integration: dark theme picks up FOLDO's palette. */
+  /* Shell */
+  --foldo-sidebar-w: 276px;
+  --foldo-topbar-h: 68px;
+  --foldo-content-max: 1240px;
+
+  /* Bootstrap bridge */
   --bs-body-bg: var(--foldo-bg);
   --bs-body-color: var(--foldo-ink);
+  --bs-body-font-family: var(--foldo-font-sans);
   --bs-secondary-color: var(--foldo-muted);
-  --bs-border-color: var(--foldo-border);
-  --bs-primary: #1d4ed8;
-  --bs-primary-rgb: 29, 78, 216;
+  --bs-tertiary-color: var(--foldo-subtle);
+  --bs-border-color: var(--foldo-line);
+  --bs-border-radius: var(--foldo-radius);
+  --bs-primary: #145bff;
+  --bs-primary-rgb: 20, 91, 255;
+  --bs-success-rgb: 196, 245, 0;
+  --bs-danger-rgb: 255, 77, 109;
   --bs-link-color: var(--foldo-blue-text);
-  --bs-link-color-rgb: 126, 162, 255;
+  --bs-link-color-rgb: 143, 176, 255;
   --bs-link-hover-color: var(--foldo-lime);
-  --bs-link-hover-color-rgb: 184, 243, 74;
+  --bs-link-hover-color-rgb: 196, 245, 0;
+  --bs-emphasis-color: #fff;
+  --bs-focus-ring-color: rgba(196, 245, 0, 0.4);
 }
 
-/* --- Base --------------------------------------------------------------- */
+/* --- 2. Base ------------------------------------------------------------- */
+html {
+  scroll-behavior: smooth;
+}
+
 body {
+  margin: 0;
   font-family: var(--foldo-font-sans);
   color: var(--foldo-ink);
   background-color: var(--foldo-bg);
   -webkit-font-smoothing: antialiased;
   line-height: 1.6;
+  overflow-x: hidden;
 }
 
 /* Thai needs taller lines so tone marks and vowels never collide. */
 html:lang(th) body {
-  line-height: 1.75;
+  line-height: 1.72;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
   font-family: var(--foldo-font-display);
-  letter-spacing: -0.01em;
   font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--foldo-ink);
 }
 
 a {
   color: var(--foldo-blue-text);
+  text-underline-offset: 3px;
 }
 
 a:hover {
   color: var(--foldo-lime);
+}
+
+::selection {
+  background: var(--foldo-lime);
+  color: var(--foldo-ink-dark);
 }
 
 /* Visible, consistent keyboard focus — lime reads well on navy. */
@@ -99,43 +155,34 @@ a:hover {
   border-radius: 4px;
 }
 
-/* Bootstrap replaces the outline with a faint shadow on these; restore it. */
-.foldo-brand:focus-visible {
-  outline: 3px solid var(--foldo-lime);
-  outline-offset: 2px;
-  box-shadow: none;
+main a[href^="mailto:"],
+main a[href^="http"] {
+  overflow-wrap: anywhere;
 }
 
-/* Anchored sections clear the sticky navbar. */
 section[id] {
-  scroll-margin-top: 5rem;
+  scroll-margin-top: calc(var(--foldo-topbar-h) + 1rem);
 }
 
-.foldo-text-lime {
-  color: var(--foldo-lime);
-}
+.foldo-text-lime { color: var(--foldo-lime); }
+.foldo-text-pink { color: var(--foldo-pink-text); }
+.foldo-text-purple { color: var(--foldo-purple-text); }
+.foldo-text-blue { color: var(--foldo-blue-text); }
+.foldo-muted { color: var(--foldo-muted); }
+.text-body-secondary { color: var(--foldo-muted) !important; }
+.min-w-0 { min-width: 0; }
 
-.foldo-arrow {
-  display: inline-block;
-  margin-left: 0.35rem;
-  transition: transform 0.2s ease;
-}
-
-.btn:hover .foldo-arrow {
-  transform: translateX(3px);
-}
-
-/* --- Skip link ---------------------------------------------------------- */
+/* Skip link */
 .foldo-skip-link {
   position: absolute;
   left: var(--foldo-space-2);
-  top: -3rem;
-  z-index: 1080;
+  top: -4rem;
+  z-index: 1090;
+  padding: 0.6rem 1rem;
+  border-radius: var(--foldo-radius);
   background: var(--foldo-lime);
   color: var(--foldo-ink-dark);
   font-weight: 600;
-  padding: 0.6rem 1rem;
-  border-radius: var(--foldo-radius);
   text-decoration: none;
   transition: top 0.15s ease-in-out;
 }
@@ -145,177 +192,973 @@ section[id] {
   color: var(--foldo-ink-dark);
 }
 
-/* --- Navigation --------------------------------------------------------- */
-.foldo-navbar {
-  background: var(--foldo-bg);
-  border-bottom: 1px solid transparent;
-  padding: 0.85rem 0;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+.foldo-arrow {
+  display: inline-block;
+  margin-left: 0.35rem;
+  transition: transform 0.2s ease;
 }
 
-.foldo-navbar.is-scrolled {
-  border-bottom-color: var(--foldo-border);
-  box-shadow: var(--foldo-shadow-sm);
+.btn:hover .foldo-arrow { transform: translateX(3px); }
+.foldo-arrow--out { margin-left: 0.3rem; }
+.btn:hover .foldo-arrow--out { transform: translate(2px, -2px); }
+
+/* --- 3. Bootstrap bridge -------------------------------------------------- */
+.progress {
+  --bs-progress-height: 0.6rem;
+  --bs-progress-bg: rgba(175, 192, 232, 0.14);
+  --bs-progress-border-radius: 999px;
+  --bs-progress-bar-bg: var(--foldo-blue);
 }
 
-.foldo-brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: var(--foldo-font-display);
-  font-weight: 700;
-  font-size: 1.5rem;
-  letter-spacing: -0.01em;
-  color: var(--foldo-ink);
-  text-decoration: none;
+.progress-bar {
+  background: linear-gradient(90deg, var(--foldo-blue), var(--foldo-lime));
+  border-radius: 999px;
 }
 
-.foldo-brand:hover {
-  color: var(--foldo-ink);
+.list-group {
+  --bs-list-group-bg: transparent;
+  --bs-list-group-color: var(--foldo-ink);
+  --bs-list-group-border-color: var(--foldo-line);
 }
 
-.foldo-brand--lg {
-  font-size: 1.75rem;
+.card {
+  --bs-card-bg: var(--foldo-surface);
+  --bs-card-border-color: var(--foldo-line);
+  --bs-card-border-radius: var(--foldo-radius-lg);
+  --bs-card-color: var(--foldo-ink);
 }
 
-.foldo-navbar .container {
-  flex-wrap: wrap;
-  row-gap: 0.5rem;
+.btn-close {
+  filter: invert(1) grayscale(1) brightness(1.6);
 }
 
-.foldo-nav {
-  gap: 0.25rem;
-}
-
-.foldo-nav .btn {
-  --bs-btn-padding-x: 0.9rem;
-  --bs-btn-padding-y: 0.4rem;
-  --bs-btn-font-size: 0.9rem;
-}
-
-.foldo-nav__form {
-  margin: 0;
-}
-
-.foldo-nav__link {
-  padding: 0.4rem 0.75rem;
-  border-radius: var(--foldo-radius);
-  color: var(--foldo-muted);
-  font-weight: 500;
-}
-
-.foldo-nav__link:hover,
-.foldo-nav__link.active {
-  color: var(--foldo-ink);
-  background: var(--foldo-surface);
-}
-
-.foldo-nav__link:focus-visible {
-  outline: 3px solid var(--foldo-lime);
-  outline-offset: 2px;
-}
-
-.btn-foldo,
-.btn-outline-foldo,
-.btn-lime {
+/* --- 4. Buttons ----------------------------------------------------------- */
+.btn {
+  --bs-btn-font-family: var(--foldo-font-display);
   --bs-btn-font-weight: 600;
-  --bs-btn-padding-x: 1.4rem;
-  --bs-btn-padding-y: 0.6rem;
+  --bs-btn-padding-x: 1.25rem;
+  --bs-btn-padding-y: 0.62rem;
   --bs-btn-font-size: 0.95rem;
-  --bs-btn-border-radius: 6px;
+  --bs-btn-border-radius: var(--foldo-radius);
   --bs-btn-border-width: 1.5px;
   --bs-btn-focus-box-shadow: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  letter-spacing: 0.005em;
+  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease,
+    box-shadow 0.2s ease, transform 0.18s ease;
 }
 
-/* Bootstrap swaps the outline for an animated shadow; use an immediate,
-   offset outline instead so it also reads around the lime button. */
-.btn-foldo:focus-visible,
-.btn-outline-foldo:focus-visible,
-.btn-lime:focus-visible {
+.btn:focus-visible {
   outline: 3px solid var(--foldo-lime);
   outline-offset: 3px;
 }
 
-.btn-lg.btn-foldo,
-.btn-lg.btn-outline-foldo,
-.btn-lg.btn-lime {
-  --bs-btn-padding-x: 1.7rem;
-  --bs-btn-padding-y: 0.8rem;
-  --bs-btn-font-size: 1rem;
+.btn:active { transform: translateY(1px); }
+
+.btn-sm {
+  --bs-btn-padding-x: 0.85rem;
+  --bs-btn-padding-y: 0.4rem;
+  --bs-btn-font-size: 0.85rem;
+  --bs-btn-border-radius: 10px;
 }
 
-.btn-foldo {
-  --bs-btn-color: #fff;
-  --bs-btn-bg: var(--foldo-blue);
-  --bs-btn-border-color: var(--foldo-blue);
-  --bs-btn-hover-color: #fff;
-  --bs-btn-hover-bg: var(--foldo-blue-strong);
-  --bs-btn-hover-border-color: var(--foldo-blue-strong);
-  --bs-btn-active-color: #fff;
-  --bs-btn-active-bg: var(--foldo-blue);
-  --bs-btn-active-border-color: var(--foldo-blue);
+.btn-lg {
+  --bs-btn-padding-x: 1.65rem;
+  --bs-btn-padding-y: 0.85rem;
+  --bs-btn-font-size: 1.02rem;
+  --bs-btn-border-radius: 14px;
 }
 
-.btn-outline-foldo {
-  --bs-btn-color: var(--foldo-ink);
-  --bs-btn-bg: transparent;
-  --bs-btn-border-color: var(--foldo-border-strong);
-  --bs-btn-hover-color: var(--foldo-ink);
-  --bs-btn-hover-bg: rgba(29, 78, 216, 0.18);
-  --bs-btn-hover-border-color: var(--foldo-blue-strong);
-  --bs-btn-active-color: var(--foldo-ink);
-  --bs-btn-active-bg: rgba(29, 78, 216, 0.28);
-  --bs-btn-active-border-color: var(--foldo-blue-strong);
-}
-
+/* Lime = the one most important action on a screen. */
 .btn-lime {
   --bs-btn-color: var(--foldo-ink-dark);
   --bs-btn-bg: var(--foldo-lime);
   --bs-btn-border-color: var(--foldo-lime);
   --bs-btn-hover-color: var(--foldo-ink-dark);
-  --bs-btn-hover-bg: #c9f76b;
-  --bs-btn-hover-border-color: #c9f76b;
+  --bs-btn-hover-bg: var(--foldo-lime-2);
+  --bs-btn-hover-border-color: var(--foldo-lime-2);
   --bs-btn-active-color: var(--foldo-ink-dark);
-  --bs-btn-active-bg: var(--foldo-lime-strong);
-  --bs-btn-active-border-color: var(--foldo-lime-strong);
+  --bs-btn-active-bg: #b2df00;
+  --bs-btn-active-border-color: #b2df00;
+  --bs-btn-disabled-color: var(--foldo-ink-dark);
+  --bs-btn-disabled-bg: var(--foldo-lime);
+  --bs-btn-disabled-border-color: var(--foldo-lime);
 }
 
-/* --- Asset slots (designer graphics go here later) --------------------- */
-.foldo-asset {
+.btn-lime:hover { box-shadow: var(--foldo-glow-lime); }
+
+/* Blue = product / navigation actions. Bootstrap's primary maps here too. */
+.btn-foldo,
+.btn-primary {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: var(--foldo-blue);
+  --bs-btn-border-color: var(--foldo-blue);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--foldo-blue-2);
+  --bs-btn-hover-border-color: var(--foldo-blue-2);
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #0f4ad6;
+  --bs-btn-active-border-color: #0f4ad6;
+  --bs-btn-disabled-bg: var(--foldo-blue);
+  --bs-btn-disabled-border-color: var(--foldo-blue);
+}
+
+.btn-foldo:hover,
+.btn-primary:hover { box-shadow: var(--foldo-glow-blue); }
+
+/* Outline = secondary actions. */
+.btn-outline-foldo,
+.btn-outline-secondary,
+.btn-outline-primary,
+.btn-outline-light {
+  --bs-btn-color: var(--foldo-ink);
+  --bs-btn-bg: rgba(255, 255, 255, 0.02);
+  --bs-btn-border-color: var(--foldo-line-strong);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: rgba(20, 91, 255, 0.2);
+  --bs-btn-hover-border-color: var(--foldo-blue-2);
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: rgba(20, 91, 255, 0.32);
+  --bs-btn-active-border-color: var(--foldo-blue-2);
+}
+
+/* Ghost = quiet tertiary actions (toolbars, menus). */
+.btn-ghost {
+  --bs-btn-color: var(--foldo-muted);
+  --bs-btn-bg: transparent;
+  --bs-btn-border-color: transparent;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: rgba(175, 192, 232, 0.1);
+  --bs-btn-hover-border-color: transparent;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: rgba(175, 192, 232, 0.16);
+}
+
+/* Danger: destructive actions are always pink-red and always confirmed. */
+.btn-danger {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: var(--foldo-danger);
+  --bs-btn-border-color: var(--foldo-danger);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #ff6b85;
+  --bs-btn-hover-border-color: #ff6b85;
+  --bs-btn-active-bg: #e8405f;
+  --bs-btn-active-border-color: #e8405f;
+}
+
+.btn-outline-danger {
+  --bs-btn-color: #ff8fa4;
+  --bs-btn-bg: transparent;
+  --bs-btn-border-color: rgba(255, 77, 109, 0.45);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: rgba(255, 77, 109, 0.18);
+  --bs-btn-hover-border-color: var(--foldo-danger);
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: rgba(255, 77, 109, 0.28);
+  --bs-btn-active-border-color: var(--foldo-danger);
+}
+
+/* Square icon-only button (always has a visually-hidden label). */
+.btn-icon {
+  --bs-btn-padding-x: 0;
+  --bs-btn-padding-y: 0;
+  width: 2.6rem;
+  height: 2.6rem;
+  flex: none;
+}
+
+.btn-icon.btn-sm {
+  width: 2.15rem;
+  height: 2.15rem;
+}
+
+.btn[aria-busy="true"],
+form[aria-busy="true"] .btn[type="submit"] {
+  cursor: progress;
+}
+
+/* --- 5. Forms ------------------------------------------------------------- */
+.form-label,
+.foldo-label {
+  margin-bottom: 0.4rem;
+  font-size: var(--foldo-fs-sm);
+  font-weight: 600;
+  color: #dfe7ff;
+}
+
+.form-control,
+.form-select {
+  padding: 0.68rem 0.95rem;
+  font-size: 0.97rem;
+  color: var(--foldo-ink);
+  background-color: var(--foldo-bg-deep);
+  border: 1.5px solid var(--foldo-line);
+  border-radius: var(--foldo-radius);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.form-control::placeholder {
+  color: rgba(175, 192, 232, 0.5);
+}
+
+.form-control:hover,
+.form-select:hover {
+  border-color: var(--foldo-line-strong);
+}
+
+.form-control:focus,
+.form-select:focus {
+  color: var(--foldo-ink);
+  background-color: #061644;
+  border-color: var(--foldo-blue-2);
+  box-shadow: 0 0 0 4px rgba(20, 91, 255, 0.25);
+}
+
+.form-control[readonly] {
+  background-color: rgba(4, 14, 46, 0.6);
+}
+
+.form-select {
+  --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23afc0e8' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+}
+
+.form-select option {
+  background: var(--foldo-bg-2);
+  color: var(--foldo-ink);
+}
+
+/* Native date pickers: light icon on dark field. */
+.form-control::-webkit-calendar-picker-indicator {
+  filter: invert(0.85);
+}
+
+.form-control[type="file"]::file-selector-button {
+  margin-right: 0.9rem;
+  padding: 0.35rem 0.9rem;
+  border: 0;
+  border-radius: 8px;
+  background: var(--foldo-surface-2);
+  color: var(--foldo-ink);
+  font-weight: 600;
+}
+
+.form-control.is-invalid,
+.form-select.is-invalid {
+  border-color: var(--foldo-danger);
+  background-image: none;
+  padding-right: 0.95rem;
+}
+
+.form-control.is-invalid:focus,
+.form-select.is-invalid:focus {
+  box-shadow: 0 0 0 4px rgba(255, 77, 109, 0.22);
+}
+
+.invalid-feedback {
+  color: #ff97ab;
+  font-size: var(--foldo-fs-sm);
+}
+
+.form-text {
+  margin-top: 0.4rem;
+  color: var(--foldo-subtle);
+  font-size: 0.82rem;
+}
+
+.foldo-required {
+  color: var(--foldo-pink);
+}
+
+/* Checkboxes, radios and switches: lime when on. */
+.form-check-input {
+  width: 1.15em;
+  height: 1.15em;
+  background-color: var(--foldo-bg-deep);
+  border: 1.5px solid var(--foldo-line-strong);
+}
+
+.form-check-input:checked {
+  background-color: var(--foldo-lime);
+  border-color: var(--foldo-lime);
+  --bs-form-check-bg-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%2306143d' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
+}
+
+.form-check-input[type="radio"]:checked {
+  --bs-form-check-bg-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='%2306143d'/%3e%3c/svg%3e");
+}
+
+.form-check-input:focus {
+  border-color: var(--foldo-blue-2);
+  box-shadow: 0 0 0 4px rgba(20, 91, 255, 0.25);
+}
+
+.form-switch {
+  padding-left: 3.4em;
+}
+
+.form-switch .form-check-input {
+  margin-left: -3.4em;
+  width: 2.6em;
+  height: 1.4em;
+  --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23afc0e8'/%3e%3c/svg%3e");
+}
+
+.form-switch .form-check-input:checked {
+  --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%2306143d'/%3e%3c/svg%3e");
+}
+
+/* A form section: a card with a numbered, coloured heading. */
+.foldo-form-section {
   position: relative;
-  display: block;
-  width: 100%;
-  aspect-ratio: var(--ratio, 16 / 10);
-  border: 1.5px dashed var(--foldo-border-strong);
-  border-radius: var(--asset-radius, 12px);
-  background: repeating-linear-gradient(
-    45deg,
-    rgba(126, 146, 255, 0.07) 0 10px,
-    transparent 10px 20px
-  );
-  color: var(--foldo-muted);
+  margin-bottom: var(--foldo-space-3);
+  padding: var(--foldo-space-3);
+  border: 1px solid var(--foldo-line);
+  border-radius: var(--foldo-radius-lg);
+  background: linear-gradient(180deg, rgba(13, 36, 96, 0.85), rgba(9, 28, 80, 0.85));
 }
 
-.foldo-asset::after {
-  content: attr(data-asset);
-  position: absolute;
-  inset: 0;
+.foldo-form-section__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.foldo-form-section__num {
+  flex: none;
   display: grid;
   place-items: center;
-  padding: 0.5rem;
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  text-align: center;
-  color: inherit;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 10px;
+  background: var(--tone, var(--foldo-blue));
+  color: var(--tone-on, #fff);
+  font-family: var(--foldo-font-display);
+  font-size: 0.9rem;
+  font-weight: 700;
 }
 
-.foldo-asset-img {
-  display: block;
-  width: 100%;
-  height: auto;
+.foldo-form-section__title {
+  margin: 0;
+  font-size: 1.08rem;
 }
+
+.foldo-form-section__hint {
+  margin: 0.15rem 0 0;
+  color: var(--foldo-subtle);
+  font-size: var(--foldo-fs-sm);
+}
+
+/* Sticky action bar at the bottom of long forms. */
+.foldo-form-actions {
+  position: sticky;
+  bottom: 0.75rem;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem;
+  border: 1px solid var(--foldo-line-strong);
+  border-radius: var(--foldo-radius-lg);
+  background: #081b50;
+  box-shadow: 0 -8px 30px -10px rgba(2, 8, 30, 0.9);
+}
+
+.foldo-form-actions__note {
+  margin: 0 0 0 auto;
+  color: var(--foldo-subtle);
+  font-size: var(--foldo-fs-xs);
+}
+
+/* --- 6. Feedback --------------------------------------------------------- */
+.alert {
+  --bs-alert-bg: var(--foldo-surface);
+  --bs-alert-border-color: var(--foldo-line);
+  --bs-alert-color: var(--foldo-ink);
+  --bs-alert-border-radius: var(--foldo-radius);
+  --bs-alert-link-color: var(--foldo-lime);
+  border-left-width: 4px;
+}
+
+.alert-success { --bs-alert-border-color: rgba(196, 245, 0, 0.5); border-left-color: var(--foldo-lime); }
+.alert-info { --bs-alert-border-color: rgba(61, 120, 255, 0.5); border-left-color: var(--foldo-blue-2); }
+.alert-warning { --bs-alert-border-color: rgba(255, 176, 32, 0.45); border-left-color: var(--foldo-warning); }
+.alert-danger { --bs-alert-border-color: rgba(255, 77, 109, 0.5); border-left-color: var(--foldo-danger); }
+
+/* Flash messages float as toasts, top-right. Success fades on its own
+   (JS in main.js; the CSS animation is the no-JS fallback). */
+.foldo-toasts {
+  position: fixed;
+  top: calc(var(--foldo-topbar-h) + 0.5rem);
+  right: 1rem;
+  z-index: 1085;
+  display: grid;
+  gap: 0.6rem;
+  width: min(25rem, calc(100vw - 2rem));
+  pointer-events: none;
+}
+
+.foldo-toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0.85rem 0.9rem 0.85rem 1rem;
+  border: 1px solid var(--foldo-line-strong);
+  border-left: 4px solid var(--tone, var(--foldo-blue));
+  border-radius: var(--foldo-radius);
+  background: #0a1d52;
+  color: var(--foldo-ink);
+  box-shadow: 0 24px 48px -16px rgba(0, 0, 0, 0.75);
+  animation: foldo-toast-in 0.35s ease-out both;
+  overflow-wrap: anywhere;
+}
+
+.foldo-toast__icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 8px;
+  background: var(--tone, var(--foldo-blue));
+  color: var(--tone-on, #fff);
+}
+
+.foldo-toast__body {
+  flex: 1;
+  padding-top: 0.12rem;
+  font-size: 0.92rem;
+}
+
+.foldo-toast .btn-close {
+  flex: none;
+  margin-top: 0.2rem;
+  width: 0.7rem;
+  height: 0.7rem;
+}
+
+.foldo-toast.is-leaving {
+  animation: foldo-toast-out 0.3s ease-in forwards;
+}
+
+.foldo-toasts:not(.is-enhanced) .foldo-toast--success {
+  animation: foldo-toast-in 0.35s ease-out both, foldo-toast-out 0.4s ease-in 6s forwards;
+}
+
+@keyframes foldo-toast-in {
+  from { opacity: 0; transform: translateY(-0.75rem) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes foldo-toast-out {
+  to { opacity: 0; transform: translateY(-0.5rem); visibility: hidden; }
+}
+
+/* Modals and dropdowns share the elevated surface. */
+.modal {
+  --bs-modal-bg: #0b1f58;
+  --bs-modal-color: var(--foldo-ink);
+  --bs-modal-border-color: var(--foldo-line-strong);
+  --bs-modal-border-radius: var(--foldo-radius-xl);
+  --bs-modal-header-border-color: transparent;
+  --bs-modal-footer-border-color: transparent;
+  --bs-modal-padding: 1.5rem;
+}
+
+.modal-backdrop {
+  --bs-backdrop-bg: #020820;
+  --bs-backdrop-opacity: 0.72;
+}
+
+.modal-content {
+  box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.9);
+  overflow: hidden;
+}
+
+.foldo-modal--danger .modal-content {
+  border-top: 4px solid var(--foldo-danger);
+}
+
+.foldo-modal__icon {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: 1rem;
+  border-radius: 14px;
+  background: rgba(255, 77, 109, 0.14);
+  color: var(--foldo-danger);
+  font-size: 1.3rem;
+}
+
+.modal-body { overflow-wrap: anywhere; }
+
+.dropdown-menu {
+  --bs-dropdown-bg: #0b1f58;
+  --bs-dropdown-color: var(--foldo-ink);
+  --bs-dropdown-border-color: var(--foldo-line-strong);
+  --bs-dropdown-border-radius: var(--foldo-radius-lg);
+  --bs-dropdown-link-color: var(--foldo-ink);
+  --bs-dropdown-link-hover-color: #fff;
+  --bs-dropdown-link-hover-bg: rgba(20, 91, 255, 0.22);
+  --bs-dropdown-link-active-color: var(--foldo-ink-dark);
+  --bs-dropdown-link-active-bg: var(--foldo-lime);
+  --bs-dropdown-divider-bg: var(--foldo-line);
+  --bs-dropdown-header-color: var(--foldo-subtle);
+  --bs-dropdown-item-padding-x: 0.85rem;
+  --bs-dropdown-item-padding-y: 0.55rem;
+  --bs-dropdown-padding-x: 0.4rem;
+  --bs-dropdown-padding-y: 0.4rem;
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.85);
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  border-radius: 10px;
+  font-size: 0.92rem;
+}
+
+.dropdown-item .foldo-icon { color: var(--foldo-subtle); }
+.dropdown-item:hover .foldo-icon { color: inherit; }
+
+.dropdown-item--danger { color: #ff8fa4; }
+.dropdown-item--danger:hover { background: rgba(255, 77, 109, 0.16); color: #fff; }
+
+.dropdown-header {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Spinner for loading buttons */
+.spinner-border-sm { --bs-spinner-border-width: 0.18em; }
+
+/* --- 7. App shell -------------------------------------------------------- */
+.foldo-frame {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+.foldo-frame__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.foldo-main {
+  flex: 1;
+  outline: none;
+}
+
+.foldo-frame--app {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--foldo-sidebar-w) minmax(0, 1fr);
+  background:
+    radial-gradient(900px 480px at 100% -10%, rgba(20, 91, 255, 0.22), transparent 70%),
+    radial-gradient(700px 420px at 30% -20%, rgba(112, 46, 255, 0.14), transparent 70%),
+    var(--foldo-bg);
+  background-attachment: fixed;
+}
+
+/* The sidebar column's own background, so it reaches the bottom of long pages. */
+@media (min-width: 992px) {
+  .foldo-frame--app::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: var(--foldo-sidebar-w);
+    background: var(--foldo-bg-deep);
+    border-right: 1px solid var(--foldo-line);
+  }
+
+  .foldo-frame--app > * {
+    position: relative;
+  }
+}
+
+/* Sidebar (a <header>, so the brand + primary navigation is the page banner). */
+.foldo-sidebar {
+  --bs-offcanvas-width: 292px;
+  --bs-offcanvas-bg: var(--foldo-bg-deep);
+  --bs-offcanvas-color: var(--foldo-ink);
+  --bs-offcanvas-border-color: var(--foldo-line);
+}
+
+.foldo-sidebar__inner {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  padding: 1.25rem 1rem 1rem;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--foldo-surface-2) transparent;
+  background:
+    radial-gradient(260px 220px at 0% 100%, rgba(112, 46, 255, 0.2), transparent 70%),
+    linear-gradient(180deg, #051236, var(--foldo-bg-deep));
+  border-right: 1px solid var(--foldo-line);
+}
+
+.foldo-sidebar__inner > * {
+  flex-shrink: 0;
+}
+
+.foldo-sidebar__brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0 0.5rem 1.25rem;
+}
+
+.foldo-sidebar__nav {
+  flex: 1 0 auto;
+}
+
+.foldo-nav-group {
+  margin: 0 0 0.85rem;
+  padding: 0;
+  list-style: none;
+}
+
+.foldo-nav-group__label {
+  display: block;
+  margin: 0 0 0.35rem;
+  padding: 0 0.75rem;
+  color: var(--foldo-subtle);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.foldo-nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.05rem 0;
+  padding: 0.42rem 0.65rem;
+  border-radius: 14px;
+  color: var(--foldo-muted);
+  font-weight: 500;
+  font-size: 0.94rem;
+  text-decoration: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.foldo-nav-item:hover {
+  background: rgba(20, 91, 255, 0.14);
+  color: #fff;
+}
+
+.foldo-nav-item__icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 10px;
+  background: var(--tone-soft, rgba(175, 192, 232, 0.08));
+  color: var(--tone-text, var(--foldo-muted));
+  transition: background-color 0.15s ease, color 0.15s ease, transform 0.2s ease;
+}
+
+.foldo-nav-item:hover .foldo-nav-item__icon {
+  transform: rotate(-6deg) scale(1.05);
+}
+
+.foldo-nav-item__count {
+  margin-left: auto;
+  padding: 0.05rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(175, 192, 232, 0.12);
+  color: var(--foldo-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+/* Active: electric blue pill, lime marker, the icon tile turns solid. */
+.foldo-nav-item.active {
+  background: linear-gradient(90deg, rgba(20, 91, 255, 0.95), rgba(20, 91, 255, 0.55));
+  color: #fff;
+  box-shadow: 0 10px 24px -12px rgba(20, 91, 255, 0.9);
+}
+
+.foldo-nav-item.active::before {
+  content: "";
+  position: absolute;
+  left: -1rem;
+  top: 22%;
+  bottom: 22%;
+  width: 4px;
+  border-radius: 0 4px 4px 0;
+  background: var(--foldo-lime);
+  box-shadow: 0 0 12px var(--foldo-lime);
+}
+
+.foldo-nav-item.active .foldo-nav-item__icon {
+  background: var(--tone, var(--foldo-lime));
+  color: var(--tone-on, var(--foldo-ink-dark));
+}
+
+.foldo-nav-item.active .foldo-nav-item__count {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.foldo-nav-item--sub {
+  padding-left: 0.65rem;
+  font-size: 0.9rem;
+}
+
+/* Sidebar promo: the one creative call-to-action in the chrome. */
+.foldo-sidebar__promo {
+  position: relative;
+  margin: 0.5rem 0 1rem;
+  padding: 1rem;
+  border-radius: var(--foldo-radius-lg);
+  background: linear-gradient(135deg, var(--foldo-purple), var(--foldo-magenta));
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.foldo-sidebar__promo::after {
+  content: "";
+  position: absolute;
+  right: -18px;
+  top: -18px;
+  z-index: -1;
+  width: 86px;
+  height: 86px;
+  background: var(--foldo-lime);
+  clip-path: polygon(50% 0, 100% 100%, 0 80%);
+  opacity: 0.9;
+  transform: rotate(18deg);
+}
+
+.foldo-sidebar__promo p {
+  margin: 0 0 0.75rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.foldo-sidebar__promo strong {
+  display: block;
+  font-family: var(--foldo-font-display);
+  font-size: 1rem;
+  color: #fff;
+}
+
+.foldo-sidebar__user {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0.65rem;
+  border: 1px solid var(--foldo-line);
+  border-radius: var(--foldo-radius-lg);
+  background: rgba(13, 36, 96, 0.55);
+  list-style: none;
+}
+
+.foldo-sidebar__user-text {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.3;
+}
+
+.foldo-sidebar__user-name {
+  display: block;
+  overflow: hidden;
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.foldo-sidebar__user-handle {
+  display: block;
+  overflow: hidden;
+  color: var(--foldo-subtle);
+  font-size: 0.76rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.foldo-sidebar__logout {
+  margin: 0;
+}
+
+/* Top bar */
+.foldo-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  height: var(--foldo-topbar-h);
+  padding: 0 clamp(1rem, 3vw, 2.25rem);
+  background: rgba(6, 20, 61, 0.86);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.foldo-topbar.is-scrolled {
+  border-bottom-color: var(--foldo-line);
+  background: rgba(6, 20, 61, 0.96);
+}
+
+.foldo-topbar__crumb {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--foldo-subtle);
+  font-size: 0.88rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.foldo-topbar__crumb strong {
+  color: #fff;
+  font-weight: 600;
+}
+
+.foldo-topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.foldo-bell {
+  position: relative;
+}
+
+.foldo-bell__dot {
+  position: absolute;
+  top: 0.2rem;
+  right: 0.2rem;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 0.3rem;
+  border: 2px solid var(--foldo-bg);
+  border-radius: 999px;
+  background: var(--foldo-pink);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 0.85rem;
+  text-align: center;
+}
+
+.foldo-notify {
+  width: min(22rem, calc(100vw - 2rem));
+}
+
+.foldo-notify__item {
+  align-items: flex-start;
+  white-space: normal;
+}
+
+.foldo-notify__item small {
+  display: block;
+  color: var(--foldo-subtle);
+  line-height: 1.4;
+}
+
+.foldo-profile-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.25rem 0.65rem 0.25rem 0.25rem;
+  border: 1px solid var(--foldo-line);
+  border-radius: 999px;
+  background: rgba(13, 36, 96, 0.6);
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.foldo-profile-btn:hover,
+.foldo-profile-btn[aria-expanded="true"] {
+  border-color: var(--foldo-blue-2);
+  background: rgba(20, 91, 255, 0.2);
+}
+
+.foldo-profile-btn__name {
+  max-width: 9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Footer */
+.foldo-footer {
+  border-top: 1px solid var(--foldo-line-soft);
+}
+
+.foldo-footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 2rem;
+  padding: 1.35rem 0;
+}
+
+.foldo-footer__meta {
+  margin: 0;
+  color: var(--foldo-subtle);
+  font-size: 0.82rem;
+}
+
+.foldo-footer__bands {
+  display: flex;
+  gap: 4px;
+  width: 4.5rem;
+  height: 6px;
+}
+
+.foldo-footer__bands span { flex: 1; border-radius: 3px; background: var(--foldo-lime); }
+.foldo-footer__bands span:nth-child(2) { background: var(--foldo-pink); }
+.foldo-footer__bands span:nth-child(3) { background: var(--foldo-blue); }
+
+/* Brand lock-up */
+.foldo-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: #fff;
+  font-family: var(--foldo-font-display);
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+}
+
+.foldo-brand:hover { color: #fff; }
+.foldo-brand--lg { font-size: 1.75rem; }
+.foldo-brand--sm { font-size: 1.2rem; }
 
 .foldo-logo-mark {
   flex: 0 0 auto;
@@ -324,31 +1167,752 @@ section[id] {
   height: auto;
 }
 
-.foldo-brand--lg .foldo-logo-mark {
-  width: 2.4rem;
+.foldo-brand--sm .foldo-logo-mark { width: 1.75rem; }
+.foldo-brand--lg .foldo-logo-mark { width: 2.4rem; }
+
+/* --- 8. Public navbar (visitors) ----------------------------------------- */
+.foldo-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+  padding: 0.85rem 0;
+  background: rgba(6, 20, 61, 0.9);
+  border-bottom: 1px solid transparent;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: border-color 0.2s ease;
 }
 
+.foldo-navbar.is-scrolled { border-bottom-color: var(--foldo-line); }
+
+.foldo-navbar__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.foldo-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.foldo-nav__link {
+  display: inline-block;
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--foldo-radius);
+  color: var(--foldo-muted);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.foldo-nav__link:hover,
+.foldo-nav__link.active {
+  background: var(--foldo-surface);
+  color: #fff;
+}
+
+/* --- 9. Page layout ------------------------------------------------------ */
+.foldo-page {
+  width: 100%;
+  max-width: var(--foldo-content-max);
+  margin: 0 auto;
+  padding: clamp(1.25rem, 3vw, 2.25rem) clamp(1rem, 3vw, 2.25rem) var(--foldo-space-5);
+}
+
+.foldo-page--narrow { max-width: 860px; }
+.foldo-page--medium { max-width: 1040px; }
+.foldo-page--wide { max-width: 1440px; }
+
+.foldo-page-head {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.25rem 2rem;
+  margin-bottom: var(--foldo-space-4);
+}
+
+.foldo-page-head__text {
+  flex: 1 1 26rem;
+  min-width: 0;
+}
+
+.foldo-page-head__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.foldo-eyebrow {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.6rem;
+  color: var(--tone-text, var(--foldo-lime));
+  font-family: var(--foldo-font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.foldo-eyebrow::before {
+  content: "";
+  width: 0.65rem;
+  height: 0.65rem;
+  background: var(--tone, var(--foldo-lime));
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+/* Eyebrow that shows user content (a portfolio or profile name): no caps tracking, Thai-safe. */
+.foldo-eyebrow--plain {
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
+  text-transform: none;
+}
+
+.foldo-page-title {
+  margin: 0;
+  font-size: var(--foldo-fs-3xl);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+}
+
+.foldo-page-title em {
+  font-style: normal;
+  color: var(--tone-text, var(--foldo-lime));
+}
+
+.foldo-page-lead {
+  max-width: 44rem;
+  margin: 0.75rem 0 0;
+  color: var(--foldo-muted);
+  font-size: 1.02rem;
+}
+
+/* Lime + pink + blue bands: the landing page's signature, used as a small rule. */
+.foldo-bands {
+  display: flex;
+  gap: 5px;
+  width: 6.5rem;
+  height: 6px;
+  margin-top: 1rem;
+}
+
+.foldo-bands span { flex: 2; border-radius: 3px; background: var(--foldo-lime); }
+.foldo-bands span:nth-child(2) { flex: 1; background: var(--foldo-orange); }
+.foldo-bands span:nth-child(3) { flex: 1; background: var(--foldo-blue); }
+
+/* Pill-shaped back link */
+.foldo-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 1rem;
+  padding: 0.32rem 0.85rem 0.32rem 0.6rem;
+  border: 1px solid var(--foldo-line);
+  border-radius: 999px;
+  background: rgba(13, 36, 96, 0.5);
+  color: var(--foldo-muted);
+  font-size: 0.84rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.foldo-back:hover {
+  border-color: var(--foldo-lime);
+  color: var(--foldo-lime);
+  transform: translateX(-2px);
+}
+
+.foldo-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.foldo-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.foldo-section-head p {
+  margin: 0.15rem 0 0;
+  color: var(--foldo-subtle);
+  font-size: var(--foldo-fs-sm);
+}
+
+/* Legacy section wrappers (still used by error pages / onboarding). */
 .foldo-section {
-  padding: 5.5rem 0;
-  border-top: 1px solid var(--foldo-border);
-  overflow-x: clip;
+  padding: var(--foldo-space-5) 0;
 }
 
 .foldo-section__title {
   margin-bottom: 0.75rem;
-  font-size: clamp(1.75rem, 3.4vw, 2.75rem);
-  font-weight: 600;
-  line-height: 1.3;
+  font-size: var(--foldo-fs-3xl);
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 .foldo-section__subtitle {
-  max-width: 40rem;
+  max-width: 42rem;
   color: var(--foldo-muted);
 }
 
-/* --- Hero (landing key visual) ------------------------------------------ */
-/* Full-bleed electric-blue screen: copy on the left, illustration on the
-   right, lime + orange bands anchored to the bottom-left edge. */
+/* --- 10. Components ------------------------------------------------------ */
+
+/* Tones: one class sets a colour family that components read from. */
+.tone-blue { --tone: var(--foldo-blue); --tone-text: var(--foldo-blue-text); --tone-on: #fff; --tone-soft: rgba(20, 91, 255, 0.16); --tone-line: rgba(61, 120, 255, 0.5); }
+.tone-lime { --tone: var(--foldo-lime); --tone-text: var(--foldo-lime); --tone-on: var(--foldo-ink-dark); --tone-soft: rgba(196, 245, 0, 0.13); --tone-line: rgba(196, 245, 0, 0.5); }
+.tone-purple { --tone: var(--foldo-purple); --tone-text: var(--foldo-purple-text); --tone-on: #fff; --tone-soft: rgba(112, 46, 255, 0.2); --tone-line: rgba(140, 90, 255, 0.55); }
+.tone-pink { --tone: var(--foldo-pink); --tone-text: var(--foldo-pink-text); --tone-on: #fff; --tone-soft: rgba(255, 61, 154, 0.16); --tone-line: rgba(255, 61, 154, 0.5); }
+.tone-magenta { --tone: var(--foldo-magenta); --tone-text: #ff8be0; --tone-on: #fff; --tone-soft: rgba(236, 32, 184, 0.16); --tone-line: rgba(236, 32, 184, 0.5); }
+.tone-orange { --tone: var(--foldo-orange); --tone-text: #ffa77f; --tone-on: #fff; --tone-soft: rgba(255, 106, 43, 0.16); --tone-line: rgba(255, 106, 43, 0.5); }
+.tone-danger { --tone: var(--foldo-danger); --tone-text: #ff97ab; --tone-on: #fff; --tone-soft: rgba(255, 77, 109, 0.15); --tone-line: rgba(255, 77, 109, 0.5); }
+.tone-warning { --tone: var(--foldo-warning); --tone-text: #ffcb6b; --tone-on: var(--foldo-ink-dark); --tone-soft: rgba(255, 176, 32, 0.15); --tone-line: rgba(255, 176, 32, 0.5); }
+.tone-muted { --tone: #5a6fa6; --tone-text: var(--foldo-muted); --tone-on: #fff; --tone-soft: rgba(175, 192, 232, 0.1); --tone-line: rgba(175, 192, 232, 0.3); }
+
+/* Card: navy surface, thin blue line, generous radius. */
+.foldo-card {
+  position: relative;
+  padding: var(--foldo-space-3);
+  border: 1px solid var(--foldo-line);
+  border-radius: var(--foldo-radius-lg);
+  background: linear-gradient(180deg, rgba(13, 36, 96, 0.92), rgba(9, 29, 82, 0.92));
+  box-shadow: var(--foldo-shadow-md);
+}
+
+.foldo-card--flat {
+  background: rgba(13, 36, 96, 0.5);
+  box-shadow: none;
+}
+
+.foldo-card--tone {
+  border-color: var(--tone-line);
+  background:
+    radial-gradient(420px 200px at 100% 0%, var(--tone-soft), transparent 70%),
+    linear-gradient(180deg, rgba(13, 36, 96, 0.92), rgba(9, 29, 82, 0.92));
+}
+
+.foldo-card--interactive {
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.foldo-card--interactive:hover,
+.foldo-card--interactive:focus-within {
+  transform: translateY(-3px);
+  border-color: var(--tone-line, var(--foldo-line-strong));
+  box-shadow: 0 0 0 1px var(--tone-line, rgba(20, 91, 255, 0.4)), 0 26px 50px -24px rgba(2, 8, 30, 0.9);
+}
+
+.foldo-card__title {
+  margin: 0 0 0.35rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+/* Stretched link: whole card is clickable, inner buttons stay on top. */
+.foldo-card__link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+.foldo-card__link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.foldo-card__link:hover { color: inherit; }
+.foldo-above-link { position: relative; z-index: 2; }
+
+/* Icon tile */
+.foldo-icon-tile {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 14px;
+  background: var(--tone-soft, rgba(20, 91, 255, 0.16));
+  color: var(--tone-text, var(--foldo-blue-text));
+  font-size: 1.15rem;
+}
+
+.foldo-icon-tile--solid {
+  background: var(--tone, var(--foldo-blue));
+  color: var(--tone-on, #fff);
+  box-shadow: 0 10px 22px -12px var(--tone, var(--foldo-blue));
+}
+
+.foldo-icon-tile--lg {
+  width: 3.4rem;
+  height: 3.4rem;
+  border-radius: 18px;
+  font-size: 1.45rem;
+}
+
+.foldo-icon-tile--sm {
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+}
+
+/* Badges & chips */
+.foldo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.22rem 0.65rem;
+  border: 1px solid var(--tone-line, var(--foldo-line));
+  border-radius: 999px;
+  background: var(--tone-soft, rgba(175, 192, 232, 0.08));
+  color: var(--tone-text, var(--foldo-muted));
+  font-family: var(--foldo-font-sans);
+  font-size: 0.74rem;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.foldo-badge--solid {
+  border-color: var(--tone, var(--foldo-lime));
+  background: var(--tone, var(--foldo-lime));
+  color: var(--tone-on, var(--foldo-ink-dark));
+}
+
+.foldo-badge__dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.foldo-badge--live .foldo-badge__dot {
+  box-shadow: 0 0 0 0 currentColor;
+  animation: foldo-pulse 2s ease-out infinite;
+}
+
+@keyframes foldo-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(196, 245, 0, 0.6); }
+  80%, 100% { box-shadow: 0 0 0 6px rgba(196, 245, 0, 0); }
+}
+
+.foldo-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.8rem;
+  border: 1px solid var(--tone-line, var(--foldo-line));
+  border-radius: 999px;
+  background: var(--tone-soft, rgba(13, 36, 96, 0.6));
+  color: var(--tone-text, var(--foldo-ink));
+  font-size: 0.84rem;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+a.foldo-chip:hover,
+button.foldo-chip:hover {
+  border-color: var(--tone, var(--foldo-blue-2));
+  color: #fff;
+}
+
+button.foldo-chip {
+  cursor: pointer;
+}
+
+.foldo-chip[aria-pressed="true"] {
+  border-color: var(--foldo-lime);
+  background: var(--foldo-lime);
+  color: var(--foldo-ink-dark);
+}
+
+.foldo-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Avatar */
+.foldo-avatar {
+  --size: 2.5rem;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background: conic-gradient(from 210deg, var(--foldo-lime), var(--foldo-blue), var(--foldo-purple), var(--foldo-pink), var(--foldo-lime));
+  color: var(--foldo-ink-dark);
+  font-family: var(--foldo-font-display);
+  font-size: calc(var(--size) * 0.38);
+  font-weight: 700;
+  overflow: hidden;
+}
+
+.foldo-avatar span {
+  display: grid;
+  place-items: center;
+  width: calc(100% - 4px);
+  height: calc(100% - 4px);
+  border-radius: 50%;
+  background: var(--foldo-lime);
+}
+
+.foldo-avatar img {
+  width: calc(100% - 4px);
+  height: calc(100% - 4px);
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.foldo-avatar--sm { --size: 2rem; }
+.foldo-avatar--lg { --size: 4.5rem; }
+.foldo-avatar--xl { --size: 7.5rem; }
+
+/* Progress ring (conic gradient); set --value 0–100. */
+.foldo-ring {
+  --size: 5.5rem;
+  --thickness: 9px;
+  --value: 0;
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background:
+    conic-gradient(var(--tone, var(--foldo-lime)) calc(var(--value) * 1%), rgba(175, 192, 232, 0.13) 0);
+}
+
+.foldo-ring::before {
+  content: "";
+  position: absolute;
+  inset: var(--thickness);
+  border-radius: 50%;
+  background: var(--ring-bg, var(--foldo-surface));
+}
+
+.foldo-ring__value {
+  position: relative;
+  font-family: var(--foldo-font-display);
+  font-size: calc(var(--size) * 0.24);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.foldo-ring__value small {
+  font-size: 0.55em;
+  color: var(--foldo-muted);
+}
+
+.foldo-ring--lg { --size: 8.5rem; --thickness: 12px; }
+.foldo-ring--sm { --size: 3.25rem; --thickness: 6px; }
+
+/* Meter (skill level): four segments. */
+.foldo-meter {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.foldo-meter span {
+  width: 0.9rem;
+  height: 0.35rem;
+  border-radius: 2px;
+  background: rgba(175, 192, 232, 0.18);
+}
+
+.foldo-meter span.is-on {
+  background: var(--tone, var(--foldo-lime));
+}
+
+/* Stat */
+.foldo-stat__value {
+  display: block;
+  font-family: var(--foldo-font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.foldo-stat__label {
+  display: block;
+  color: var(--foldo-muted);
+  font-size: 0.85rem;
+}
+
+/* Definition list (key / value rows) */
+.foldo-dl {
+  display: grid;
+  grid-template-columns: minmax(7rem, auto) 1fr;
+  gap: 0.6rem 1.25rem;
+  margin: 0;
+}
+
+.foldo-dl dt {
+  color: var(--foldo-subtle);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.foldo-dl dd {
+  margin: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* Empty state */
+.foldo-empty {
+  display: grid;
+  justify-items: center;
+  gap: 0.25rem;
+  padding: clamp(2rem, 5vw, 3.5rem) 1.5rem;
+  border: 1.5px dashed var(--foldo-line-strong);
+  border-radius: var(--foldo-radius-xl);
+  background:
+    radial-gradient(400px 220px at 50% 0%, rgba(20, 91, 255, 0.16), transparent 70%),
+    rgba(9, 29, 82, 0.45);
+  text-align: center;
+}
+
+.foldo-empty__art {
+  width: min(13rem, 70%);
+  margin-bottom: 0.75rem;
+}
+
+.foldo-empty__title {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.foldo-empty__message {
+  max-width: 30rem;
+  margin: 0.25rem 0 0;
+  color: var(--foldo-muted);
+}
+
+.foldo-empty .btn {
+  margin-top: 1.1rem;
+}
+
+/* Kept for older includes: .foldo-state wraps simple centred messages. */
+.foldo-state {
+  max-width: 34rem;
+  margin: 0 auto;
+  padding: var(--foldo-space-4) 0;
+  text-align: center;
+}
+
+/* Geometric 3D art (partials/geo_art.html → static/images/geo/*.svg) */
+.foldo-geo {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Decorative floating shapes for headers (pure CSS). */
+.foldo-shapes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.foldo-shape {
+  position: absolute;
+  display: block;
+}
+
+.foldo-shape--tri {
+  width: var(--s, 2.5rem);
+  aspect-ratio: 1;
+  background: linear-gradient(135deg, var(--c1, var(--foldo-lime)) 50%, var(--c2, #8fbf00) 50%);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.foldo-shape--diamond {
+  width: var(--s, 2rem);
+  aspect-ratio: 1;
+  background: linear-gradient(90deg, var(--c1, var(--foldo-pink)) 50%, var(--c2, var(--foldo-magenta)) 50%);
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+}
+
+.foldo-shape--dot {
+  width: var(--s, 1rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #fff 0, var(--c1, var(--foldo-blue)) 35%, var(--c2, #0a2a9a) 100%);
+}
+
+.foldo-shape--ring {
+  width: var(--s, 4rem);
+  aspect-ratio: 1;
+  border: 3px solid var(--c1, var(--foldo-purple));
+  border-radius: 50%;
+  opacity: 0.6;
+}
+
+/* Mini theme thumbnail (partials/theme_thumb.html): a tiny live mock-up. */
+.foldo-thumb {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--foldo-radius);
+  overflow: hidden;
+  background: var(--thumb-bg, linear-gradient(135deg, #1a3be0, #0c2aa8));
+  isolation: isolate;
+}
+
+.foldo-thumb__page {
+  position: absolute;
+  inset: 12% 12% 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5%;
+  padding: 7% 7% 0;
+  border-radius: 8px 8px 0 0;
+  background: #f5f7fb;
+  box-shadow: 0 -10px 30px -10px rgba(0, 0, 0, 0.5);
+  transition: transform 0.35s ease;
+}
+
+.foldo-card--interactive:hover .foldo-thumb__page,
+.foldo-thumb-hover:hover .foldo-thumb__page {
+  transform: translateY(-4%);
+}
+
+.foldo-thumb i {
+  display: block;
+  height: 5%;
+  min-height: 3px;
+  border-radius: 2px;
+  background: #d5dbea;
+}
+
+.foldo-thumb i.is-title { width: 55%; height: 8%; min-height: 5px; background: #0b1530; }
+.foldo-thumb i.is-sub { width: 38%; background: #7b86a8; }
+.foldo-thumb i.is-short { width: 70%; }
+.foldo-thumb i.is-accent { width: 30%; background: var(--foldo-blue); }
+
+.foldo-thumb__row {
+  display: flex;
+  gap: 6%;
+  flex: 1;
+}
+
+.foldo-thumb__side {
+  display: flex;
+  flex-direction: column;
+  gap: 8%;
+  width: 34%;
+  padding: 8% 7%;
+  border-radius: 4px;
+  background: #0b1530;
+}
+
+.foldo-thumb__side i { background: #3a4a78; }
+.foldo-thumb__side i.is-lime { background: var(--foldo-lime); width: 60%; }
+
+.foldo-thumb__avatar {
+  width: 42%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--foldo-lime), var(--foldo-blue));
+}
+
+.foldo-thumb__col {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 7%;
+}
+
+.foldo-thumb__hero {
+  position: relative;
+  height: 34%;
+  margin: -7% -7% 0;
+  padding: 7%;
+  background: #1a34d8;
+}
+
+.foldo-thumb__hero i.is-title { background: #fff; }
+.foldo-thumb__hero i.is-sub { background: var(--foldo-lime); }
+
+.foldo-thumb__hero::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 55%;
+  height: 9%;
+  background: var(--foldo-lime);
+  box-shadow: 0 6px 0 0 var(--foldo-orange);
+}
+
+.foldo-thumb__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6%;
+  flex: 1;
+  padding-top: 4%;
+}
+
+.foldo-thumb__grid span {
+  border-radius: 4px;
+  background: #e2e7f5;
+  border-top: 3px solid var(--foldo-blue);
+}
+
+.foldo-thumb__grid span:nth-child(2) { border-top-color: var(--foldo-pink); }
+.foldo-thumb__grid span:nth-child(3) { border-top-color: var(--foldo-lime); }
+.foldo-thumb__grid span:nth-child(4) { border-top-color: var(--foldo-purple); }
+
+.foldo-thumb--classic { --thumb-bg: linear-gradient(135deg, #145bff, #0a2fa8); }
+.foldo-thumb--modern { --thumb-bg: linear-gradient(135deg, #702eff, #3a1199); }
+.foldo-thumb--creative { --thumb-bg: linear-gradient(135deg, #ec20b8, #ff3d9a 60%, #ff6a2b); }
+
+.foldo-thumb__deco {
+  position: absolute;
+  z-index: -1;
+  width: 28%;
+  aspect-ratio: 1;
+  background: var(--foldo-lime);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  opacity: 0.85;
+}
+
+.foldo-thumb__deco--a { top: -6%; right: -4%; transform: rotate(20deg); }
+.foldo-thumb__deco--b { bottom: 8%; left: -8%; width: 18%; background: #fff; opacity: 0.25; border-radius: 50%; clip-path: none; }
+
+/* --- 11. Landing hero (key visual; layout unchanged) --------------------- */
 main:has(> .foldo-hero) {
   display: flex;
   flex-direction: column;
@@ -357,26 +1921,22 @@ main:has(> .foldo-hero) {
 .foldo-hero {
   --hero-bg: #1a34d8;
   --hero-band-h: clamp(2.25rem, 6vh, 3.5rem);
+  --hero-pad-y: calc(var(--hero-band-h) * 2 + 2rem);
   position: relative;
   flex: 1;
   display: flex;
   align-items: center;
   min-height: 100vh;
   min-height: 100svh;
-  /* Equal top and bottom space (the bottom clears the colour bands) so the
-     two columns sit on the screen's optical centre. */
-  --hero-pad-y: calc(var(--hero-band-h) * 2 + 2rem);
   padding: var(--hero-pad-y) 0;
   overflow: hidden;
   background: var(--hero-bg);
 }
 
-/* Two balanced columns: copy left, illustration right, both centred vertically. */
 .foldo-hero__inner {
   position: relative;
   z-index: 1;
   display: grid;
-  /* Slightly wider art column so the illustration reads large. */
   grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
   align-items: center;
   gap: clamp(1.5rem, 2.5vw, 2.5rem);
@@ -390,7 +1950,6 @@ main:has(> .foldo-hero) {
   max-width: 42rem;
 }
 
-/* Large brand lock-up: logo mark + wordmark. */
 .foldo-hero__logo {
   display: flex;
   align-items: center;
@@ -401,12 +1960,10 @@ main:has(> .foldo-hero) {
   font-weight: 700;
   line-height: 1;
   letter-spacing: -0.03em;
-  color: #ffffff;
+  color: #fff;
 }
 
-.foldo-logo-mark.foldo-hero__mark {
-  width: 1.05em;
-}
+.foldo-logo-mark.foldo-hero__mark { width: 1.05em; }
 
 .foldo-hero__title {
   margin-bottom: 1.5rem;
@@ -414,21 +1971,18 @@ main:has(> .foldo-hero) {
   font-weight: 700;
   line-height: 1.05;
   letter-spacing: -0.02em;
-  color: #ffffff;
+  color: #fff;
 }
 
-.foldo-hero__title .foldo-text-lime {
-  display: block;
-}
+.foldo-hero__title .foldo-text-lime { display: block; }
 
 .foldo-hero__lead {
   margin: 0;
   font-size: clamp(1.15rem, 1.7vw, 1.5rem);
   line-height: 1.7;
-  color: #ffffff;
+  color: #fff;
 }
 
-/* Two classes so it outranks the shared .btn-lg.btn-lime sizing. */
 .btn-lg.foldo-hero__cta {
   --bs-btn-padding-x: 2.75rem;
   --bs-btn-padding-y: 1.15rem;
@@ -437,39 +1991,13 @@ main:has(> .foldo-hero) {
   margin-top: 2.25rem;
 }
 
-/* Not wired yet: a visible but inert button with a "coming soon" tag. */
-.btn-lg.foldo-hero__cta:disabled {
-  --bs-btn-disabled-color: var(--foldo-ink-dark);
-  --bs-btn-disabled-bg: var(--foldo-lime);
-  --bs-btn-disabled-border-color: var(--foldo-lime);
-  --bs-btn-disabled-opacity: 1;
-  cursor: not-allowed;
+.foldo-hero__login {
+  margin-top: 2.25rem;
+  --bs-btn-border-color: rgba(255, 255, 255, 0.7);
+  --bs-btn-hover-bg: rgba(255, 255, 255, 0.12);
+  --bs-btn-hover-border-color: #fff;
 }
 
-.foldo-hero__soon {
-  margin-left: 0.75rem;
-  padding: 0.2rem 0.6rem;
-  border-radius: 999px;
-  background: var(--foldo-ink-dark);
-  color: var(--foldo-lime);
-  font-size: 0.7em;
-  font-weight: 700;
-  vertical-align: middle;
-}
-
-.foldo-arrow--out {
-  margin-left: 0.3rem;
-}
-
-.btn:hover .foldo-arrow--out {
-  transform: translate(2px, -2px);
-}
-
-/* Illustration: right column, centred, capped so it never outgrows the copy block. */
-/* Bottom layer. Negative margins let the art spill into the hero's top/bottom
-   padding, past the container's right edge and in under the copy, so it can
-   be very large without making the row taller (the copy stays vertically
-   centred against it and is drawn on top). */
 .foldo-hero__visual {
   position: relative;
   z-index: 0;
@@ -483,16 +2011,20 @@ main:has(> .foldo-hero) {
   pointer-events: none;
 }
 
+.foldo-asset-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 .foldo-asset-img.foldo-hero__art {
   width: 100%;
   max-height: calc(100svh - 1rem);
   object-fit: contain;
-  /* The artwork's glow is cut flat at its bottom edge; fade it into the background. */
   -webkit-mask-image: linear-gradient(to bottom, #000 88%, transparent);
   mask-image: linear-gradient(to bottom, #000 88%, transparent);
 }
 
-/* Bottom-left colour bands. */
 .foldo-hero__bands {
   position: absolute;
   bottom: 0;
@@ -502,214 +2034,9 @@ main:has(> .foldo-hero) {
   width: 48%;
 }
 
-.foldo-hero__band {
-  display: block;
-  height: var(--hero-band-h);
-}
-
-.foldo-hero__band--lime {
-  width: 97%;
-  background: var(--foldo-lime);
-}
-
-.foldo-hero__band--orange {
-  width: 100%;
-  background: var(--foldo-orange);
-}
-
-/* --- App shell: onboarding steps & dashboard cards ---------------------- */
-.foldo-eyebrow {
-  margin-bottom: 0.5rem;
-  color: var(--foldo-blue-text);
-  font-weight: 600;
-  font-size: 0.85rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.foldo-onboarding__cta {
-  margin-top: var(--foldo-space-3);
-}
-
-.foldo-step,
-.foldo-card {
-  padding: var(--foldo-space-3);
-  border: 1px solid var(--foldo-border);
-  border-radius: var(--foldo-radius-lg);
-  background: var(--foldo-surface);
-}
-
-.foldo-step__number {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  margin-bottom: 0.75rem;
-  border-radius: 50%;
-  background: var(--foldo-lime);
-  color: var(--foldo-ink-dark);
-  font-family: var(--foldo-font-display);
-  font-weight: 700;
-}
-
-.foldo-step__title {
-  margin-bottom: 0.15rem;
-  font-size: 1.05rem;
-  font-weight: 600;
-}
-
-.foldo-step__title-th {
-  margin-bottom: 0.5rem;
-  color: var(--foldo-muted);
-  font-size: 0.9rem;
-}
-
-.foldo-step__description {
-  color: var(--foldo-muted);
-}
-
-.foldo-step--done {
-  border-color: var(--foldo-lime);
-}
-
-.foldo-step__status {
-  color: var(--foldo-lime);
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-.foldo-card h2 {
-  margin-bottom: 0.75rem;
-}
-
-/* --- Main Profile pages (FOLDO-03) -------------------------------------- */
-.foldo-profile__narrow {
-  max-width: 760px;
-}
-
-.foldo-profile__back {
-  font-size: 0.9rem;
-  text-decoration: none;
-}
-
-.foldo-profile__warn {
-  color: var(--foldo-orange);
-}
-
-.foldo-badge {
-  background: var(--foldo-lime);
-  color: var(--foldo-ink-dark);
-  font-size: 0.75rem;
-}
-
-.foldo-profile-card__initials {
-  background: var(--foldo-surface-2);
-  color: var(--foldo-lime);
-}
-
-/* detail.html still uses Bootstrap's primary/secondary buttons and alerts;
-   map them onto FOLDO colours inside profile pages only. */
-.foldo-profile .btn-primary {
-  --bs-btn-bg: var(--foldo-lime);
-  --bs-btn-border-color: var(--foldo-lime);
-  --bs-btn-color: var(--foldo-ink-dark);
-  --bs-btn-hover-bg: #c9f76b;
-  --bs-btn-hover-border-color: #c9f76b;
-  --bs-btn-hover-color: var(--foldo-ink-dark);
-  font-weight: 600;
-}
-
-.foldo-profile .btn-outline-secondary {
-  --bs-btn-color: var(--foldo-ink);
-  --bs-btn-border-color: var(--foldo-border-strong);
-  --bs-btn-hover-bg: var(--foldo-surface-2);
-  --bs-btn-hover-border-color: var(--foldo-blue-strong);
-  --bs-btn-hover-color: var(--foldo-ink);
-}
-
-.foldo-profile .alert-warning {
-  --bs-alert-bg: rgba(255, 106, 43, 0.12);
-  --bs-alert-border-color: rgba(255, 106, 43, 0.45);
-  --bs-alert-color: var(--foldo-ink);
-}
-
-/* --- Template gallery (FOLDO-07) --------------------------------------- */
-.foldo-theme__swatch {
-  display: flex;
-  gap: 0.35rem;
-  margin-bottom: 1rem;
-}
-
-.foldo-theme__swatch span {
-  flex: 1;
-  height: 2.5rem;
-  border-radius: 6px;
-}
-
-.foldo-theme--classic .foldo-theme__swatch span { background: #f5f7fb; }
-.foldo-theme--classic .foldo-theme__swatch span:first-child { background: #0b1530; flex: 0.3; }
-.foldo-theme--modern .foldo-theme__swatch span { background: #f5f7fb; }
-.foldo-theme--modern .foldo-theme__swatch span:first-child { background: #0b1530; flex: 0.6; }
-.foldo-theme--creative .foldo-theme__swatch span { background: #1a34d8; }
-.foldo-theme--creative .foldo-theme__swatch span:nth-child(2) { background: var(--foldo-lime); }
-.foldo-theme--creative .foldo-theme__swatch span:last-child { background: var(--foldo-orange); }
-
-/* --- Template picker on the portfolio version form (FOLDO-07) --------- */
-.foldo-theme-picker {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 0.75rem;
-}
-
-.foldo-theme-option {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: 0.85rem;
-  border: 2px solid var(--bs-border-color);
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-.foldo-theme-option .foldo-theme__swatch {
-  margin-right: 1.75rem; /* room for the radio in the corner */
-  margin-bottom: 0.6rem;
-}
-
-.foldo-theme-option .foldo-theme__swatch span {
-  height: 1.75rem;
-}
-
-.foldo-theme-option input {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-}
-
-.foldo-theme-option:has(input:checked) {
-  border-color: var(--bs-primary);
-  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
-}
-
-.foldo-theme-option:has(input:focus-visible) {
-  outline: 3px solid var(--foldo-orange);
-  outline-offset: 2px;
-}
-
-/* --- Portfolio Quality Check (FOLDO-16) ------------------------------- */
-.foldo-quality__item {
-  border-left: 4px solid var(--bs-border-color);
-}
-
-.foldo-quality__item--error { border-left-color: var(--bs-danger); }
-.foldo-quality__item--warning { border-left-color: var(--bs-warning); }
-.foldo-quality__item--info { border-left-color: var(--bs-info); }
-
-.foldo-quality__summary.is-blocking {
-  border-color: var(--bs-danger);
-}
+.foldo-hero__band { display: block; height: var(--hero-band-h); }
+.foldo-hero__band--lime { width: 97%; background: var(--foldo-lime); }
+.foldo-hero__band--orange { width: 100%; background: var(--foldo-orange); }
 
 /* --- Portfolio DNA (FOLDO-14) ------------------------------------------- */
 .foldo-dna__stats {
@@ -741,64 +2068,35 @@ main:has(> .foldo-hero) {
   margin: 0 0.25rem 0.25rem 0;
 }
 
-/* --- Error pages (404 / 500) ------------------------------------------- */
-.foldo-state {
-  max-width: 34rem;
-  margin: 0 auto;
-  padding: var(--foldo-space-4) 0;
-  text-align: center;
-}
-
-.foldo-state__code {
-  font-family: var(--foldo-font-display);
-  font-size: 4rem;
-  font-weight: 700;
-  color: var(--foldo-lime);
-  margin-bottom: 0.25rem;
-}
-
-/* --- Footer ------------------------------------------------------------- */
-.foldo-footer {
-  background: var(--foldo-bg-deep);
-  border-top: 1px solid var(--foldo-border);
-}
-
-.foldo-footer__inner {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.25rem 2.5rem;
-  padding: 1.75rem 0;
-}
-
-.foldo-footer__meta {
-  margin-right: auto;
-}
-
-.foldo-footer__meta {
-  font-size: 0.85rem;
-  color: var(--foldo-muted);
-  text-decoration: none;
-}
-
-/* --- Responsive --------------------------------------------------------- */
+/* --- 12. Motion & responsive -------------------------------------------- */
 @media (max-width: 991.98px) {
+  .foldo-frame--app {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .foldo-sidebar__inner {
+    position: static;
+    height: 100%;
+    border-right: 0;
+  }
+
+  .foldo-sidebar .foldo-nav-item.active::before { left: -1rem; }
+
+  .foldo-topbar { padding: 0 1rem; }
+
   .foldo-hero {
     flex-direction: column;
     align-items: stretch;
     padding: 3rem 0 0;
   }
 
-  /* Stack: copy, then the illustration, then the bands. */
   .foldo-hero__inner {
     grid-template-columns: minmax(0, 1fr);
     gap: 2.5rem;
   }
 
-  .foldo-hero__copy {
-    max-width: none;
-  }
+  .foldo-hero__copy { max-width: none; }
 
   .foldo-hero__visual {
     grid-column: 1;
@@ -806,29 +2104,43 @@ main:has(> .foldo-hero) {
     margin: 0 calc(var(--bs-gutter-x, 1.5rem) * -0.5);
   }
 
-  .foldo-asset-img.foldo-hero__art {
-    max-height: none;
-  }
+  .foldo-asset-img.foldo-hero__art { max-height: none; }
 
   .foldo-hero__bands {
     position: relative;
     order: 2;
     width: 88%;
   }
-
-  .foldo-section {
-    padding: 4rem 0;
-  }
 }
 
-/* --- Reduced motion ----------------------------------------------------- */
+@media (max-width: 575.98px) {
+  :root { --foldo-topbar-h: 60px; }
+
+  .foldo-page { padding-bottom: 3rem; }
+  .foldo-page-head { margin-bottom: 1.75rem; }
+  .foldo-page-head__actions { width: 100%; }
+  .foldo-page-head__actions .btn { flex: 1 1 auto; }
+  .foldo-card, .foldo-form-section { padding: 1.15rem; }
+  .foldo-dl { grid-template-columns: 1fr; gap: 0.15rem; }
+  .foldo-dl dd { margin-bottom: 0.6rem; }
+  .foldo-form-actions .btn { flex: 1 1 auto; }
+  .foldo-form-actions__note { width: 100%; margin: 0; text-align: center; }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *,
+  *::before,
+  *::after {
     transition: none !important;
     animation: none !important;
     scroll-behavior: auto !important;
   }
 }
 
-main a[href^="mailto:"],
-main a[href^="http"] { overflow-wrap: anywhere; }
+@media print {
+  .foldo-sidebar,
+  .foldo-topbar,
+  .foldo-toasts,
+  .foldo-footer { display: none !important; }
+  .foldo-frame--app { display: block; }
+}

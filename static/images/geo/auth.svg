@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 380">
+  <style>
+    .float-a, .float-b, .float-c, .spin-slow { transform-box: fill-box; transform-origin: center; }
+    .float-a { animation: f 7s ease-in-out infinite; }
+    .float-b { animation: f 9s ease-in-out -3s infinite; }
+    .float-c { animation: f 8s ease-in-out -5s infinite reverse; }
+    .spin-slow { animation: s 30s linear infinite; }
+    @keyframes f { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-8px) rotate(3deg); } }
+    @keyframes s { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  </style>
+  <defs>
+    <radialGradient id="ga-glow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#9cc0ff" stop-opacity=".55"/><stop offset="1" stop-color="#3d78ff" stop-opacity="0"/></radialGradient>
+    <radialGradient id="ga-orange" cx="35%" cy="30%" r="70%"><stop offset="0" stop-color="#ffd0b8"/><stop offset=".4" stop-color="#ff6a2b"/><stop offset="1" stop-color="#b53c0a"/></radialGradient>
+    <radialGradient id="ga-ball" cx="35%" cy="30%" r="70%"><stop offset="0" stop-color="#f0e6ff"/><stop offset=".45" stop-color="#8f5cff"/><stop offset="1" stop-color="#3a0fa0"/></radialGradient>
+    <linearGradient id="ga-ring" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c4f500"/><stop offset="1" stop-color="#ff3d9a"/></linearGradient>
+  </defs>
+  <circle cx="210" cy="190" r="175" fill="url(#ga-glow)"/>
+  <ellipse class="spin-slow" cx="210" cy="200" rx="185" ry="70" fill="none" stroke="url(#ga-ring)" stroke-width="3" opacity=".7" transform="rotate(14 210 200)"/>
+  <!-- cards fanned behind -->
+  <rect x="52" y="78" width="120" height="156" rx="16" fill="#702eff" transform="rotate(-16 112 156)" opacity=".95"/>
+  <rect x="250" y="70" width="120" height="156" rx="16" fill="#ff3d9a" transform="rotate(14 310 148)" opacity=".95"/>
+  <!-- extruded logo blocks (lime bar, orange ball, pink F, white pill) -->
+  <g class="float-a">
+    <rect x="120" y="110" width="132" height="44" rx="12" fill="#86ad00" transform="translate(8 10)"/>
+    <rect x="120" y="110" width="132" height="44" rx="12" fill="#c4f500"/>
+    <rect x="132" y="118" width="70" height="8" rx="4" fill="#fff" opacity=".45"/>
+  </g>
+  <g class="float-b">
+    <circle cx="292" cy="132" r="26" fill="url(#ga-orange)"/>
+  </g>
+  <g class="float-c">
+    <path d="M128 174h84a12 12 0 0 1 12 12v18a12 12 0 0 1-12 12h-46v40a12 12 0 0 1-12 12h-14a12 12 0 0 1-12-12v-70a12 12 0 0 1 12-12Z" fill="#b51568" transform="translate(8 10)"/>
+    <path d="M128 174h84a12 12 0 0 1 12 12v18a12 12 0 0 1-12 12h-46v40a12 12 0 0 1-12 12h-14a12 12 0 0 1-12-12v-70a12 12 0 0 1 12-12Z" fill="#ff3d9a"/>
+    <rect x="236" y="176" width="86" height="40" rx="20" fill="#b8c8ef" transform="translate(8 10)"/>
+    <rect x="236" y="176" width="86" height="40" rx="20" fill="#fff"/>
+    <text x="174" y="252" font-family="Prompt, Inter, sans-serif" font-size="30" font-weight="700" fill="#fff" letter-spacing="-1">Foldo</text>
+  </g>
+  <!-- solids -->
+  <g class="float-b"><path d="M62 280l26 14-26 14-26-14Z" fill="#8fb0ff"/><path d="M36 294l26 14v30l-26-14Z" fill="#3d78ff"/><path d="M88 294l-26 14v30l26-14Z" fill="#145bff"/></g>
+  <g class="float-c"><path d="M366 250l-30 52 26 10Z" fill="#c4f500"/><path d="M366 250l-4 62 36-14Z" fill="#8fb800"/></g>
+  <circle class="float-a" cx="352" cy="44" r="16" fill="url(#ga-ball)"/>
+  <path class="float-b" d="M72 34l22 5-12 16Z" fill="#ff6a2b"/>
+  <path d="M220 330l3 8 8 3-8 3-3 8-3-8-8-3 8-3Z" fill="#c4f500"/>
+  <path d="M30 150l2.5 6 6 2.5-6 2.5-2.5 6-2.5-6-6-2.5 6-2.5Z" fill="#fff" opacity=".8"/>
+</svg>

@@ -173,6 +173,8 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                # Sidebar / top bar state for signed-in pages (lazy, user-scoped).
+                "apps.core.context_processors.shell",
             ],
         },
     },

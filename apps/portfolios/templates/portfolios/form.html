@@ -1,32 +1,74 @@
 {% extends "base.html" %}
-{% block title %}{% if is_new %}New portfolio{% else %}Edit {{ portfolio.title }}{% endif %} – FOLDO{% endblock %}
+{% block title %}{% if is_new %}สร้างพอร์ตโฟลิโอ{% else %}แก้ไข {{ portfolio.title }}{% endif %} — FOLDO{% endblock %}
 {% block content %}
-<div class="container py-4" style="max-width: 640px;">
-  <h1 class="h3 mb-3">{% if is_new %}Create a portfolio{% else %}Edit portfolio{% endif %}</h1>
+<div class="foldo-page foldo-page--medium">
+  <a class="foldo-back" href="{% url 'portfolios:list' %}">{% include "partials/icon.html" with name="arrow-left" %}พอร์ตโฟลิโอทั้งหมด</a>
+
+  <div class="foldo-page-head">
+    <div class="foldo-page-head__text tone-magenta">
+      {% if is_new %}
+        <p class="foldo-eyebrow" lang="en">New version</p>
+        <h1 id="portfolio-form-heading" class="foldo-page-title">สร้าง<em>พอร์ตโฟลิโอ</em></h1>
+        <p class="foldo-page-lead">เริ่มจากชื่อ โปรไฟล์ และหน้าตา (เทมเพลต) ก่อน — ขั้นนี้ไม่ต้องเลือกเนื้อหา ทุกอย่างในโปรไฟล์จะแสดงไว้ก่อน แล้วค่อยคัดออกในขั้นที่ 2</p>
+      {% else %}
+        <p class="foldo-eyebrow foldo-eyebrow--plain"><span class="foldo-badge tone-magenta me-1">{% include "partials/icon.html" with name="edit" %}กำลังแก้ไข</span>{{ portfolio.title }}</p>
+        <h1 id="portfolio-form-heading" class="foldo-page-title">ตั้งค่าและ<em>ดีไซน์</em></h1>
+        <p class="foldo-page-lead">ชื่อ โปรไฟล์ที่ใช้ เทมเพลต และการเผยแพร่ของเวอร์ชันนี้ เปลี่ยนแล้วไม่กระทบเวอร์ชันอื่น</p>
+      {% endif %}
+    </div>
+  </div>
+
+  {% include "portfolios/_workflow.html" with current="setup" %}
 
   {% if not has_profiles %}
-    <div class="alert alert-warning" role="status">
-      You don't have a profile yet, so this portfolio would be empty.
-      <a class="alert-link" href="{% url 'profiles:create' %}">Create a profile first</a>.
+    <div class="alert alert-warning d-flex gap-2 align-items-start" role="status">
+      {% include "partials/icon.html" with name="alert" class="mt-1" %}
+      <div>ยังไม่มีโปรไฟล์ พอร์ตโฟลิโอนี้จะว่างเปล่า <a class="alert-link" href="{% url 'profiles:create' %}">สร้างโปรไฟล์ก่อน</a></div>
     </div>
   {% endif %}
 
-  <form method="post" class="card card-body p-4" novalidate>
+  <form method="post" novalidate data-loading data-unsaved-guard aria-labelledby="portfolio-form-heading">
     {% csrf_token %}
-
     {% include "partials/form_errors.html" %}
 
-    {% for field in form %}
-      {% if field.name == "template_key" %}
-        {% include "rendering/partials/theme_picker.html" with field=field themes=form.themes %}
-      {% else %}
-        {% include "partials/form_field.html" with field=field %}
-      {% endif %}
-    {% endfor %}
+    <section class="foldo-form-section tone-magenta" aria-labelledby="sec-basics">
+      <div class="foldo-form-section__head">
+        <span class="foldo-form-section__num">1</span>
+        <div><h2 id="sec-basics" class="foldo-form-section__title">ชื่อและโปรไฟล์</h2><p class="foldo-form-section__hint">ตั้งชื่อตามงานที่สมัคร เช่น “Backend Intern @ บริษัท A”</p></div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">{% include "partials/form_field.html" with field=form.title label="ชื่อเวอร์ชัน (Portfolio title)" %}</div>
+        <div class="col-md-6">{% include "partials/form_field.html" with field=form.profile label="โปรไฟล์ที่ใช้แสดง" %}</div>
+      </div>
+    </section>
 
-    <div class="d-flex gap-2">
-      <button type="submit" class="btn btn-primary">Save portfolio</button>
-      <a class="btn btn-outline-secondary" href="{% url 'portfolios:list' %}">Cancel</a>
+    <section class="foldo-form-section tone-lime" aria-labelledby="sec-template">
+      <div class="foldo-form-section__head">
+        <span class="foldo-form-section__num">2</span>
+        <div><h2 id="sec-template" class="foldo-form-section__title">เทมเพลต</h2><p class="foldo-form-section__hint">เปลี่ยนได้ตลอด ไม่กระทบโปรไฟล์หรือเวอร์ชันอื่น</p></div>
+      </div>
+      {% include "rendering/partials/theme_picker.html" with field=form.template_key themes=form.themes %}
+    </section>
+
+    <section class="foldo-form-section tone-blue" id="publish" aria-labelledby="sec-visibility">
+      <div class="foldo-form-section__head">
+        <span class="foldo-form-section__num">3</span>
+        <div><h2 id="sec-visibility" class="foldo-form-section__title">การมองเห็น</h2><p class="foldo-form-section__hint">ปิดไว้ = ฉบับร่างส่วนตัว มีแค่คุณที่ดูได้</p></div>
+      </div>
+      {% include "partials/form_field.html" with field=form.is_published label="เผยแพร่พอร์ตโฟลิโอนี้ (Publish)" %}
+      {# Spell out what flipping the switch will do, before the user saves. #}
+      <p class="foldo-publish-note tone-warning" data-publish-note="off" hidden role="status">
+        {% include "partials/icon.html" with name="alert" %}<span>เมื่อบันทึก ลิงก์สาธารณะและ QR code ที่เคยแชร์ไปจะใช้ไม่ได้ทันที เปิดอีกครั้งเมื่อไรลิงก์เดิมจะกลับมาใช้ได้</span>
+      </p>
+      <p class="foldo-publish-note tone-lime" data-publish-note="on" hidden role="status">
+        {% include "partials/icon.html" with name="globe" %}<span>เมื่อบันทึก ใครมีลิงก์ก็เปิดดูได้ รวมถึงข้อมูลติดต่อในโปรไฟล์ที่เลือก ลิงก์และ QR อยู่ในขั้น “เผยแพร่และแชร์”</span>
+      </p>
+    </section>
+
+    <div class="foldo-form-actions">
+      <button type="submit" class="btn btn-lime" data-loading-text="กำลังบันทึก…">{% include "partials/icon.html" with name="check" %}บันทึกพอร์ตโฟลิโอ</button>
+      <a class="btn btn-outline-foldo" href="{% url 'portfolios:list' %}">ยกเลิก</a>
+      <p class="foldo-form-actions__note" data-unsaved-note>{% if is_new %}บันทึกแล้วจะเปิดตัวอย่างให้ดู จากนั้นไปขั้น “เลือกเนื้อหา” ต่อได้{% else %}บันทึกแล้วจะเปิดตัวอย่างให้ดู{% endif %}</p>
     </div>
   </form>
 </div>

@@ -1,0 +1,66 @@
+{% comment %}
+  Signed-in top bar: menu button (phones/tablets), where-am-I label, a quick
+  create action, reminders (real to-dos from shell.todos) and the account menu.
+{% endcomment %}
+<div class="foldo-topbar" data-topbar>
+  <button type="button" class="btn btn-outline-foldo btn-icon btn-sm d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#foldo-sidebar" aria-controls="foldo-sidebar" aria-label="เปิดเมนู">
+    {% include "partials/icon.html" with name="menu" %}
+  </button>
+  <a class="foldo-brand foldo-brand--sm d-lg-none" href="{% url 'core:dashboard' %}" lang="en">
+    {% include "partials/logo_mark.html" %}<span class="d-none d-sm-inline">Foldo</span>
+  </a>
+  {% if shell.section_label %}
+    <p class="foldo-topbar__crumb d-none d-lg-block mb-0">
+      <span lang="en">FOLDO</span> / <strong>{{ shell.section_label }}</strong>
+    </p>
+  {% endif %}
+
+  <div class="foldo-topbar__actions">
+    <a class="btn btn-lime btn-sm d-none d-md-inline-flex" href="{% url 'portfolios:create' %}">
+      {% include "partials/icon.html" with name="plus" %}สร้างพอร์ตโฟลิโอ
+    </a>
+
+    <div class="dropdown foldo-bell">
+      <button type="button" class="btn btn-outline-foldo btn-icon btn-sm" data-bs-toggle="dropdown" aria-expanded="false" data-bs-offset="0,10">
+        {% include "partials/icon.html" with name="bell" %}
+        <span class="visually-hidden">การแจ้งเตือน {{ shell.todos|length }} รายการ</span>
+        {% if shell.todos %}<span class="foldo-bell__dot" aria-hidden="true">{{ shell.todos|length }}</span>{% endif %}
+      </button>
+      <div class="dropdown-menu dropdown-menu-end foldo-notify">
+        <h2 class="dropdown-header">สิ่งที่ควรทำต่อ</h2>
+        {% for todo in shell.todos %}
+          <a class="dropdown-item foldo-notify__item" href="{{ todo.url }}">
+            <span class="foldo-icon-tile foldo-icon-tile--sm tone-{{ todo.tone }}">{% include "partials/icon.html" with name=todo.icon %}</span>
+            <span>{{ todo.title }}<small>{{ todo.detail }}</small></span>
+          </a>
+        {% empty %}
+          <p class="px-3 py-2 mb-0 small foldo-muted">
+            {% include "partials/icon.html" with name="check-circle" class="foldo-text-lime" %}
+            ไม่มีงานค้าง โปรไฟล์และพอร์ตโฟลิโอของคุณพร้อมแชร์แล้ว
+          </p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="dropdown">
+      <button type="button" class="foldo-profile-btn" data-bs-toggle="dropdown" aria-expanded="false" data-bs-offset="0,10">
+        {% include "partials/avatar.html" with photo_url=shell.photo_url initials=shell.initials size="sm" %}
+        <span class="foldo-profile-btn__name d-none d-sm-inline">{{ shell.display_name }}</span>
+        <span class="visually-hidden">เมนูบัญชี</span>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><span class="dropdown-header">@{{ user.get_username }}</span></li>
+        <li><a class="dropdown-item" href="{% url 'profiles:detail' %}">{% include "partials/icon.html" with name="user" %}โปรไฟล์หลัก</a></li>
+        <li><a class="dropdown-item" href="{% url 'accounts:settings' %}">{% include "partials/icon.html" with name="settings" %}ตั้งค่าบัญชี</a></li>
+        <li><a class="dropdown-item" href="{% url 'accounts:password_change' %}">{% include "partials/icon.html" with name="key" %}เปลี่ยนรหัสผ่าน</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li>
+          <form method="post" action="{% url 'accounts:logout' %}" class="m-0">
+            {% csrf_token %}
+            <button type="submit" class="dropdown-item dropdown-item--danger">{% include "partials/icon.html" with name="logout" %}ออกจากระบบ</button>
+          </form>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

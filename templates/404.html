@@ -1,18 +1,7 @@
-{% extends "base.html" %}
-
-{% block title %}Page not found — FOLDO{% endblock %}
-
-{% block content %}
-<section class="foldo-section">
-  <div class="container">
-    <div class="foldo-state">
-      <p class="foldo-state__code">404</p>
-      <h1 class="foldo-section__title">We couldn't find that page</h1>
-      <p class="foldo-section__subtitle">
-        The page may have moved, or the link may be incorrect.
-      </p>
-      <a class="btn btn-foldo mt-2" href="{% url 'core:landing' %}">Back to dashboard</a>
-    </div>
-  </div>
-</section>
-{% endblock %}
+{% extends "layouts/error.html" %}
+{% block title %}ไม่พบหน้านี้ (404) — FOLDO{% endblock %}
+{% block error_code %}404{% endblock %}
+{% block error_code_label %}404{% endblock %}
+{% block error_title %}ไม่พบหน้าที่คุณหา{% endblock %}
+{% block error_title_en %}We couldn't find that page.{% endblock %}
+{% block error_message %}หน้านี้อาจถูกย้าย ถูกลบ หรือลิงก์อาจพิมพ์ผิด ลองกลับไปเริ่มจากหน้าหลักอีกครั้ง{% endblock %}

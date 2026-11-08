@@ -1,60 +1,92 @@
 {% extends "base.html" %}
-{% block title %}My portfolios – FOLDO{% endblock %}
+{% load foldo_tags %}
+{% block title %}พอร์ตโฟลิโอของฉัน — FOLDO{% endblock %}
 {% block content %}
-<div class="container py-4" style="max-width: 900px;">
-   <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-    <h1 class="h3 mb-0">My portfolios</h1>
-    <div class="d-flex flex-wrap gap-2">
-      <a class="btn btn-primary" href="{% url 'portfolios:create' %}">New portfolio</a>
+<div class="foldo-page">
+  <div class="foldo-page-head">
+    <div class="foldo-page-head__text tone-magenta">
+      <p class="foldo-eyebrow" lang="en">Portfolio versions</p>
+      <h1 id="portfolios-heading" class="foldo-page-title">เวอร์ชัน<em>พอร์ตโฟลิโอ</em></h1>
+      <p class="foldo-page-lead">หนึ่งโปรไฟล์ หลายเวอร์ชัน แต่ละเวอร์ชันมีเทมเพลต เนื้อหา และลิงก์ของตัวเอง โดยไม่กระทบเวอร์ชันอื่น</p>
+    </div>
+    <div class="foldo-page-head__actions">
+      <a class="btn btn-lime" href="{% url 'portfolios:create' %}">{% include "partials/icon.html" with name="plus" %}สร้างพอร์ตโฟลิโอใหม่</a>
     </div>
   </div>
 
   {% if portfolios %}
-    <div class="row g-3">
-      {% for portfolio in portfolios %}
-        <div class="col-md-6">
-          <article class="card h-100">
-            <div class="card-body d-flex flex-column">
-              <h2 class="h5 mb-1">
-                {{ portfolio.title }}
-                {% if portfolio.is_published %}
-                  <span class="badge text-bg-success ms-1">Published</span>
-                {% else %}
-                  <span class="badge text-bg-secondary ms-1">Private</span>
-                {% endif %}
-              </h2>
-              <p class="small text-body-secondary mb-1">
-                Profile:
-                {% if portfolio.profile %}{{ portfolio.profile.label }}{% else %}your default profile{% endif %}
-                &middot; Template: {{ portfolio.get_template_key_display }}
-              </p>
-              {% if portfolio.is_published %}
-                <p class="small mb-1">
-                  Public link:
-                  <a href="{% url 'portfolios:public' portfolio.slug %}">{{ request.scheme }}://{{ request.get_host }}{% url 'portfolios:public' portfolio.slug %}</a>
-                </p>
-              {% endif %}
+    <div class="foldo-toolbar-row">
+      <div class="foldo-chip-row" data-filter-group="versions" role="group" aria-label="กรองตามสถานะ" hidden>
+        <button type="button" class="foldo-chip" data-filter="all" aria-pressed="true">ทั้งหมด</button>
+        <button type="button" class="foldo-chip" data-filter="published" aria-pressed="false">เผยแพร่แล้ว</button>
+        <button type="button" class="foldo-chip" data-filter="private" aria-pressed="false">ส่วนตัว</button>
+      </div>
+      <p class="foldo-muted small mb-0"><span data-filter-count="versions">{{ portfolios|length }}</span> เวอร์ชัน</p>
+    </div>
 
-              <div class="d-flex flex-wrap gap-2 mt-auto pt-2">
-                <a class="btn btn-sm btn-outline-primary" href="{% url 'portfolios:preview' portfolio.pk %}">Preview</a>
-                <a class="btn btn-sm btn-outline-secondary" href="{% url 'portfolios:export' portfolio.pk %}">PDF</a>
-                <a class="btn btn-sm btn-outline-primary" href="{% url 'portfolios:device_preview' portfolio.pk %}">Desktop / Mobile</a>
-                <a class="btn btn-sm btn-outline-secondary" href="{% url 'portfolios:content' portfolio.pk %}">Content</a>
-                <a class="btn btn-sm btn-outline-secondary" href="{% url 'portfolios:share' portfolio.pk %}">Share</a>
-                <a class="btn btn-sm btn-outline-secondary" href="{% url 'portfolios:update' portfolio.pk %}">Edit</a>
-                <a class="btn btn-sm btn-outline-secondary" href="{% url 'portfolios:quality' portfolio.pk %}">Quality check</a>
-                <a class="btn btn-sm btn-outline-danger ms-auto" href="{% url 'portfolios:delete' portfolio.pk %}">Delete</a>
+    <ul class="foldo-versions" aria-labelledby="portfolios-heading">
+      {% for portfolio in portfolios %}
+        <li class="foldo-version foldo-card--interactive {% if portfolio.is_published %}tone-lime{% else %}tone-magenta{% endif %}" data-filter-item="versions" data-filter-tags="{% if portfolio.is_published %}published{% else %}private{% endif %}">
+          <div class="foldo-version__thumb">
+            {% include "partials/theme_thumb.html" with key=portfolio.template_key %}
+            <span class="foldo-version__status">
+              {% if portfolio.is_published %}
+                <span class="foldo-badge foldo-badge--solid tone-lime foldo-badge--live"><span class="foldo-badge__dot"></span>เผยแพร่แล้ว<span class="visually-hidden" lang="en"> (Published)</span></span>
+              {% else %}
+                <span class="foldo-badge foldo-badge--solid tone-muted">{% include "partials/icon.html" with name="lock" %}ส่วนตัว<span class="visually-hidden" lang="en"> (Private)</span></span>
+              {% endif %}
+            </span>
+          </div>
+          <div class="foldo-version__body">
+            <h2 class="foldo-version__title"><a class="foldo-card__link" href="{% url 'portfolios:device_preview' portfolio.pk %}">{{ portfolio.title }}</a></h2>
+            <dl class="foldo-version__meta">
+              <div><dt>โปรไฟล์</dt><dd>{% if portfolio.profile %}{{ portfolio.profile.label }}{% else %}โปรไฟล์ Default{% endif %}</dd></div>
+              <div><dt>เทมเพลต</dt><dd>{{ portfolio.get_template_key_display }}</dd></div>
+              <div><dt>แก้ไขล่าสุด</dt><dd>{{ portfolio.updated_at|ago }}</dd></div>
+            </dl>
+            {% if portfolio.is_published %}
+              <a class="foldo-version__link foldo-above-link" href="{% url 'portfolios:public' portfolio.slug %}" target="_blank" rel="noopener">
+                {% include "partials/icon.html" with name="link" %}<span>{{ request.get_host }}{% url 'portfolios:public' portfolio.slug %}</span>
+              </a>
+            {% endif %}
+
+            <div class="foldo-version__actions foldo-above-link">
+              <a class="btn btn-sm btn-foldo" href="{% url 'portfolios:device_preview' portfolio.pk %}">{% include "partials/icon.html" with name="eye" %}ดูตัวอย่าง<span class="visually-hidden"> {{ portfolio.title }}</span></a>
+              <a class="btn btn-sm btn-outline-foldo" href="{% url 'portfolios:update' portfolio.pk %}">{% include "partials/icon.html" with name="edit" %}แก้ไข<span class="visually-hidden"> {{ portfolio.title }}</span></a>
+              {% if portfolio.is_published %}
+                <a class="btn btn-sm btn-outline-foldo" href="{% url 'portfolios:share' portfolio.pk %}">{% include "partials/icon.html" with name="share" %}แชร์<span class="visually-hidden"> {{ portfolio.title }}</span></a>
+              {% endif %}
+              <div class="dropdown ms-auto">
+                <button class="btn btn-sm btn-outline-foldo btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  {% include "partials/icon.html" with name="more" %}<span class="visually-hidden">ตัวเลือกของ {{ portfolio.title }}</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li><span class="dropdown-header">ขั้นตอนของเวอร์ชันนี้</span></li>
+                  <li><a class="dropdown-item" href="{% url 'portfolios:content' portfolio.pk %}">{% include "partials/icon.html" with name="sliders" %}เลือกเนื้อหา</a></li>
+                  <li><a class="dropdown-item" href="{% url 'portfolios:quality' portfolio.pk %}">{% include "partials/icon.html" with name="gauge" %}ตรวจคุณภาพ</a></li>
+                  <li><a class="dropdown-item" href="{% url 'portfolios:share' portfolio.pk %}">{% include "partials/icon.html" with name="share" %}แชร์ลิงก์ / QR</a></li>
+                  <li><a class="dropdown-item" href="{% url 'portfolios:export' portfolio.pk %}">{% include "partials/icon.html" with name="download" %}ส่งออก PDF…</a></li>
+                  <li><a class="dropdown-item" href="{% url 'portfolios:pdf' portfolio.pk %}" data-busy-text="กำลังสร้าง PDF…">{% include "partials/icon.html" with name="download" %}ดาวน์โหลด PDF</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item" href="{% url 'portfolios:preview' portfolio.pk %}">{% include "partials/icon.html" with name="external" %}เปิดตัวอย่างเต็มหน้า</a></li>
+                  <li>
+                    <form method="post" action="{% url 'portfolios:duplicate' portfolio.pk %}" class="m-0" data-loading>
+                      {% csrf_token %}
+                      <button type="submit" class="dropdown-item" data-loading-text="กำลังทำสำเนา…">{% include "partials/icon.html" with name="copy" %}ทำสำเนา</button>
+                    </form>
+                  </li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item dropdown-item--danger" href="{% url 'portfolios:delete' portfolio.pk %}">{% include "partials/icon.html" with name="trash" %}ลบ</a></li>
+                </ul>
               </div>
             </div>
-          </article>
-        </div>
+          </div>
+        </li>
       {% endfor %}
-    </div>
+    </ul>
   {% else %}
-    <div class="card card-body text-center py-5">
-      <p class="mb-3">You don't have a portfolio yet. Pick one of your profiles and a template to create one.</p>
-      <div><a class="btn btn-primary" href="{% url 'portfolios:create' %}">Create your first portfolio</a></div>
-    </div>
+    {% url 'portfolios:create' as create_url %}
+    {% include "partials/empty_state.html" with title="ยังไม่มีพอร์ตโฟลิโอ" message="You don't have a portfolio yet. เลือกโปรไฟล์และเทมเพลตเพื่อสร้างเวอร์ชันแรกของคุณ" action_url=create_url action_label="สร้างพอร์ตโฟลิโอแรก" tone="magenta" %}
   {% endif %}
 </div>
 {% endblock %}

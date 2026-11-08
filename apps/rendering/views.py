@@ -21,6 +21,12 @@ class ThemeGalleryView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context["themes"] = THEMES
         context["profile"] = get_default_profile(self.request.user)
+        # How many of the user's versions already use each template (for "in use" badges).
+        from collections import Counter
+
+        from apps.portfolios.services import get_portfolios
+
+        context["theme_usage"] = dict(Counter(get_portfolios(self.request.user).values_list("template_key", flat=True)))
         return context
 
 

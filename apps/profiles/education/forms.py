@@ -36,20 +36,20 @@ class EducationForm(BootstrapFormMixin, forms.ModelForm):
             "description",
         ]
         labels = {
-            "institution": "School / university",
-            "degree": "Degree",
-            "field_of_study": "Field of study",
-            "start_date": "Start date",
-            "end_date": "End date",
-            "grade": "Grade / GPA",
-            "description": "Details",
+            "institution": "สถาบัน (โรงเรียน / มหาวิทยาลัย)",
+            "degree": "วุฒิการศึกษา",
+            "field_of_study": "สาขาวิชา",
+            "start_date": "วันที่เริ่ม",
+            "end_date": "วันที่จบ",
+            "grade": "เกรด / GPA",
+            "description": "รายละเอียด",
         }
         help_texts = {
-            "degree": "Optional, e.g. \"B.Eng.\" or \"High school diploma\".",
-            "field_of_study": "Optional, e.g. \"Computer Engineering\".",
-            "end_date": "Leave empty if you are still studying here. A future date means expected graduation.",
-            "grade": "Optional, e.g. \"3.75\" or \"First-class honours\".",
-            "description": "Optional: activities, awards, thesis topic.",
+            "degree": "ไม่บังคับ เช่น “B.Eng.” หรือ “มัธยมปลาย”",
+            "field_of_study": "ไม่บังคับ เช่น “วิศวกรรมคอมพิวเตอร์”",
+            "end_date": "เว้นว่างถ้ายังเรียนอยู่ ใส่วันในอนาคตได้ถ้าเป็นวันที่คาดว่าจะจบ",
+            "grade": "ไม่บังคับ เช่น “3.75” หรือ “เกียรตินิยมอันดับ 1”",
+            "description": "ไม่บังคับ: กิจกรรม รางวัล หัวข้อวิทยานิพนธ์",
         }
         widgets = {
             "start_date": forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"),

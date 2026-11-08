@@ -1,9 +1,27 @@
+{% load foldo_tags %}
 {% comment %}
-  Errors that belong to the whole form, not one field (FOLDO-10),
-  e.g. "username or password is incorrect". Put it at the top of the form.
+  Error summary at the top of a form (FOLDO-10). Shows errors that belong to the
+  whole form, then one link per invalid field that jumps to (and focuses) it.
+  main.js moves focus here after a failed submit so keyboard and screen-reader
+  users hear what went wrong. Everything the user typed is kept in the form.
 {% endcomment %}
-{% if form.non_field_errors %}
-<div class="alert alert-danger" role="alert">
-  {% for error in form.non_field_errors %}<p class="mb-0">{{ error }}</p>{% endfor %}
+{% with bad=form|errored_fields %}
+{% if form.non_field_errors or bad %}
+<div class="alert alert-danger" role="alert" tabindex="-1" data-error-summary>
+  <div class="d-flex gap-2 align-items-start">
+    {% include "partials/icon.html" with name="alert" class="mt-1" %}
+    <div class="min-w-0">
+      {% for error in form.non_field_errors %}<p class="mb-1">{{ error }}</p>{% endfor %}
+      {% if bad %}
+        <p class="foldo-error-summary__title">ยังบันทึกไม่ได้ — แก้ {{ bad|length }} ช่องนี้ก่อน ข้อมูลอื่นที่กรอกไว้ยังอยู่ครบ</p>
+        <ul class="foldo-error-summary__list">
+          {% for field in bad %}
+            <li><a href="#{{ field|field_anchor }}">{{ field.label }}</a> — {{ field.errors.0 }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+  </div>
 </div>
 {% endif %}
+{% endwith %}

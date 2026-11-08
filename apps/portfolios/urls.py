@@ -12,6 +12,7 @@ urlpatterns = [
     path("<int:pk>/preview/frame/", views.portfolio_preview_frame, name="preview_frame"),
     path("<int:pk>/edit/", views.portfolio_edit, name="update"),
     path("<int:pk>/delete/", views.portfolio_delete, name="delete"),
+    path("<int:pk>/duplicate/", views.portfolio_duplicate, name="duplicate"),
     path("p/<slug:slug>/", views.portfolio_public, name="public"),
     path("<int:pk>/pdf/", views.portfolio_pdf, name="pdf"),
     # FOLDO-06: per-version content selection (Dev 2)

@@ -14,7 +14,7 @@ from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import CreateView, DeleteView, TemplateView, UpdateView
 
-from apps.core.mixins import OwnerRequiredMixin
+from apps.core.mixins import AddAnotherMixin, OwnerRequiredMixin
 
 from ..models import Experience, Skill
 from ..services import get_profile
@@ -96,7 +96,8 @@ class _EditFormMixin(_ChildMixin):
 # --- skills ----------------------------------------------------------------
 
 
-class SkillCreateView(OwnedProfileMixin, _FormPageMixin, CreateView):
+class SkillCreateView(AddAnotherMixin, OwnedProfileMixin, _FormPageMixin, CreateView):
+    add_another_url_name = "profiles:skill_add"
     model = Skill
     form_class = SkillForm
     template_name = FORM_TEMPLATE
@@ -167,7 +168,8 @@ class SkillDeleteView(OwnerRequiredMixin, _ChildMixin, DeleteView):
 # --- experience --------------------------------------------------------------
 
 
-class ExperienceCreateView(OwnedProfileMixin, _FormPageMixin, CreateView):
+class ExperienceCreateView(AddAnotherMixin, OwnedProfileMixin, _FormPageMixin, CreateView):
+    add_another_url_name = "profiles:experience_add"
     model = Experience
     form_class = ExperienceForm
     template_name = FORM_TEMPLATE

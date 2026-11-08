@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% comment %}
+  Sign-in / sign-up / password screens: a brand panel (landing key visual:
+  electric blue, 3D logo blocks, lime + orange bands) beside a focused form.
+  Child templates fill auth_eyebrow, auth_title, auth_lead, auth_body, auth_footer.
+{% endcomment %}
+{% block html_lang %}th{% endblock %}
+{% block frame_class %}foldo-frame--bare{% endblock %}
+{% block header %}{% endblock %}
+{% block topbar %}{% endblock %}
+{% block footer %}{% endblock %}
+{% block content %}
+<div class="foldo-auth">
+  <aside class="foldo-auth__brand" aria-hidden="true">
+    <a class="foldo-brand foldo-brand--lg" href="{% url 'core:landing' %}" tabindex="-1" lang="en">{% include "partials/logo_mark.html" %}<span>Foldo</span></a>
+    <div class="foldo-auth__art">{% include "partials/geo_art.html" with variant="auth" %}</div>
+    <p class="foldo-auth__tagline" lang="en">One Profile. <span>Many Forms.</span></p>
+    <p class="foldo-auth__sub">เก็บทุกผลงานไว้ที่เดียว แล้วสร้างพอร์ตโฟลิโอได้หลายเวอร์ชัน</p>
+    <div class="foldo-auth__bands"><span></span><span></span></div>
+  </aside>
+
+  <section class="foldo-auth__panel" aria-labelledby="auth-heading">
+    <div class="foldo-auth__panel-inner">
+      <a class="foldo-brand d-lg-none mb-4" href="{% url 'core:landing' %}" lang="en">{% include "partials/logo_mark.html" %}<span>Foldo</span></a>
+      <p class="foldo-eyebrow tone-lime">{% block auth_eyebrow %}{% endblock %}</p>
+      <h1 id="auth-heading" class="foldo-auth__title">{% block auth_title %}{% endblock %}</h1>
+      <p class="foldo-auth__lead">{% block auth_lead %}{% endblock %}</p>
+      {% block auth_body %}{% endblock %}
+      <div class="foldo-auth__footer">{% block auth_footer %}{% endblock %}</div>
+    </div>
+  </section>
+</div>
+{% endblock %}

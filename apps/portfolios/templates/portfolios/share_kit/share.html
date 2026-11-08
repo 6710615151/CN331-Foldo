@@ -1,56 +1,94 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Share · {{ portfolio.title }}{% endblock %}
-{% block extra_css %}<link rel="stylesheet" href="{% static 'portfolios/share_kit.css' %}">{% endblock %}
+{% block title %}แชร์ · {{ portfolio.title }} — FOLDO{% endblock %}
 
 {% block content %}
-<div class="foldo-sk container py-5" style="max-width: 760px;">
-  <a class="foldo-back" href="{% url 'portfolios:list' %}"><span aria-hidden="true">&larr;</span> My portfolios</a>
+<div class="foldo-page foldo-page--medium">
+  <a class="foldo-back" href="{% url 'portfolios:list' %}">{% include "partials/icon.html" with name="arrow-left" %}พอร์ตโฟลิโอทั้งหมด</a>
 
-  <header class="foldo-sk__header">
-    <p class="foldo-sk__eyebrow" lang="en">{{ portfolio.title }}</p>
-    <h1 class="foldo-sk__title">Share <span class="foldo-text-lime">kit</span></h1>
-    <div class="foldo-sk__bands" aria-hidden="true"><span></span><span></span></div>
-    {% if published %}
-      <span class="foldo-sk__status foldo-sk__status--on" role="status">Published &middot; anyone with the link can view it</span>
-    {% else %}
-      <span class="foldo-sk__status" role="status">Unpublished &middot; only you can see it</span>
-    {% endif %}
-  </header>
+  <div class="foldo-page-head">
+    <div class="foldo-page-head__text tone-lime">
+      <p class="foldo-eyebrow foldo-eyebrow--plain">{{ portfolio.title }}</p>
+      <h1 class="foldo-page-title">Share <em>Kit</em></h1>
+      <p class="foldo-page-lead">ลิงก์สาธารณะและ QR code ของเวอร์ชันนี้ ใส่ในเรซูเม่ อีเมล หรือพิมพ์ติดโปสเตอร์ได้เลย</p>
+    </div>
+    <div class="foldo-page-head__actions">
+      {% if published %}
+        <span class="foldo-badge tone-lime foldo-badge--live" role="status"><span class="foldo-badge__dot"></span>เผยแพร่แล้ว · ใครมีลิงก์ก็ดูได้<span class="visually-hidden" lang="en"> (Published)</span></span>
+      {% else %}
+        <span class="foldo-badge tone-muted" role="status">{% include "partials/icon.html" with name="lock" %}ยังไม่เผยแพร่ · เห็นได้เฉพาะคุณ</span>
+      {% endif %}
+    </div>
+  </div>
+
+  {% include "portfolios/_workflow.html" with current="share" %}
 
   {% if published %}
-    <section class="foldo-sk__card card card-body" aria-labelledby="sk-link-heading">
-      <h2 class="foldo-sk__card-title" id="sk-link-heading">Public link</h2>
-      <div class="input-group">
-        <input type="text" class="form-control" id="sk-url" value="{{ public_url }}" readonly
-               aria-label="Public URL" onfocus="this.select()">
-        <button type="button" class="btn btn-primary" id="sk-copy" data-copy-target="#sk-url" hidden>Copy link</button>
-        <a class="btn btn-outline-secondary" href="{{ public_url }}" target="_blank" rel="noopener">Open</a>
-      </div>
-      <p class="foldo-sk__hint mb-0" id="sk-copy-status" role="status" aria-live="polite"></p>
-    </section>
+    <div class="foldo-share">
+      <section class="foldo-card foldo-share__link" aria-labelledby="sk-link-heading">
+        <h2 class="foldo-section-title mb-3" id="sk-link-heading">
+          <span class="foldo-icon-tile foldo-icon-tile--sm tone-lime">{% include "partials/icon.html" with name="link" %}</span>ลิงก์สาธารณะ
+        </h2>
+        <div class="foldo-copy-field">
+          <input type="text" class="form-control" id="sk-url" value="{{ public_url }}" readonly aria-label="ลิงก์สาธารณะ (Public URL)" onfocus="this.select()">
+          <button type="button" class="btn btn-lime" id="sk-copy" data-copy="#sk-url" data-copy-status="#sk-copy-status" hidden>
+            {% include "partials/icon.html" with name="copy" %}<span data-copy-label>คัดลอกลิงก์</span>
+          </button>
+        </div>
+        <p class="visually-hidden" id="sk-copy-status" role="status" aria-live="polite"></p>
 
-    <section class="foldo-sk__card card card-body" aria-labelledby="sk-qr-heading">
-      <h2 class="foldo-sk__card-title" id="sk-qr-heading">QR code</h2>
-      <div class="foldo-sk__qr">{{ qr_svg|safe }}</div>
-      <p class="foldo-sk__hint">Scanning it opens the link above. It stops working if you unpublish this version.</p>
-      <div class="d-flex flex-wrap gap-2">
-        <a class="btn btn-primary" href="{% url 'portfolios:share_qr_png' portfolio.pk %}" download>Download PNG</a>
-        <a class="btn btn-outline-secondary" href="{% url 'portfolios:share_qr_svg' portfolio.pk %}" download>Download SVG</a>
+        <div class="foldo-share__actions">
+          <a class="btn btn-outline-foldo btn-sm" href="{{ public_url }}" target="_blank" rel="noopener">{% include "partials/icon.html" with name="external" %}เปิดหน้า</a>
+          <button type="button" class="btn btn-outline-foldo btn-sm" data-share-url="{{ public_url }}" data-share-title="{{ portfolio.title }}" hidden>{% include "partials/icon.html" with name="send" %}แชร์…</button>
+          <a class="btn btn-outline-foldo btn-sm" href="mailto:?subject={{ portfolio.title|urlencode }}&amp;body={{ public_url|urlencode }}">{% include "partials/icon.html" with name="mail" %}อีเมล</a>
+          <a class="btn btn-outline-foldo btn-sm" href="https://www.linkedin.com/sharing/share-offsite/?url={{ public_url|urlencode }}" target="_blank" rel="noopener noreferrer">{% include "partials/icon.html" with name="linkedin" %}LinkedIn</a>
+          <a class="btn btn-outline-foldo btn-sm" href="https://social-plugins.line.me/lineit/share?url={{ public_url|urlencode }}" target="_blank" rel="noopener noreferrer">LINE</a>
+        </div>
+
+        <ul class="foldo-share__tips">
+          <li>{% include "partials/icon.html" with name="check" %}ลิงก์อัปเดตตามโปรไฟล์อัตโนมัติ แก้โปรไฟล์แล้วไม่ต้องส่งลิงก์ใหม่</li>
+          <li>{% include "partials/icon.html" with name="check" %}ปิดการเผยแพร่เมื่อไรก็ได้ ลิงก์และ QR จะใช้ไม่ได้ทันที</li>
+        </ul>
+        <a class="btn btn-ghost btn-sm" href="{% url 'portfolios:update' portfolio.pk %}#id_is_published">{% include "partials/icon.html" with name="settings" %}ตั้งค่าการเผยแพร่ / เลิกเผยแพร่</a>
+      </section>
+
+      <section class="foldo-qr-poster" aria-labelledby="sk-qr-heading">
+        <div class="foldo-shapes" aria-hidden="true">
+          <span class="foldo-shape foldo-shape--tri" style="--s:3rem; right:10%; top:6%; transform:rotate(20deg)"></span>
+          <span class="foldo-shape foldo-shape--dot" style="--s:1rem; left:10%; top:10%; --c1:#ff3d9a; --c2:#9c0f6a"></span>
+        </div>
+        <h2 class="foldo-qr-poster__title" id="sk-qr-heading">QR code</h2>
+        <div class="foldo-qr-poster__code foldo-sk__qr">{{ qr_svg|safe }}</div>
+        <p class="foldo-qr-poster__name">{{ portfolio.title }}</p>
+        <p class="foldo-qr-poster__hint">สแกนแล้วเปิดลิงก์ด้านซ้าย จะใช้ไม่ได้ถ้าเลิกเผยแพร่เวอร์ชันนี้</p>
+        <div class="d-flex flex-wrap justify-content-center gap-2">
+          <a class="btn btn-lime btn-sm" href="{% url 'portfolios:share_qr_png' portfolio.pk %}" download>{% include "partials/icon.html" with name="download" %}PNG</a>
+          <a class="btn btn-outline-light btn-sm" href="{% url 'portfolios:share_qr_svg' portfolio.pk %}" download>{% include "partials/icon.html" with name="download" %}SVG</a>
+        </div>
+        <div class="foldo-qr-poster__bands" aria-hidden="true"><span></span><span></span></div>
+      </section>
+    </div>
+  {% else %}
+    <section class="foldo-empty tone-lime">
+      <div class="foldo-empty__art">{% include "partials/geo_art.html" with variant="empty" %}</div>
+      <p class="foldo-empty__title h5">เวอร์ชันนี้ยังไม่เผยแพร่ <span class="visually-hidden" lang="en">(This version is not published yet.)</span></p>
+      <p class="foldo-empty__message">ลิงก์หรือ QR code จะพาไปหน้าที่ยังไม่มีอยู่ จึงยังไม่แสดง เปิดสวิตช์ “เผยแพร่พอร์ตโฟลิโอนี้” แล้วกดบันทึก ลิงก์และ QR จะขึ้นที่นี่</p>
+      <ol class="foldo-mini-steps">
+        <li><b>1</b>กด “ไปเปิดการเผยแพร่”</li>
+        <li><b>2</b>เปิดสวิตช์ “เผยแพร่พอร์ตโฟลิโอนี้”</li>
+        <li><b>3</b>กดบันทึก แล้วกลับมาที่ Share Kit</li>
+      </ol>
+      <div class="d-flex flex-wrap justify-content-center gap-2 mt-3">
+        <a class="btn btn-lime" href="{% url 'portfolios:update' portfolio.pk %}#id_is_published">{% include "partials/icon.html" with name="globe" %}ไปเปิดการเผยแพร่</a>
+        <a class="btn btn-outline-foldo" href="{% url 'portfolios:quality' portfolio.pk %}">ตรวจคุณภาพก่อน</a>
       </div>
     </section>
-  {% else %}
-    <section class="foldo-sk__empty">
-      <p class="mb-2"><strong>This version is not published yet.</strong></p>
-      <p class="mb-3 text-body-secondary">
-        A link or QR code would lead to a page that does not exist, so none is shown.
-        Turn on &ldquo;Publish this portfolio&rdquo; and come back here.
-      </p>
-      <a class="btn btn-primary" href="{% url 'portfolios:update' portfolio.pk %}">Edit &amp; publish</a>
-      <a class="btn btn-outline-secondary" href="{% url 'portfolios:preview' portfolio.pk %}">Preview</a>
-    </section>
+  {% endif %}
+
+  {% if published %}
+    {% url 'portfolios:create' as next_url %}
+    {% url 'portfolios:list' as list_url %}
+    {% include "portfolios/_workflow_next.html" with url=next_url label="สร้างเวอร์ชันใหม่" hint="เวอร์ชันนี้พร้อมแชร์แล้ว สมัครงานอื่นต่อ? สร้างอีกเวอร์ชันจากโปรไฟล์เดิม หรือทำสำเนาจากหน้ารวมพอร์ตโฟลิโอ" secondary_url=list_url secondary_label="พอร์ตโฟลิโอทั้งหมด" tone="lime" %}
   {% endif %}
 </div>
 {% endblock %}
-
-{% block extra_js %}<script src="{% static 'portfolios/share_kit.js' %}" defer></script>{% endblock %}
