@@ -77,8 +77,10 @@ class EndToEndPart1Tests(TestCase):
         })
 
         # 6. Preview shows the selection and the Project Story, in the version's own template.
-        backend_html = self.client.get(reverse("portfolios:preview", args=[backend.pk])).content.decode()
-        self.assertIn("pf--classic", backend_html)
+        backend_page = self.client.get(reverse("portfolios:preview", args=[backend.pk])).content.decode()
+        self.assertIn("pf--classic", backend_page)
+        # Only the portfolio itself: the owner bar above it may show a pending "project added" message.
+        backend_html = backend_page[backend_page.index('<main class="pf-page">'):]
         self.assertIn("Resume Rocket", backend_html)
         self.assertIn("Students retype the same profile", backend_html)
         self.assertIn("Python", backend_html)

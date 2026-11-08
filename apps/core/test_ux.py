@@ -168,7 +168,7 @@ class BuilderStepperTests(_Signed):
         self.portfolio.is_published = True
         self.portfolio.save()
         html = self.client.get(url).content.decode()
-        self.assertIn("เลือกเองแล้ว", html)
+        self.assertIn("เลือกเนื้อหาแล้ว", html)
         self.assertIn("เผยแพร่แล้ว", html)
 
     def test_create_page_shows_later_steps_as_locked(self):
@@ -265,3 +265,24 @@ class UnsavedGuardMarkupTests(_Signed):
         for url in urls:
             with self.subTest(url=url):
                 self.assertContains(self.client.get(url), "data-unsaved-guard")
+
+
+class SaveFeedbackTests(_Signed):
+    """Saving a portfolio lands on the full-page preview; the confirmation must show there."""
+
+    def test_publish_confirmation_is_shown_on_the_page_the_user_lands_on(self):
+        self.complete_profile()
+        response = self.client.post(reverse("portfolios:create"),
+                                    {"title": "Frontend Intern", "template_key": "modern", "is_published": "on"},
+                                    follow=True)
+        self.assertContains(response, "pf-toolbar__msg")
+        self.assertContains(response, "บันทึก “Frontend Intern” แล้ว (เผยแพร่แล้ว)")
+
+    def test_public_page_never_shows_or_consumes_owner_messages(self):
+        self.complete_profile()
+        self.client.post(reverse("portfolios:create"), {"title": "V", "template_key": "modern", "is_published": "on"})
+        portfolio = Portfolio.objects.get(title="V")
+        public = self.client.get(reverse("portfolios:public", args=[portfolio.slug]))
+        self.assertNotContains(public, "pf-toolbar__msg")
+        # Still waiting for the owner's next app page.
+        self.assertContains(self.client.get(reverse("portfolios:list")), "บันทึก “V” แล้ว")

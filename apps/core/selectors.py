@@ -118,7 +118,10 @@ def get_onboarding_steps(user, progress=None) -> list[dict]:
             "number": 1,
             "title": "สร้างโปรไฟล์",
             "title_en": "Build your main profile",
-            "description": "เก็บข้อมูลส่วนตัว การศึกษา ทักษะ และโปรเจกต์ไว้ที่เดียว แก้ครั้งเดียว ทุกพอร์ตโฟลิโอเปลี่ยนตาม",
+            "description": (
+                "เก็บข้อมูลส่วนตัว การศึกษา ทักษะ และโปรเจกต์ไว้ที่เดียว "
+                "แก้ครั้งเดียว ทุกพอร์ตโฟลิโอเปลี่ยนตาม"
+            ),
             "done": profile is not None,
             "action_url": (
                 reverse("profiles:update", args=[profile.pk])
@@ -140,7 +143,10 @@ def get_onboarding_steps(user, progress=None) -> list[dict]:
             "number": 3,
             "title": "ตรวจ แล้วแชร์",
             "title_en": "Preview, export and share",
-            "description": "ดูตัวอย่างบนจอคอมและมือถือ ดาวน์โหลด PDF แล้วเผยแพร่เพื่อส่งลิงก์หรือ QR code ให้ผู้รับสมัคร",
+            "description": (
+                "ดูตัวอย่างบนจอคอมและมือถือ ดาวน์โหลด PDF "
+                "แล้วเผยแพร่เพื่อส่งลิงก์หรือ QR code ให้ผู้รับสมัคร"
+            ),
             "done": published is not None,
             "action_url": step3_url,
             "action_label": step3_label,
@@ -288,7 +294,8 @@ def get_recent_activity(user, limit=RECENT_ACTIVITY) -> list[dict]:
                                reverse("profiles:skills_experience", args=[row.profile_id]), row, "spark", "purple"))
     for row in Experience.objects.filter(**owned).order_by("-updated_at")[:limit]:
         items.append(_activity("experience", "ประสบการณ์", f"{row.job_title} · {row.company}",
-                               reverse("profiles:skills_experience", args=[row.profile_id]), row, "briefcase", "purple"))
+                               reverse("profiles:skills_experience", args=[row.profile_id]), row,
+                               "briefcase", "purple"))
     for row in Project.objects.filter(**owned).order_by("-updated_at")[:limit]:
         items.append(_activity("project", "โปรเจกต์", row.project_name,
                                reverse("profiles:project_detail", args=[row.pk]), row, "code", "pink"))

@@ -35,7 +35,9 @@ SEVERITY_LABELS = {ERROR: "ต้องแก้ก่อนส่ง", WARNING:
 SECTION_TITLES = {key: title for key, title, _, _ in SECTION_SPECS}
 # The portfolio document keeps English headings; findings are UI text, so Thai (docs/CONTENT_GUIDE.md).
 SECTION_TITLES_TH = {"experience": "ประสบการณ์", "education": "การศึกษา", "projects": "โปรเจกต์", "skills": "ทักษะ"}
-STORY_LABELS_TH = {"Problem": "ปัญหา", "My role": "บทบาท", "Process": "วิธีทำ", "Solution": "ทางออก", "Outcome": "ผลลัพธ์"}
+STORY_LABELS_TH = {
+    "Problem": "ปัญหา", "My role": "บทบาท", "Process": "วิธีทำ", "Solution": "ทางออก", "Outcome": "ผลลัพธ์",
+}
 LONG_BIO = 1500
 STORY_CORE = ("Problem", "My role", "Outcome")  # what a reader needs to trust a project story
 

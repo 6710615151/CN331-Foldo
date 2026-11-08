@@ -53,8 +53,10 @@ class CreateVersionTests(VersionTestCase):
     def test_create_redirects_to_preview_with_a_saved_message(self):
         response = self.create()
         portfolio = Portfolio.objects.get()
-        self.assertRedirects(response, reverse("portfolios:preview", args=[portfolio.pk]))
-        self.assertContains(self.client.get(reverse("portfolios:list")), "แล้ว (ยังไม่เผยแพร่)")
+        preview = reverse("portfolios:preview", args=[portfolio.pk])
+        self.assertRedirects(response, preview, fetch_redirect_response=False)
+        # The confirmation shows on the page the user lands on (the preview's owner bar).
+        self.assertContains(self.client.get(preview), "แล้ว (ยังไม่เผยแพร่)")
 
     def test_owner_always_comes_from_the_signed_in_user(self):
         self.create(owner=self.bob.pk)

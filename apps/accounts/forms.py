@@ -28,6 +28,7 @@ from .selectors import email_is_taken
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
+
 class _CleanEmailMixin:
     """Normalise the e-mail and keep it unique across accounts."""
 
