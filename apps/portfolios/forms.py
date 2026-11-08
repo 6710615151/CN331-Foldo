@@ -1,10 +1,15 @@
 from django import forms
 
+from apps.rendering.themes import THEMES
+
 from .models import Portfolio
 from .services import profile_choices
 
 
 class PortfolioForm(forms.ModelForm):
+    # Shown as cards by rendering/partials/theme_picker.html (FOLDO-07).
+    themes = THEMES
+
     class Meta:
         model = Portfolio
         fields = ["title", "profile", "template_key", "is_published"]
@@ -14,7 +19,10 @@ class PortfolioForm(forms.ModelForm):
             "template_key": "Template",
             "is_published": "Publish this portfolio",
         }
+        widgets = {"template_key": forms.RadioSelect}
         help_texts = {
+            "template_key": "Each portfolio version keeps its own template. "
+                            "Changing it never changes your profile or your other versions.",
             "title": "Only used to tell your portfolios apart, e.g. \"For backend jobs\".",
             "profile": "Pick one of your profiles. Changes you make to it show up here automatically.",
             "is_published": "When on, anyone with the link can see this portfolio, including the "
