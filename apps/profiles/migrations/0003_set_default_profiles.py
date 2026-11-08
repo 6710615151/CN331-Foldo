@@ -2,12 +2,26 @@
 
 from django.db import migrations
 
+
 def set_defaults(apps, schema_editor):
+    """Give every owner exactly one default profile (their most recently updated one).
+
+    Marking every row as default would violate ``uniq_default_profile_per_owner``
+    for owners who already have more than one profile.
+    """
     MainProfile = apps.get_model("profiles", "MainProfile")
-    MainProfile.objects.update(is_default=True)
+    owners_with_default = set(
+        MainProfile.objects.filter(is_default=True).values_list("owner_id", flat=True)
+    )
+    for owner_id in MainProfile.objects.values_list("owner_id", flat=True).distinct():
+        if owner_id in owners_with_default:
+            continue
+        newest = MainProfile.objects.filter(owner_id=owner_id).order_by("-updated_at", "-pk").first()
+        MainProfile.objects.filter(pk=newest.pk).update(is_default=True)
+
 
 class Migration(migrations.Migration):
     dependencies = [
-            ('profiles', '0002_alter_mainprofile_options_mainprofile_is_default_and_more'),
+        ("profiles", "0002_alter_mainprofile_options_mainprofile_is_default_and_more"),
     ]
     operations = [migrations.RunPython(set_defaults, migrations.RunPython.noop)]

@@ -1,13 +1,27 @@
 from django import forms
 
+from apps.core.forms import BootstrapFormMixin
+from apps.core.validators import safe_url_validator
+
 from .models import MAX_PHOTO_BYTES, MainProfile
 
 
-class MainProfileForm(forms.ModelForm):
+def _link_field(label):
     # assume_scheme lets users type "example.com" instead of "https://example.com".
-    website = forms.URLField(label="Website", required=False, max_length=200, assume_scheme="https")
-    linkedin_url = forms.URLField(label="LinkedIn", required=False, max_length=200, assume_scheme="https")
-    github_url = forms.URLField(label="GitHub", required=False, max_length=200, assume_scheme="https")
+    # max_length matches the model's URLField (200); safe_url_validator allows only http/https.
+    return forms.URLField(
+        label=label,
+        required=False,
+        max_length=200,
+        assume_scheme="https",
+        validators=[safe_url_validator],
+    )
+
+
+class MainProfileForm(BootstrapFormMixin, forms.ModelForm):
+    website = _link_field("Website")
+    linkedin_url = _link_field("LinkedIn")
+    github_url = _link_field("GitHub")
 
     class Meta:
         model = MainProfile
