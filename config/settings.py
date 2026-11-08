@@ -110,7 +110,10 @@ DJANGO_APPS = [
 LOCAL_APPS = [
     "apps.accounts",
     "apps.core",
-    "apps.profiles"
+    "apps.profiles",
+    "apps.portfolios",
+    "apps.education",
+    "apps.skills",
 ]
 
 # Custom user model from the very first migration (see apps/accounts/models.py).

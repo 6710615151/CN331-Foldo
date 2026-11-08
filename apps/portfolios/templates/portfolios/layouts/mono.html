@@ -1,0 +1,16 @@
+{% extends "portfolios/layouts/_base.html" %}
+{# Mono: black on white, flat, serif headings. #}
+{% block theme_css %}
+    :root {
+      --pf-page-bg: #ffffff;
+      --pf-card-bg: #ffffff;
+      --pf-accent: #111111;
+      --pf-accent-contrast: #ffffff;
+      --pf-radius: 0;
+      --pf-shadow: none;
+    }
+    h1, h2 { font-family: Georgia, "Times New Roman", serif; }
+    .pf-card { border: 1px solid #111 !important; }
+    .pf-hero { border-top: 1px solid #111; border-bottom: 6px solid #111 !important; }
+    main a:not(.btn) { text-decoration: underline; }
+{% endblock %}

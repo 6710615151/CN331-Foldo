@@ -13,6 +13,7 @@ urlpatterns = [
     path("", include("apps.core.urls")),
     path("accounts/", include("apps.accounts.urls")),
     path("profiles/", include("apps.profiles.urls")),
+    path("portfolios/", include("apps.portfolios.urls")),
 ]
 
 # Development-only: endpoint used by django-browser-reload to trigger a refresh
