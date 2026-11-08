@@ -655,6 +655,36 @@ main:has(> .foldo-hero) {
 .foldo-theme--creative .foldo-theme__swatch span:nth-child(2) { background: var(--foldo-lime); }
 .foldo-theme--creative .foldo-theme__swatch span:last-child { background: var(--foldo-orange); }
 
+/* --- Portfolio DNA (FOLDO-14) ------------------------------------------- */
+.foldo-dna__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.foldo-dna__stats dt {
+  color: var(--foldo-muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.foldo-dna__stats dd {
+  margin: 0;
+  font-family: var(--foldo-font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--foldo-lime);
+}
+
+.foldo-dna__table {
+  --bs-table-bg: transparent;
+}
+
+.foldo-dna__table .badge {
+  margin: 0 0.25rem 0.25rem 0;
+}
+
 /* --- Error pages (404 / 500) ------------------------------------------- */
 .foldo-state {
   max-width: 34rem;
