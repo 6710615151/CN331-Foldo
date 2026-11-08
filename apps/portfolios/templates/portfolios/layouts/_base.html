@@ -86,7 +86,7 @@
 
     {# Owned by other modules. They render nothing until those modules are implemented. #}
     {% include "education/_portfolio_section.html" with education=education %}
-    {% include "skills/_portfolio_section.html" with skills=skills %}
+    {% include "portfolios/sections/_skills.html" with skills=skills %}
 
     {% if display.contacts or display.links %}
       <section class="card pf-card border-0 mb-4" aria-labelledby="contact-heading">

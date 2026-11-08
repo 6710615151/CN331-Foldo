@@ -8,7 +8,6 @@ from __future__ import annotations
 
 from apps.education.services import get_education_display
 from apps.profiles.services import build_display, get_default_profile, get_profiles
-from apps.skills.services import get_skills_display
 
 from .models import Portfolio
 
@@ -51,8 +50,8 @@ def build_portfolio_context(portfolio: Portfolio) -> dict:
     return {
         "portfolio": portfolio,
         "display": build_display(owner, profile),
-        "education": get_education_display(owner),  # None until that module exists
-        "skills": get_skills_display(owner),        # None until that module exists
+        "education": get_education_display(owner),
+        "skills": list(profile.skills.all()) if profile else [],
     }
 
 
