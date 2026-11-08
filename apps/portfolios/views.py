@@ -3,14 +3,14 @@ import logging
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import DatabaseError, transaction
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.clickjacking import xframe_options_sameorigin
 
 from .forms import PortfolioForm
 from .models import Portfolio
-from .services import build_portfolio_context, get_portfolio, get_portfolios, layout_for, profile_choices
+from .services import get_portfolio, get_portfolios, profile_choices, render_version_html
 
 logger = logging.getLogger(__name__)
 
@@ -23,10 +23,9 @@ def _owned_or_404(request, pk):
     return portfolio
 
 
-def _render_portfolio(request, portfolio, *, preview):
-    context = build_portfolio_context(portfolio)
-    context["preview"] = preview
-    return render(request, layout_for(portfolio), context)
+def _render_portfolio(request, portfolio, *, preview, toolbar=None):
+    """One version in its own template (FOLDO-07). Read-only: never publishes or saves anything."""
+    return HttpResponse(render_version_html(portfolio, request=request, preview=preview, toolbar=toolbar))
 
 
 def _process_form(request, portfolio):
@@ -143,7 +142,7 @@ def portfolio_preview_frame(request, pk):
     """The portfolio itself, shown inside the device preview. A template error shows a message, not a blank frame."""
     portfolio = _owned_or_404(request, pk)
     try:
-        response = _render_portfolio(request, portfolio, preview=False)
+        response = _render_portfolio(request, portfolio, preview=True, toolbar=False)
     except Exception:
         logger.exception("Failed rendering preview of portfolio %s for user %s", pk, request.user.pk)
         response = render(request, "portfolios/preview_error.html", {"portfolio": portfolio}, status=500)

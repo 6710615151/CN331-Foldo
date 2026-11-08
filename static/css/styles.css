@@ -655,6 +655,49 @@ main:has(> .foldo-hero) {
 .foldo-theme--creative .foldo-theme__swatch span:nth-child(2) { background: var(--foldo-lime); }
 .foldo-theme--creative .foldo-theme__swatch span:last-child { background: var(--foldo-orange); }
 
+/* --- Template picker on the portfolio version form (FOLDO-07) --------- */
+.foldo-theme-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem;
+}
+
+.foldo-theme-option {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0.85rem;
+  border: 2px solid var(--bs-border-color);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.foldo-theme-option .foldo-theme__swatch {
+  margin-right: 1.75rem; /* room for the radio in the corner */
+  margin-bottom: 0.6rem;
+}
+
+.foldo-theme-option .foldo-theme__swatch span {
+  height: 1.75rem;
+}
+
+.foldo-theme-option input {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+}
+
+.foldo-theme-option:has(input:checked) {
+  border-color: var(--bs-primary);
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+}
+
+.foldo-theme-option:has(input:focus-visible) {
+  outline: 3px solid var(--foldo-orange);
+  outline-offset: 2px;
+}
+
 /* --- Error pages (404 / 500) ------------------------------------------- */
 .foldo-state {
   max-width: 34rem;
