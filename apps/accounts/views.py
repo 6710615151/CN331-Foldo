@@ -51,7 +51,7 @@ def register(request):
         if form.is_valid():
             user = form.save()
             login(request, user)  # log the user in right after signup
-            return redirect("accounts:dashboard")
+            return redirect("core:dashboard")
     else:
         form = SignUpForm()
 

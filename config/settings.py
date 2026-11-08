@@ -13,6 +13,7 @@ loaded from a local ``.env`` file when one is present. Never commit ``.env``.
 import importlib.util
 import os
 from pathlib import Path
+
 from dotenv import load_dotenv
 
 # ---------------------------------------------------------------------------
@@ -109,6 +110,7 @@ DJANGO_APPS = [
 LOCAL_APPS = [
     "apps.accounts",
     "apps.core",
+    "apps.profiles"
 ]
 
 # Custom user model from the very first migration (see apps/accounts/models.py).
@@ -335,26 +337,26 @@ MESSAGE_TAGS = {40: "danger"}
 # is easy to bump and never leaks anything sensitive.
 FOLDO_VERSION = env_str("FOLDO_VERSION", "0.1.0")
 
-LOGIN_REDIRECT_URL = "/dashboard/"         # where to go after login
-LOGOUT_REDIRECT_URL = "/accounts/login/"            # where to go after logout
+LOGIN_URL = "accounts:login"
+LOGIN_REDIRECT_URL = "core:dashboard"
+LOGOUT_REDIRECT_URL = "accounts:login"
 
-# email setting 
-# for this case use foldoportfolio@gmail.com
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'foldoportfolio@gmail.com'
-
-# stash password in secretpass
-# in production don't commit this password to git
-# create the secretpass.py
-# apppass = "yourapppass"
-
-#from config import secretpass
-#EMAIL_HOST_PASSWORD = secretpass.apppass;
-EMAIL_HOST_PASSWORD = "??????";
-
-DEFAULT_FROM_EMAIL = 'foldoportfolio@gmail.com'
-
+# ---------------------------------------------------------------------------
+# E-mail (password reset)
+# ---------------------------------------------------------------------------
+# Locally, e-mails are printed to the runserver console, so the password-reset
+# link works without any mail account. Shared/production environments set
+# EMAIL_HOST and friends through environment variables — never in this file.
+EMAIL_HOST = env_str("EMAIL_HOST")
+EMAIL_BACKEND = env_str(
+    "EMAIL_BACKEND",
+    "django.core.mail.backends.smtp.EmailBackend"
+    if EMAIL_HOST
+    else "django.core.mail.backends.console.EmailBackend",
+)
+EMAIL_PORT = env_int("EMAIL_PORT", 587)
+EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", True)
+EMAIL_HOST_USER = env_str("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env_str("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = env_str("DEFAULT_FROM_EMAIL", "FOLDO <no-reply@foldo.local>")

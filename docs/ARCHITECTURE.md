@@ -177,17 +177,17 @@ Owns everything that is *not* tied to a specific domain:
   "Get Started" button goes to sign-up (or to the dashboard when signed in).
 - `views.OnboardingView` — first-time entry flow: a three-step walkthrough
   (`/onboarding/`). Signed-in users only (`LoginRequiredMixin`).
-- `views.DashboardView` — the signed-in app shell (`/dashboard/`): navigation
-  plus an empty-state summary. Signed-in users only (`LoginRequiredMixin`).
+- `views.DashboardView` — the signed-in app shell (`/dashboard/`): the user's
+  Main Profile status (completeness, missing fields, edit link). Portfolio
+  versions are an empty state until FOLDO-05. Signed-in users only.
 - `templates/partials/navbar.html` — visitors see Log in / Sign up; signed-in
-  users see Dashboard, Account settings and a POST Log out button.
+  users see Dashboard, Profile, Account settings and a POST Log out button.
 - `views.HealthCheckView` — JSON health endpoint for monitoring.
 - `views.page_not_found` / `views.server_error` — custom error handlers.
 - `selectors.py` — health check (`get_health_report()`, `DatabaseHealthCheck`,
-  `HealthReport`): a pure read with no side effects. Also holds the shell's
-  mock data (`get_mock_onboarding_steps()`, `get_mock_dashboard_summary()`)
-  until `apps.profiles`/`apps.portfolios` exist — see
-  `docs/API_CONVENTIONS.md` for the mock-data convention.
+  `HealthReport`): a pure read with no side effects. Also composes the shell's
+  `get_onboarding_steps(user)` and `get_dashboard_summary(user)` from
+  `apps.profiles.services` (the profiles app's public interface).
 - `services.py` — empty: the shell performs no mutations.
 - `urls.py` — `""` (landing), `"health/"`, `"onboarding/"`, `"dashboard/"`.
 - `templates/core/landing.html`, `onboarding.html`, `dashboard.html`.
@@ -195,16 +195,37 @@ Owns everything that is *not* tied to a specific domain:
 `core` intentionally has **no models**. Navigation, base template, skip link,
 footer and shared CSS/JS are also part of the core shell.
 
+### `apps.profiles` — the Main Profile (FOLDO-03)
+
+Owns `MainProfile` (personal details, photo, contact, links) and will own the
+profile sections from FOLDO-04/15 (education, skills, experience, projects,
+project stories).
+
+- `services.py` — the app's public interface for other apps:
+  - `get_profile(user, pk=None)` / `get_default_profile(user)` — every lookup
+    is scoped to `user`.
+  - `build_display(user, profile=None)` — a render-safe view that never raises
+    on missing data.
+- `views.py` — generic class-based views (list / view / create / edit /
+  delete / make-default) under `/profiles/`. Object views use
+  `OwnerRequiredMixin` with `owner_field = "owner"`, so another user's id
+  returns 404. Writes go through `services.save_profile()` /
+  `delete_profile()`; the model keeps the "one default per owner" rule.
+- `forms.py` — `MainProfileForm(BootstrapFormMixin, ModelForm)`; links use
+  `safe_url_validator`; rendered with `partials/form_field.html`.
+- `templatetags/profile_tags.py` — `{% profile_card user %}` for portfolio
+  templates.
+- `tests.py` — access control, persistence, validation, completeness,
+  default handling and photo upload.
+
 ### Planned apps (not created yet)
 
-The current scope is **FOLDO-01** (MVP scope and product goal), so only the
-foundation exists. The domain apps are created together with the Issue that
-first needs them — never as empty placeholders:
+Domain apps are created together with the Issue that first needs them, never
+as empty placeholders:
 
 | App | Created with | Will own |
 | --- | ------------ | -------- |
-| `apps.profiles` | FOLDO-02 | The one main profile: personal details, education, skills, projects, experience (FOLDO-02/03). |
-| `apps.portfolios` | FOLDO-04 | Portfolio versions, content selection, templates, preview, PDF export (FOLDO-04..08). |
+| `apps.portfolios` | FOLDO-05 | Portfolio versions, content selection, templates, preview, PDF export (FOLDO-05..08, 11). |
 
 Each new app follows the same layered layout (`models`, `selectors`,
 `services`, `forms`, `views`, `urls`, `admin`, `tests.py`,
@@ -230,7 +251,12 @@ config/urls.py
 │                                            "health/"       (health,     name="core:health")
 │                                            "onboarding/"   (onboarding, name="core:onboarding")
 │                                            "dashboard/"    (dashboard,  name="core:dashboard")
-└── "accounts/"   → apps.accounts.urls    → (auth routes arrive with the authentication Issue)
+├── "accounts/"   → apps.accounts.urls    → login, logout, register, password reset, settings
+└── "profiles/"   → apps.profiles.urls    → ""              (list,   name="profiles:list")
+                                             "new/"          (create, name="profiles:create")
+                                             "<pk>/"         (view,   name="profiles:view")
+                                             "<pk>/edit/"    (edit,   name="profiles:update")
+                                             "<pk>/delete/"  (delete, name="profiles:delete")
 ```
 
 All app URLconfs use `app_name` namespaces, so templates reverse URLs safely
