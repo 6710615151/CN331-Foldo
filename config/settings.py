@@ -265,12 +265,25 @@ USE_TZ = True
 # Static files
 # ---------------------------------------------------------------------------
 # Source files live in /static; `collectstatic` gathers them into STATIC_ROOT.
+# ---------------------------------------------------------------------------
+# Static & Media Files Storage
+# ---------------------------------------------------------------------------
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+
+# Required for modern Django to route uploads to Cloudinary
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
 
 
 # ---------------------------------------------------------------------------
