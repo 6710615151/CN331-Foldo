@@ -140,13 +140,16 @@ if DEBUG and DEV_TOOLS_INSTALLED:
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add this line for web hosting production
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add this line for web
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "cloudinary_storage",          # Add this
+    "django.contrib.staticfiles",
+    "cloudinary",                  # Add this
 ]
 
 # In development, inject a script that reloads the browser whenever code,
@@ -266,7 +269,6 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
@@ -375,3 +377,16 @@ DATABASES = {
         conn_max_age=600
     )
 }
+
+# ---------------------------------------------------------------------------
+# Cloudinary Media Storage
+# ---------------------------------------------------------------------------
+# Only activates when the Cloudinary credentials are provided in the environment.
+if env_str("CLOUDINARY_CLOUD_NAME"):
+    CLOUDINARY_STORAGE = {
+        'CLOUD_NAME': env_str('CLOUDINARY_CLOUD_NAME'),
+        'API_KEY': env_str('CLOUDINARY_API_KEY'),
+        'API_SECRET': env_str('CLOUDINARY_API_SECRET'),
+    }
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
