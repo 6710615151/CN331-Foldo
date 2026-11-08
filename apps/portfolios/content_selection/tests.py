@@ -8,8 +8,7 @@ from django.conf import settings
 from django.test import TestCase
 from django.urls import reverse
 
-from apps.education.models import EducationEntry
-from apps.profiles.models import Experience, MainProfile, Project, Skill
+from apps.profiles.models import Education, Experience, MainProfile, Project, Skill
 
 from ..models import Portfolio, PortfolioContentSelection, PortfolioContentSetup
 from . import selectors, services
@@ -31,8 +30,8 @@ class SelectionTestCase(TestCase):
             profile=self.profile, company="AcmeCoX", job_title="InternRoleX", start_date=datetime.date(2024, 6, 1)
         )
         self.project = Project.objects.create(profile=self.profile, project_name="ProjectAlphaX")
-        self.school = EducationEntry.objects.create(
-            owner=self.alice, level=EducationEntry.Level.UNDERGRADUATE, institution="SchoolUniX"
+        self.school = Education.objects.create(
+            profile=self.profile, institution="SchoolUniX", start_date=datetime.date(2022, 8, 1)
         )
         self.v1 = Portfolio.objects.create(owner=self.alice, title="Version One", profile=self.profile)
         self.v2 = Portfolio.objects.create(owner=self.alice, title="Version Two", profile=self.profile)
@@ -118,7 +117,7 @@ class DefaultAndSaveTests(SelectionTestCase):
         self.assertTrue(PortfolioContentSetup.objects.filter(portfolio=self.v1).exists())
         self.assertEqual(Skill.objects.filter(profile=self.profile).count(), 2)
         self.assertTrue(Experience.objects.filter(pk=self.job.pk).exists())
-        self.assertTrue(EducationEntry.objects.filter(pk=self.school.pk).exists())
+        self.assertTrue(Education.objects.filter(pk=self.school.pk).exists())
 
     def test_reset_goes_back_to_everything(self):
         self.choose(self.v1, skills=[self.python.pk])
@@ -186,7 +185,7 @@ class UnavailableItemTests(SelectionTestCase):
         Skill.objects.all().delete()
         Project.objects.all().delete()
         Experience.objects.all().delete()
-        EducationEntry.objects.all().delete()
+        Education.objects.all().delete()
         html = self.client.get(self.url(self.v1)).content.decode()
         self.assertIn("Nothing to choose from yet", html)
 

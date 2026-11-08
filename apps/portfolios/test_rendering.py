@@ -1,6 +1,6 @@
 """FOLDO-07: each portfolio version renders its own content in its own template.
 
-Uses the real models (Skill, Experience, Project + story, EducationEntry), so a
+Uses the real models (Skill, Experience, Project + story, Education), so a
 change in any of them that breaks rendering fails here.
 """
 import importlib
@@ -11,8 +11,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
-from apps.education.models import EducationEntry
-from apps.profiles.models import Experience, MainProfile, Project, Skill
+from apps.profiles.models import Education, Experience, MainProfile, Project, Skill
 from apps.rendering.themes import DEFAULT_THEME_KEY, THEMES
 
 from .models import Portfolio
@@ -52,11 +51,10 @@ class VersionRenderingTests(TestCase):
             problem="Students re-type CVs.", role="Team lead", solution="One profile, many portfolios.",
         )
         cls.old = Project.objects.create(profile=cls.profile, project_name="Old project")
-        cls.uni = EducationEntry.objects.create(
-            owner=cls.alice, level="undergraduate", institution="Thammasat University",
-            subject="Computer Engineering", grade="3.75", start_year=2022,
+        cls.uni = Education.objects.create(
+            profile=cls.profile, institution="Thammasat University", degree="B.Eng.",
+            field_of_study="Computer Engineering", grade="3.75", start_date=date(2022, 8, 1),
         )
-        cls.school = EducationEntry.objects.create(owner=cls.alice, level="high_school")  # blank → hidden
 
         cls.backend = Portfolio.objects.create(owner=cls.alice, title="Backend jobs", template_key="modern")
         cls.design = Portfolio.objects.create(owner=cls.alice, title="Design jobs", template_key="creative")
@@ -114,9 +112,9 @@ class VersionRenderingTests(TestCase):
         old = build_version_content(self.backend).section("projects").items[1]
         self.assertEqual(old.story, ())
 
-    def test_education_comes_from_the_owner_and_blank_levels_are_hidden(self):
+    def test_education_comes_from_the_versions_profile(self):
         content = build_version_content(self.backend)
-        self.assertEqual(titles(content, "education"), ["Undergraduate degree, Computer Engineering"])
+        self.assertEqual(titles(content, "education"), ["B.Eng., Computer Engineering"])
         self.assertEqual(content.section("education").items[0].id, self.uni.pk)  # real id, so FOLDO-06 can select it
 
     def test_version_without_any_profile_renders_an_empty_page(self):
@@ -256,3 +254,76 @@ class LegacyTemplateMigrationTests(TestCase):
             "classic": "classic", "midnight": "modern", "ocean": "creative",
             "mono": "classic", "something-else": "classic",
         })
+
+
+class MoveEducationMigrationTests(TestCase):
+    """portfolios.0005 copies the retired per-user education rows into profiles.Education."""
+
+    def setUp(self):
+        from django.db import connection
+
+        self.connection = connection
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "CREATE TABLE education_educationentry (id integer PRIMARY KEY, owner_id integer, "
+                "level varchar(20), institution varchar(150), subject varchar(150), grade varchar(40), "
+                "start_year integer NULL, end_year integer NULL, created_at datetime, updated_at datetime)"
+            )
+        self.alice = User.objects.create_user("alice", password=PASSWORD)
+        self.carol = User.objects.create_user("carol", password=PASSWORD)  # no profile
+        MainProfile.objects.create(owner=self.alice, full_name="Alice", label="Other")
+        self.default = MainProfile.objects.create(owner=self.alice, full_name="Alice", label="Main", is_default=True)
+        self.portfolio = Portfolio.objects.create(owner=self.alice, title="v1")
+
+    def insert(self, *rows):
+        with self.connection.cursor() as cursor:
+            for row in rows:
+                cursor.execute(
+                    "INSERT INTO education_educationentry VALUES (%s, %s, %s, %s, %s, %s, %s, %s, "
+                    "'2026-01-01 00:00:00', '2026-01-01 00:00:00')",
+                    row,
+                )
+
+    def run_migration(self):
+        from types import SimpleNamespace
+
+        migration = importlib.import_module("apps.portfolios.migrations.0005_move_education_to_profiles")
+        cursor = self.connection.cursor()
+        migration.forwards(django_apps, SimpleNamespace(connection=self.connection, execute=cursor.execute))
+
+    def test_rows_move_to_the_default_profile_and_selections_follow(self):
+        from .models import PortfolioContentSelection
+
+        self.insert(
+            (7, self.alice.pk, "undergraduate", "Thammasat University", "Computer Engineering", "3.75", 2022, None),
+            (8, self.alice.pk, "high_school", "", "", "", None, None),          # blank: never shown
+            (9, self.carol.pk, "phd", "Somewhere", "", "", 2020, 2024),        # no profile to hold it
+            (10, self.alice.pk, "graduate", "", "AI", "", 2027, 2025),         # end before start
+        )
+        PortfolioContentSelection.objects.create(portfolio=self.portfolio, section="education", item_id=7)
+        PortfolioContentSelection.objects.create(portfolio=self.portfolio, section="education", item_id=8)
+
+        self.run_migration()
+
+        moved = Education.objects.filter(profile=self.default).order_by("start_date")
+        self.assertEqual(
+            [(e.institution, e.degree, e.field_of_study, e.grade, e.start_date, e.end_date) for e in moved],
+            [
+                ("Thammasat University", "Undergraduate degree", "Computer Engineering", "3.75",
+                 date(2022, 1, 1), None),
+                ("Graduate degree (Master's)", "Graduate degree (Master's)", "AI", "", date(2027, 1, 1), None),
+            ],
+        )
+        self.assertEqual(Education.objects.count(), 2)
+        uni = moved.first()
+        self.assertEqual(
+            list(PortfolioContentSelection.objects.filter(section="education").values_list("item_id", flat=True)),
+            [uni.pk],
+        )
+        self.assertNotIn("education_educationentry", self.connection.introspection.table_names())
+
+    def test_does_nothing_without_the_old_table(self):
+        with self.connection.cursor() as cursor:
+            cursor.execute("DROP TABLE education_educationentry")
+        self.run_migration()
+        self.assertFalse(Education.objects.exists())

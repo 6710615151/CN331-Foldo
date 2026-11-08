@@ -10,7 +10,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from apps.education.services import get_entries
 from apps.portfolios.services import resolve_profile
 
 SECTIONS = (
@@ -42,12 +41,9 @@ def _experience(profile, owner):
 
 
 def _education(profile, owner):
-    # Education belongs to the user, not to a profile.
-    return [
-        Choice(entry.pk, entry.institution or entry.get_level_display(), entry.get_level_display())
-        for entry in get_entries(owner)
-        if not entry.is_blank
-    ]
+    if not profile:
+        return []
+    return [Choice(e.pk, e.institution, e.degree or e.field_of_study) for e in profile.educations.all()]
 
 
 def _projects(profile, owner):
