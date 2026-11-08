@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import include, path
 
 from . import views
 
@@ -14,4 +14,6 @@ urlpatterns = [
     path("<int:pk>/edit/", views.profile_edit, name="update"),
     path("<int:pk>/default/", views.profile_make_default, name="make_default"),
     path("<int:pk>/delete/", views.profile_delete, name="delete"),
+    # FOLDO-04: education (Dev 1)
+    path("", include("apps.profiles.education.urls")),
 ]

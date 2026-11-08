@@ -22,6 +22,10 @@
 
   {% include "profiles/_profile_card.html" %}
 
+  <nav class="d-flex flex-wrap gap-2 mb-4" aria-label="Profile sections">
+    <a class="btn btn-outline-secondary" href="{% url 'profiles:education_list' profile.pk %}">Education</a>
+  </nav>
+
   <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
     <span class="small text-body-secondary">Last saved {{ profile.updated_at|date:"j M Y, H:i" }}</span>
     <div class="d-flex flex-wrap gap-2">
