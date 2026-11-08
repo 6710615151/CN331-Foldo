@@ -80,8 +80,34 @@
   text-decoration: none;
 }
 
+.pf-toolbar__group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 1rem;
+}
+
+.pf-toolbar__status {
+  color: #c9d2ea;
+}
+
+.pf-toolbar__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pf-toolbar__links a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .pf-toolbar__themes {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.25rem;
   margin: 0;
   padding: 0;
@@ -208,6 +234,12 @@
   font-weight: 500;
 }
 
+.pf-item__note {
+  margin: 0.1rem 0 0;
+  color: var(--pf-muted);
+  font-size: 0.9rem;
+}
+
 .pf-item__text {
   margin: 0.4rem 0 0;
 }
@@ -315,6 +347,16 @@
 
 .pf-sidebar .pf-chip {
   border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* The sidebar is already navy: invert the initials and keep headings readable. */
+.pf-sidebar .pf-photo--initials {
+  background: var(--pf-lime);
+  color: var(--pf-ink);
+}
+
+.pf--modern .pf-sidebar .pf-section__title {
+  color: var(--pf-lime);
 }
 
 .pf-main {
