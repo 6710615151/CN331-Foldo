@@ -5,6 +5,9 @@ from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 
+from apps.rendering.themes import THEMES as RENDERING_THEMES
+RENDERING_PREFIX = "rendering-"
+_RENDERING_CHOICES = [(f"{RENDERING_PREFIX}{t.key}", f"Paper – {t.name}") for t in RENDERING_THEMES]
 
 class Portfolio(models.Model):
     """
@@ -20,7 +23,8 @@ class Portfolio(models.Model):
         ("midnight", "Midnight (dark)"),
         ("ocean", "Ocean (blue)"),
         ("mono", "Mono (black & white)"),
-    ]
+    ] + _RENDERING_CHOICES
+    
     DEFAULT_TEMPLATE = "classic"
 
     owner = models.ForeignKey(

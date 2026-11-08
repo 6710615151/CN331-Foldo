@@ -13,6 +13,8 @@ from .services import build_portfolio_context, get_portfolio, get_portfolios, la
 
 logger = logging.getLogger(__name__)
 
+from django.http import Http404, HttpResponse
+from .rendering_bridge import render_html, theme_for
 
 def _owned_or_404(request, pk):
     """Looked up by id AND owner, so another user's id behaves exactly like a missing one."""
@@ -23,6 +25,9 @@ def _owned_or_404(request, pk):
 
 
 def _render_portfolio(request, portfolio, *, preview):
+    theme = theme_for(portfolio)
+    if theme is not None:
+        return HttpResponse(render_html(portfolio, theme, request=request, preview=preview))
     context = build_portfolio_context(portfolio)
     context["preview"] = preview
     return render(request, layout_for(portfolio), context)

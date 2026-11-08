@@ -1,0 +1,16 @@
+{# Owner-only status bar injected above the page by rendering_bridge.render_html (preview mode only). #}
+<div class="pfx-preview-bar" style="background:#0b1530;color:#fff;padding:.5rem 1rem;font:14px/1.4 system-ui,sans-serif;display:flex;flex-wrap:wrap;justify-content:space-between;gap:.5rem 1rem;">
+  <span>
+    <strong>Preview</strong> &middot;
+    {% if portfolio.is_published %}
+      Published at <a href="{% url 'portfolios:public' portfolio.slug %}" style="color:#b8f34a;">{% url 'portfolios:public' portfolio.slug %}</a>
+    {% else %}
+      Private: only you can see this. Turn on "Publish" to share it.
+    {% endif %}
+  </span>
+  <span style="display:flex;gap:1rem;">
+    <a href="{% url 'portfolios:update' portfolio.pk %}" style="color:#b8f34a;">Edit portfolio</a>
+    <a href="{% url 'portfolios:list' %}" style="color:#b8f34a;">All portfolios</a>
+  </span>
+</div>
+<style>@media print { .pfx-preview-bar { display: none; } }</style>
