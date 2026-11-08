@@ -1,0 +1,26 @@
+%% C4 Level 3 — Components inside the Django app (real imports, checked against the code)
+flowchart TB
+    subgraph app["Django app — apps/ (modular monolith)"]
+      direction TB
+      core["<b>core</b><br/>app shell, dashboard, onboarding, next steps,<br/>health, errors · shared form mixin & validators"]
+      accounts["<b>accounts</b><br/>CustomUser, sign-up / sign-in,<br/>password reset, settings"]
+      profiles["<b>profiles</b><br/>MainProfile, education, skills,<br/>experience, projects"]
+      portfolios["<b>portfolios</b><br/>versions · content selection ·<br/>quality check · share kit · PDF export"]
+      rendering["<b>rendering</b><br/>templates (themes),<br/>portfolio HTML"]
+      insights["<b>insights</b><br/>Portfolio DNA:<br/>which data is used where"]
+    end
+    accounts --> core
+    profiles --> core
+    core --> profiles
+    core --> portfolios
+    core --> rendering
+    portfolios --> profiles
+    portfolios --> rendering
+    rendering -.->|"two-way"| portfolios
+    rendering --> profiles
+    insights --> portfolios
+    insights --> profiles
+    insights --> rendering
+
+    classDef c fill:#0d2460,stroke:#3d78ff,color:#fff
+    class core,accounts,profiles,portfolios,rendering,insights c

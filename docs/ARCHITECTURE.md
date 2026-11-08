@@ -16,54 +16,239 @@ every app (presentation → validation → business logic → data access).
 
 ## C4 model
 
+Diagram sources live in [`docs/diagrams/`](diagrams/) (`.mmd`, rendered by GitHub);
+the `.png` files next to them are for slides.
+
 ### Level 1 — System context
 
-```text
-   ┌──────────────┐                         ┌──────────────────────┐
-   │   Student    │ builds one profile and  │  Instructor          │
-   │   (Person)   │ many tailored portfolios│  (Product Owner)     │
-   └──────┬───────┘                         └──────────┬───────────┘
-          │ uses (browser, HTTPS)                      │ reviews data (Django admin)
-          ▼                                            ▼
-   ┌───────────────────────────────────────────────────────────────┐
-   │                  FOLDO  (Software System)                     │
-   │  Keep one main profile; create, preview and export tailored   │
-   │  portfolio versions for each opportunity.                     │
-   └───────────────────────────────────────────────────────────────┘
+```mermaid
+%% C4 Level 1 — System context
+flowchart TB
+    student["<b>Student</b><br/>[Person]<br/>Keeps one profile and makes a<br/>portfolio for each application"]
+    reader["<b>Recruiter / committee</b><br/>[Person]<br/>Opens a published portfolio<br/>link, QR code or PDF"]
+    admin["<b>Instructor / admin</b><br/>[Person]<br/>Reviews data in Django admin"]
+    foldo["<b>FOLDO</b><br/>[Software System]<br/>Profile → tailored portfolios →<br/>quality check → share & PDF"]
+    mail["<b>SMTP provider</b><br/>[External System]<br/>Delivers password-reset email"]
+
+    student -- "Builds profile, portfolios<br/>[HTTPS]" --> foldo
+    reader -- "Views published portfolio<br/>[HTTPS, no account]" --> foldo
+    admin -- "Manages data<br/>[HTTPS /admin]" --> foldo
+    foldo -- "Sends reset links<br/>[SMTP]" --> mail
+    mail -- "Email" --> student
+
+    classDef person fill:#145bff,stroke:#8fb0ff,color:#fff
+    classDef system fill:#06143d,stroke:#c4f500,stroke-width:3px,color:#fff
+    classDef external fill:#2b3550,stroke:#8197cc,color:#fff
+    class student,reader,admin person
+    class foldo system
+    class mail external
 ```
 
-### Level 2 — Containers
+### Level 2 — Containers (production on Render)
 
-```text
-Browser ──HTTPS──▶ Nginx ──▶ Gunicorn ──▶ Django application ──▶ PostgreSQL
-                (reverse     (WSGI app      (config + apps/)    (relational data)
-                 proxy,       server)            │
-                 static)                         └──────────────▶ Redis
-                                                                  (cache, future queue)
+```mermaid
+%% C4 Level 2 — Containers (production on Render)
+flowchart LR
+    user["<b>Browser</b><br/>Student · recruiter"]
+    subgraph render["Render (cloud)"]
+      direction LR
+      edge["<b>Render edge</b><br/>[TLS, load balancer]<br/>HTTPS, health check /health/"]
+      subgraph web["Web service — Docker image"]
+        direction TB
+        gunicorn["<b>Gunicorn</b><br/>[WSGI server]<br/>2 workers"]
+        django["<b>Django 5.2 app</b><br/>[Python, modular monolith]<br/>Server-rendered HTML,<br/>services + selectors"]
+        whitenoise["<b>WhiteNoise</b><br/>[static files]<br/>hashed, compressed"]
+        weasy["<b>WeasyPrint</b><br/>[PDF engine]<br/>Pango + Thai fonts"]
+        gunicorn --> django
+        django --- whitenoise
+        django --- weasy
+      end
+      db[("<b>PostgreSQL</b><br/>[Render database]<br/>users, profiles, portfolios")]
+    end
+    mail["<b>SMTP provider</b><br/>[External]"]
+
+    user -- "HTTPS" --> edge --> gunicorn
+    django -- "Django ORM<br/>[DATABASE_URL]" --> db
+    django -- "SMTP" --> mail
+
+    classDef ext fill:#2b3550,stroke:#8197cc,color:#fff
+    classDef box fill:#0d2460,stroke:#3d78ff,color:#fff
+    classDef store fill:#06143d,stroke:#c4f500,color:#fff
+    class user,mail ext
+    class edge,gunicorn,django,whitenoise,weasy box
+    class db store
 ```
 
 | Container | Technology | Responsibility |
 | --------- | ---------- | -------------- |
-| Web server | Nginx | TLS termination, reverse proxy, serving `collectstatic` output. |
-| Application server | Gunicorn | Runs Django through `config/wsgi.py`. |
-| Web application | Django 5.2 | All business logic; server-rendered HTML (MVT). |
-| Database | PostgreSQL (SQLite in local development) | Persistent data via the Django ORM. |
-| Cache | Redis (in-process cache in local development) | Caching; future task queue. |
+| Edge | Render load balancer | TLS termination, HTTPS redirect, health checks on `/health/`. |
+| Application server | Gunicorn (Docker image) | Runs Django through `config/wsgi.py`; `scripts/start.sh` migrates first. |
+| Web application | Django 5.2 | All business logic; server-rendered HTML (MVT) with services and selectors. |
+| Static files | WhiteNoise | Serves `collectstatic` output with hashed names and compression. |
+| PDF engine | WeasyPrint + Pango, Noto fonts | Renders a portfolio to PDF, including Thai text. |
+| Database | PostgreSQL (SQLite in local development) | Persistent data via the Django ORM (`DATABASE_URL`). |
+| Email | External SMTP | Password-reset links (`EMAIL_*` settings). |
 
-> Local development runs only the Django container (`runserver` + SQLite).
-> Nginx and Gunicorn are the target production containers; their configuration
-> is not kept in this repository.
+Local development runs only `runserver` + SQLite; Redis is used only when
+`REDIS_URL` is set.
 
 ### Level 3 — Components (inside the Django container)
 
-```text
-config (settings, root URLconf, wsgi/asgi)
-   │
-   ├── apps.accounts    CustomUser, authentication
-   ├── apps.core        shared shell: landing page, health check, error pages
-   ├── apps.profiles    (planned, FOLDO-02/03) the one main profile
-   └── apps.portfolios  (planned, FOLDO-04..08) tailored portfolio versions
-        dependencies: portfolios ──▶ profiles ──▶ accounts   (one way only)
+```mermaid
+%% C4 Level 3 — Components inside the Django app (real imports, checked against the code)
+flowchart TB
+    subgraph app["Django app — apps/ (modular monolith)"]
+      direction TB
+      core["<b>core</b><br/>app shell, dashboard, onboarding, next steps,<br/>health, errors · shared form mixin & validators"]
+      accounts["<b>accounts</b><br/>CustomUser, sign-up / sign-in,<br/>password reset, settings"]
+      profiles["<b>profiles</b><br/>MainProfile, education, skills,<br/>experience, projects"]
+      portfolios["<b>portfolios</b><br/>versions · content selection ·<br/>quality check · share kit · PDF export"]
+      rendering["<b>rendering</b><br/>templates (themes),<br/>portfolio HTML"]
+      insights["<b>insights</b><br/>Portfolio DNA:<br/>which data is used where"]
+    end
+    accounts --> core
+    profiles --> core
+    core --> profiles
+    core --> portfolios
+    core --> rendering
+    portfolios --> profiles
+    portfolios --> rendering
+    rendering -.->|"two-way"| portfolios
+    rendering --> profiles
+    insights --> portfolios
+    insights --> profiles
+    insights --> rendering
+
+    classDef c fill:#0d2460,stroke:#3d78ff,color:#fff
+    class core,accounts,profiles,portfolios,rendering,insights c
+```
+
+Arrows are real imports, checked against the code. Two dependencies point both
+ways and are worth knowing before refactoring:
+
+- **profiles ↔ core**: profiles use core's shared form mixin and validators;
+  core's dashboard reads profiles. Core's next-step helpers are imported inside
+  functions in profiles (not at module load), so there is no import cycle.
+- **portfolios ↔ rendering**: portfolios render through rendering's themes;
+  rendering's preview uses portfolio content selection.
+
+## Data model (ERD)
+
+Generated from the Django models. Dotted lines are logical references:
+`PortfolioContentSelection.item_id` points at a row in the table named by
+`section`, deliberately without a foreign key (deleting a profile item never
+blocks or cascades into a portfolio).
+
+```mermaid
+erDiagram
+    CustomUser {
+        BigAuto id PK
+        Char password
+        Char username UK
+        Email email
+        DateTime date_joined
+    }
+    MainProfile {
+        BigAuto id PK
+        CustomUser owner FK
+        Char label
+        Boolean is_default
+        Char full_name
+        Char headline
+        Text bio
+        Char location
+        Image photo
+        Email contact_email
+        Char phone
+        URL website
+        URL linkedin_url
+        URL github_url
+        DateTime created_at
+        DateTime updated_at
+    }
+    Education {
+        BigAuto id PK
+        MainProfile profile FK
+        Char institution
+        Char degree
+        Char field_of_study
+        Date start_date
+        Date end_date
+        Char grade
+        Text description
+        DateTime created_at
+        DateTime updated_at
+    }
+    Skill {
+        BigAuto id PK
+        MainProfile profile FK
+        Char name
+        Char proficiency
+        DateTime created_at
+        DateTime updated_at
+    }
+    Experience {
+        BigAuto id PK
+        MainProfile profile FK
+        Char company
+        Char job_title
+        Text description
+        Date start_date
+        Date end_date
+        DateTime created_at
+        DateTime updated_at
+    }
+    Project {
+        BigAuto id PK
+        MainProfile profile FK
+        Char project_name
+        Text description
+        URL project_url
+        Date start_date
+        Date end_date
+        Text problem
+        Text role
+        Text process
+        Text solution
+        Text outcome
+        DateTime created_at
+        DateTime updated_at
+    }
+    Portfolio {
+        BigAuto id PK
+        CustomUser owner FK
+        Char title
+        Slug slug UK
+        MainProfile profile FK
+        Char template_key
+        Boolean is_published
+        DateTime created_at
+        DateTime updated_at
+    }
+    PortfolioContentSetup {
+        BigAuto id PK
+        Portfolio portfolio FK
+        DateTime updated_at
+    }
+    PortfolioContentSelection {
+        BigAuto id PK
+        Portfolio portfolio FK
+        Char section
+        PositiveInteger item_id
+    }
+    CustomUser ||--o{ MainProfile : "owner"
+    MainProfile ||--o{ Education : "profile"
+    MainProfile ||--o{ Skill : "profile"
+    MainProfile ||--o{ Experience : "profile"
+    MainProfile ||--o{ Project : "profile"
+    CustomUser ||--o{ Portfolio : "owner"
+    MainProfile |o--o{ Portfolio : "profile (null = main profile)"
+    Portfolio ||--|| PortfolioContentSetup : "portfolio"
+    Portfolio ||--o{ PortfolioContentSelection : "portfolio"
+    PortfolioContentSelection }o..|| Education : "item_id (section=education)"
+    PortfolioContentSelection }o..|| Skill : "item_id (section=skills)"
+    PortfolioContentSelection }o..|| Experience : "item_id (section=experience)"
+    PortfolioContentSelection }o..|| Project : "item_id (section=projects)"
 ```
 
 ## The `config/` package (Django project)
