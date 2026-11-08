@@ -583,6 +583,57 @@ main:has(> .foldo-hero) {
   margin-bottom: 0.75rem;
 }
 
+/* --- Main Profile pages (FOLDO-03) -------------------------------------- */
+.foldo-profile__narrow {
+  max-width: 760px;
+}
+
+.foldo-profile__back {
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.foldo-profile__warn {
+  color: var(--foldo-orange);
+}
+
+.foldo-badge {
+  background: var(--foldo-lime);
+  color: var(--foldo-ink-dark);
+  font-size: 0.75rem;
+}
+
+.foldo-profile-card__initials {
+  background: var(--foldo-surface-2);
+  color: var(--foldo-lime);
+}
+
+/* detail.html still uses Bootstrap's primary/secondary buttons and alerts;
+   map them onto FOLDO colours inside profile pages only. */
+.foldo-profile .btn-primary {
+  --bs-btn-bg: var(--foldo-lime);
+  --bs-btn-border-color: var(--foldo-lime);
+  --bs-btn-color: var(--foldo-ink-dark);
+  --bs-btn-hover-bg: #c9f76b;
+  --bs-btn-hover-border-color: #c9f76b;
+  --bs-btn-hover-color: var(--foldo-ink-dark);
+  font-weight: 600;
+}
+
+.foldo-profile .btn-outline-secondary {
+  --bs-btn-color: var(--foldo-ink);
+  --bs-btn-border-color: var(--foldo-border-strong);
+  --bs-btn-hover-bg: var(--foldo-surface-2);
+  --bs-btn-hover-border-color: var(--foldo-blue-strong);
+  --bs-btn-hover-color: var(--foldo-ink);
+}
+
+.foldo-profile .alert-warning {
+  --bs-alert-bg: rgba(255, 106, 43, 0.12);
+  --bs-alert-border-color: rgba(255, 106, 43, 0.45);
+  --bs-alert-color: var(--foldo-ink);
+}
+
 /* --- Error pages (404 / 500) ------------------------------------------- */
 .foldo-state {
   max-width: 34rem;

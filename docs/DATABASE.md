@@ -94,12 +94,13 @@ without a user-model swap. Always refer to it via `settings.AUTH_USER_MODEL` /
 (`MainProfile.REQUIRED_FOR_PORTFOLIO`). Saving an incomplete profile is
 allowed and shows a warning.
 
-> **Open decision (Sprint 2):** the ER diagram and the product goal ("One
-> Profile. Many Forms.") describe **one** Main Profile per user
-> (`MAIN_PROFILES.user_id` UNIQUE). The current implementation allows up to 10
-> profiles per user, with one default. Before FOLDO-04 adds child tables, the
-> team must decide which model to keep, because it changes each child table's
-> owner path (`profile__owner`).
+> **Decision (Sprint 2):** a user may keep up to 10 Main Profiles, exactly one
+> of them the **default** (used by the dashboard and as the starting point for
+> new portfolio versions). The original ER diagram had `MAIN_PROFILES.user_id`
+> UNIQUE (one profile); it was relaxed because FOLDO-03 and FOLDO-04 were
+> built on the many-profile model. Child tables reach the user through
+> `profile__owner` (see `docs/CONVENTIONS.md` §1). Tailoring for a specific
+> job is still the job of portfolio versions (FOLDO-05).
 
 Besides these, only Django's built-in tables exist (`auth` groups and
 permissions, `admin`, `contenttypes`, `sessions`). No placeholder tables were

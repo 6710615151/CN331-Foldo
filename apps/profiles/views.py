@@ -1,155 +1,176 @@
+"""Presentation layer for the ``profiles`` app (FOLDO-03 Main Profile).
+
+Views stay skinny: ownership comes from ``OwnerRequiredMixin`` (another user's
+id → 404), validation from ``forms.py`` and writes from ``services.py``.
+"""
+
 import logging
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.db import DatabaseError, transaction
-from django.http import Http404
-from django.shortcuts import redirect, render
-from django.utils import timezone
-from django.views.decorators.http import require_POST
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import DatabaseError
+from django.shortcuts import redirect
+from django.urls import reverse, reverse_lazy
+from django.utils.http import url_has_allowed_host_and_scheme
+from django.views import View
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
+from django.views.generic.detail import SingleObjectMixin
 
+from apps.core.mixins import OwnerRequiredMixin
+
+from . import services
 from .forms import MainProfileForm
 from .models import MAX_PROFILES_PER_USER, MainProfile
-from .services import build_display, get_profile, get_profiles, set_default_profile
 
 logger = logging.getLogger(__name__)
 
 
-def _owned_or_404(request, pk):
-    """Look up by id AND owner, so another user's id behaves exactly like a missing one."""
-    profile = get_profile(request.user, pk)
-    if profile is None:
-        raise Http404("Profile not found")
-    return profile
+class OwnProfileMixin(OwnerRequiredMixin):
+    model = MainProfile
+    owner_field = "owner"
+    context_object_name = "profile"
 
 
-def _process_form(request, profile):
-    """Shared create/edit flow. Returns (redirect_response_or_None, form)."""
-    instance = profile or MainProfile(owner=request.user)
+class ProfileFormMixin:
+    """Shared create/edit behaviour: owner from the session, honest save messages."""
 
-    if request.method != "POST":
-        return None, MainProfileForm(instance=instance, owner=request.user)
+    form_class = MainProfileForm
+    template_name = "profiles/edit.html"
 
-    form = MainProfileForm(request.POST, request.FILES, instance=instance, owner=request.user)
-    if not form.is_valid():
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["owner"] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        try:
+            profile = services.save_profile(form, owner=self.request.user)
+        except (DatabaseError, OSError):
+            logger.exception("Failed saving profile for user %s", self.request.user.pk)
+            form.add_error(
+                None,
+                "We couldn't save your profile because of a temporary problem. "
+                "Your entries are still in the form below. Please try again "
+                "(re-select your photo if you added one).",
+            )
+            messages.error(self.request, "Not saved. Please try again.")
+            return self.render_to_response(self.get_context_data(form=form))
+
+        saved_at = services.saved_at_label(profile)
+        if profile.is_complete:
+            messages.success(self.request, f"“{profile.label}” saved at {saved_at}.")
+        else:
+            messages.warning(
+                self.request,
+                f"“{profile.label}” saved at {saved_at}, but it's incomplete. "
+                f"Still needed: {', '.join(profile.missing_fields)}.",
+            )
+        return redirect("profiles:view", pk=profile.pk)
+
+    def form_invalid(self, form):
         messages.error(
-            request,
+            self.request,
             "Not saved. Please fix the highlighted fields. Everything else you typed has been kept.",
         )
-        return None, form
-
-    try:
-        with transaction.atomic():
-            obj = form.save(commit=False)
-            obj.owner = request.user  # never trust the client for ownership
-            obj.save()
-    except (DatabaseError, OSError):
-        logger.exception("Failed saving profile for user %s", request.user.pk)
-        form.add_error(
-            None,
-            "We couldn't save your profile because of a temporary problem. "
-            "Your entries are still in the form below. Please try again "
-            "(re-select your photo if you added one).",
-        )
-        messages.error(request, "Not saved. Please try again.")
-        return None, form
-
-    saved_at = timezone.localtime(obj.updated_at).strftime("%H:%M")
-    if obj.is_complete:
-        messages.success(request, f"“{obj.label}” saved at {saved_at}.")
-    else:
-        messages.warning(
-            request,
-            f"“{obj.label}” saved at {saved_at}, but it's incomplete. "
-            f"Still needed: {', '.join(obj.missing_fields)}.",
-        )
-    return redirect("profiles:view", pk=obj.pk), form
+        return super().form_invalid(form)
 
 
-@login_required
-def profile_list(request):
-    profiles = list(get_profiles(request.user))
-    return render(
-        request,
-        "profiles/list.html",
-        {
-            "profiles": profiles,
-            "can_create": len(profiles) < MAX_PROFILES_PER_USER,
-            "max_profiles": MAX_PROFILES_PER_USER,
-        },
-    )
+class ProfileListView(LoginRequiredMixin, ListView):
+    template_name = "profiles/list.html"
+    context_object_name = "profiles"
+
+    def get_queryset(self):
+        return services.get_profiles(self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["can_create"] = len(context["profiles"]) < MAX_PROFILES_PER_USER
+        context["max_profiles"] = MAX_PROFILES_PER_USER
+        return context
 
 
-@login_required
-def default_profile(request):
-    """Keeps the old `profiles:detail` link working: go to the default profile."""
-    profile = get_profile(request.user)
-    if profile is None:
-        messages.info(request, "You haven't created a profile yet. Add the basics to get started.")
-        return redirect("profiles:create")
-    return redirect("profiles:view", pk=profile.pk)
+class ProfileDetailView(OwnProfileMixin, DetailView):
+    template_name = "profiles/detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["display"] = services.build_display(self.request.user, self.object)
+        return context
 
 
-@login_required
-def default_profile_edit(request):
-    """Keeps the old `profiles:edit` link working: edit the default profile."""
-    profile = get_profile(request.user)
-    if profile is None:
-        return redirect("profiles:create")
-    return redirect("profiles:update", pk=profile.pk)
+class ProfileCreateView(LoginRequiredMixin, ProfileFormMixin, CreateView):
+    extra_context = {"is_new": True, "profile": None}
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated and not services.can_create_profile(request.user):
+            messages.error(
+                request,
+                f"You can have up to {MAX_PROFILES_PER_USER} profiles. Delete one to add another.",
+            )
+            return redirect("profiles:list")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["instance"] = MainProfile(owner=self.request.user)
+        return kwargs
 
 
-@login_required
-def profile_detail(request, pk):
-    profile = _owned_or_404(request, pk)
-    return render(
-        request,
-        "profiles/detail.html",
-        {"profile": profile, "display": build_display(request.user, profile)},
-    )
+class ProfileUpdateView(OwnProfileMixin, ProfileFormMixin, UpdateView):
+    extra_context = {"is_new": False}
 
 
-@login_required
-def profile_create(request):
-    if get_profiles(request.user).count() >= MAX_PROFILES_PER_USER:
-        messages.error(request, f"You can have up to {MAX_PROFILES_PER_USER} profiles. Delete one to add another.")
-        return redirect("profiles:list")
+class ProfileDeleteView(OwnProfileMixin, DeleteView):
+    template_name = "profiles/confirm_delete.html"
+    success_url = reverse_lazy("profiles:list")
 
-    response, form = _process_form(request, None)
-    if response:
-        return response
-    return render(request, "profiles/edit.html", {"form": form, "is_new": True, "profile": None})
-
-
-@login_required
-def profile_edit(request, pk):
-    profile = _owned_or_404(request, pk)
-    response, form = _process_form(request, profile)
-    if response:
-        return response
-    return render(request, "profiles/edit.html", {"form": form, "is_new": False, "profile": profile})
-
-
-@login_required
-@require_POST
-def profile_make_default(request, pk):
-    profile = _owned_or_404(request, pk)
-    set_default_profile(profile)
-    messages.success(request, f"“{profile.label}” is now your default profile.")
-    return redirect(request.POST.get("next") or "profiles:list")
-
-
-@login_required
-def profile_delete(request, pk):
-    profile = _owned_or_404(request, pk)
-    if request.method == "POST":
-        label = profile.label
+    def form_valid(self, form):
+        label = self.object.label
         try:
-            profile.delete()
+            services.delete_profile(self.object)
         except (DatabaseError, OSError):
-            logger.exception("Failed deleting profile %s for user %s", pk, request.user.pk)
-            messages.error(request, "Couldn't delete that profile. Please try again.")
-            return redirect("profiles:view", pk=pk)
-        messages.success(request, f"“{label}” was deleted.")
-        return redirect("profiles:list")
-    return render(request, "profiles/confirm_delete.html", {"profile": profile})
+            logger.exception("Failed deleting profile %s for user %s", self.object.pk, self.request.user.pk)
+            messages.error(self.request, "Couldn't delete that profile. Please try again.")
+            return redirect("profiles:view", pk=self.object.pk)
+        messages.success(self.request, f"“{label}” was deleted.")
+        return redirect(self.success_url)
+
+
+class ProfileMakeDefaultView(OwnProfileMixin, SingleObjectMixin, View):
+    """POST only (GET → 405). Redirects back only to a page on this site."""
+
+    def post(self, request, *args, **kwargs):
+        profile = self.get_object()
+        services.set_default_profile(profile)
+        messages.success(request, f"“{profile.label}” is now your default profile.")
+        next_url = request.POST.get("next", "")
+        if not url_has_allowed_host_and_scheme(
+            next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+        ):
+            next_url = reverse("profiles:list")
+        return redirect(next_url)
+
+
+class DefaultProfileView(LoginRequiredMixin, View):
+    """``/profiles/default/``: open the default profile, or start one."""
+
+    target = "profiles:view"
+
+    def get(self, request):
+        profile = services.get_default_profile(request.user)
+        if profile is None:
+            if self.target == "profiles:view":
+                messages.info(request, "You haven't created a profile yet. Add the basics to get started.")
+            return redirect("profiles:create")
+        return redirect(self.target, pk=profile.pk)
+
+
+# URL names in urls.py point at these (kept as functions so urls.py is unchanged).
+profile_list = ProfileListView.as_view()
+profile_detail = ProfileDetailView.as_view()
+profile_create = ProfileCreateView.as_view()
+profile_edit = ProfileUpdateView.as_view()
+profile_delete = ProfileDeleteView.as_view()
+profile_make_default = ProfileMakeDefaultView.as_view()
+default_profile = DefaultProfileView.as_view()
+default_profile_edit = DefaultProfileView.as_view(target="profiles:update")

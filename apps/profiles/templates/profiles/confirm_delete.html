@@ -1,18 +1,23 @@
 {% extends "base.html" %}
-{% block title %}Delete {{ profile.label }}{% endblock %}
+{% block title %}ลบ {{ profile.label }} — FOLDO{% endblock %}
 {% block content %}
-<div class="container py-4" style="max-width: 560px;">
-  <h1 class="h3 mb-3">Delete this profile?</h1>
-  <div class="card card-body mb-3">
-    <p class="mb-1"><strong>{{ profile.label }}</strong></p>
-    <p class="mb-0 text-body-secondary">{{ profile.full_name }}{% if profile.headline %} &middot; {{ profile.headline }}{% endif %}</p>
+<section class="foldo-section foldo-profile" aria-labelledby="delete-heading">
+  <div class="container foldo-profile__narrow">
+    <h1 id="delete-heading" class="foldo-section__title">ลบโปรไฟล์นี้?</h1>
+    <p class="visually-hidden" lang="en">Delete this profile?</p>
+    <div class="foldo-card mb-3">
+      <p class="mb-1"><strong>{{ profile.label }}</strong></p>
+      <p class="mb-0 foldo-section__subtitle">{{ profile.full_name }}{% if profile.headline %} &middot; {{ profile.headline }}{% endif %}</p>
+    </div>
+    <p>
+      โปรไฟล์และรูปจะถูกลบถาวร กู้คืนไม่ได้
+      {% if profile.is_default %}โปรไฟล์ที่แก้ไขล่าสุดจะกลายเป็น Default แทน{% endif %}
+    </p>
+    <form method="post" class="d-flex gap-2">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">ยืนยันลบ</button>
+      <a class="btn btn-outline-foldo" href="{% url 'profiles:view' profile.pk %}">ยกเลิก</a>
+    </form>
   </div>
-  <p>This permanently deletes the profile and its photo. This can't be undone.
-    {% if profile.is_default %}Your most recently edited remaining profile will become the default.{% endif %}</p>
-  <form method="post" class="d-flex gap-2">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-danger">Yes, delete it</button>
-    <a class="btn btn-outline-secondary" href="{% url 'profiles:view' profile.pk %}">Cancel</a>
-  </form>
-</div>
+</section>
 {% endblock %}

@@ -206,9 +206,13 @@ project stories).
     is scoped to `user`.
   - `build_display(user, profile=None)` — a render-safe view that never raises
     on missing data.
-- `views.py` — list / view / create / edit / delete / make-default under
-  `/profiles/`. Every view is login-only and looks profiles up by id **and**
-  owner, so another user's id returns 404.
+- `views.py` — generic class-based views (list / view / create / edit /
+  delete / make-default) under `/profiles/`. Object views use
+  `OwnerRequiredMixin` with `owner_field = "owner"`, so another user's id
+  returns 404. Writes go through `services.save_profile()` /
+  `delete_profile()`; the model keeps the "one default per owner" rule.
+- `forms.py` — `MainProfileForm(BootstrapFormMixin, ModelForm)`; links use
+  `safe_url_validator`; rendered with `partials/form_field.html`.
 - `templatetags/profile_tags.py` — `{% profile_card user %}` for portfolio
   templates.
 - `tests.py` — access control, persistence, validation, completeness,

@@ -343,3 +343,23 @@ FOLDO_VERSION = env_str("FOLDO_VERSION", "0.1.0")
 LOGIN_URL = "accounts:login"
 LOGIN_REDIRECT_URL = "core:dashboard"
 LOGOUT_REDIRECT_URL = "accounts:login"
+
+
+# ---------------------------------------------------------------------------
+# E-mail (password reset)
+# ---------------------------------------------------------------------------
+# Locally, e-mails are printed to the runserver console, so the password-reset
+# link works without any mail account. Shared/production environments set
+# EMAIL_HOST and friends through environment variables — never in this file.
+EMAIL_HOST = env_str("EMAIL_HOST")
+EMAIL_BACKEND = env_str(
+    "EMAIL_BACKEND",
+    "django.core.mail.backends.smtp.EmailBackend"
+    if EMAIL_HOST
+    else "django.core.mail.backends.console.EmailBackend",
+)
+EMAIL_PORT = env_int("EMAIL_PORT", 587)
+EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", True)
+EMAIL_HOST_USER = env_str("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env_str("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = env_str("DEFAULT_FROM_EMAIL", "FOLDO <no-reply@foldo.local>")
