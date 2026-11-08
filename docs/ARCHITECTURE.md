@@ -267,6 +267,24 @@ profile row. `Portfolio.template_key` choices come from `theme_choices()`;
 migration `portfolios.0003_rendering_themes` moved the retired colour layouts
 (`midnight` → `modern`, `ocean` → `creative`, `mono` → `classic`).
 
+#### Quality Check (FOLDO-16)
+
+`apps/portfolios/quality/` checks one portfolio version as it will really be
+shown: `run_quality_check(portfolio)` uses the same `build_version_content` /
+`render_version_html` as the preview, so it sees the version's own profile,
+selection and template.
+
+- Read-only: the page (`/portfolios/<pk>/quality/`, name `portfolios:quality`)
+  is GET only and no check writes, publishes or edits anything. "Check again"
+  is a plain link.
+- Findings are `error` (fix before sharing: empty version, no profile, broken
+  links, rendering failure), `warning` (should fix: required fields, empty
+  sections, deleted selected items, missing photo file, retired template) or
+  `info` (suggestions). Each links to the screen that fixes it.
+- Each check runs in isolation; one that crashes becomes a "could not check"
+  warning instead of an error page.
+- Reached from the portfolio list ("Quality check") and the preview bar.
+
 ### Planned apps (not created yet)
 
 Domain apps are created together with the Issue that first needs them, never
