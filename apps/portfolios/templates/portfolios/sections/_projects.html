@@ -1,0 +1,14 @@
+{% if projects %}
+  <section class="card pf-card border-0 mb-4" aria-labelledby="projects-heading">
+    <div class="card-body p-4">
+      <h2 id="projects-heading" class="h5 pf-heading">Projects</h2>
+      {% for project in projects %}
+        <div class="{% if not forloop.last %}mb-3{% endif %}">
+          <h3 class="h6 mb-1">{{ project.project_name }}</h3>
+          {% if project.description %}<p class="mb-1">{{ project.description|linebreaksbr }}</p>{% endif %}
+          {% if project.project_url %}<a href="{{ project.project_url }}" rel="noopener noreferrer" target="_blank">{{ project.project_url }}</a>{% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+{% endif %}

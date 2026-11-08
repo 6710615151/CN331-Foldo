@@ -9,7 +9,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from apps.education.models import EducationEntry
-from apps.profiles.models import Experience, MainProfile, Skill
+from apps.profiles.models import Experience, MainProfile, Project, Skill
 
 from ..models import Portfolio, PortfolioContentSelection, PortfolioContentSetup
 from . import selectors, services
@@ -30,6 +30,7 @@ class SelectionTestCase(TestCase):
         self.job = Experience.objects.create(
             profile=self.profile, company="AcmeCoX", job_title="InternRoleX", start_date=datetime.date(2024, 6, 1)
         )
+        self.project = Project.objects.create(profile=self.profile, project_name="ProjectAlphaX")
         self.school = EducationEntry.objects.create(
             owner=self.alice, level=EducationEntry.Level.UNDERGRADUATE, institution="SchoolUniX"
         )
@@ -84,7 +85,7 @@ class DefaultAndSaveTests(SelectionTestCase):
 
     def test_page_ticks_everything_when_never_customised(self):
         html = self.client.get(self.url(self.v1)).content.decode()
-        self.assertEqual(html.count("checked"), 4)
+        self.assertEqual(html.count("checked"), 5)  # 2 skills, 1 experience, 1 education, 1 project
 
     def test_saved_selection_filters_the_preview(self):
         response = self.choose(self.v1, skills=[self.python.pk])
@@ -183,6 +184,7 @@ class UnavailableItemTests(SelectionTestCase):
 
     def test_empty_profile_shows_the_empty_state(self):
         Skill.objects.all().delete()
+        Project.objects.all().delete()
         Experience.objects.all().delete()
         EducationEntry.objects.all().delete()
         html = self.client.get(self.url(self.v1)).content.decode()
@@ -208,3 +210,19 @@ class ServiceTests(SelectionTestCase):
         skills = content.section("skills")
         self.assertEqual([item.title for item in skills.items], ["PythonSkillX"])
         self.assertIsNone(content.section("experience"))
+
+
+class ProjectSelectionTests(SelectionTestCase):
+    def test_projects_are_shown_by_default(self):
+        self.assertIn("ProjectAlphaX", self.preview(self.v1))
+
+    def test_project_can_be_deselected_without_deleting_it(self):
+        self.choose(self.v1, skills=[self.python.pk])
+        self.assertNotIn("ProjectAlphaX", self.preview(self.v1))
+        self.assertTrue(Project.objects.filter(pk=self.project.pk).exists())
+
+    def test_project_can_be_selected_in_one_version_only(self):
+        self.choose(self.v1, projects=[self.project.pk])
+        self.choose(self.v2, skills=[self.python.pk])
+        self.assertIn("ProjectAlphaX", self.preview(self.v1))
+        self.assertNotIn("ProjectAlphaX", self.preview(self.v2))

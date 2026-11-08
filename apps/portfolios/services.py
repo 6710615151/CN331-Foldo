@@ -52,12 +52,14 @@ def build_portfolio_context(portfolio: Portfolio) -> dict:
     education = get_education_display(owner)
     skills = list(profile.skills.all()) if profile else []
     experiences = list(profile.experiences.all()) if profile else []
+    projects = list(profile.projects.all()) if profile else []
 
     # FOLDO-06: None = never customised = show everything.
     selected = get_selected_ids(portfolio)
     if selected is not None:
         skills = [s for s in skills if s.pk in selected["skills"]]
         experiences = [e for e in experiences if e.pk in selected["experience"]]
+        projects = [p for p in projects if p.pk in selected["projects"]]
         if education is not None:
             levels = set(
                 get_entries(owner).filter(pk__in=selected["education"]).values_list("level", flat=True)
@@ -71,6 +73,7 @@ def build_portfolio_context(portfolio: Portfolio) -> dict:
         "education": education,
         "skills": skills,
         "experiences": experiences,
+        "projects": projects,
     }
 
 
