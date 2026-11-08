@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Export PDF · {{ portfolio.title }}{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'portfolios/pdf_export.css' %}">{% endblock %}
+
+{% block content %}
+<div class="foldo-ex container py-5" style="max-width: 760px;">
+  <a class="foldo-back" href="{% url 'portfolios:list' %}"><span aria-hidden="true">&larr;</span> My portfolios</a>
+
+  <header class="foldo-ex__header">
+    <p class="foldo-ex__eyebrow" lang="en">{{ portfolio.title }}</p>
+    <h1 class="foldo-ex__title">Export <span class="foldo-text-lime">PDF</span></h1>
+    <div class="foldo-ex__bands" aria-hidden="true"><span></span><span></span></div>
+    <p class="foldo-ex__subtitle">
+      Template: {{ portfolio.get_template_key_display }}. Only the content you chose for this version is included.
+      Exporting does not publish it.
+    </p>
+  </header>
+
+  <section class="foldo-ex__card card card-body" aria-labelledby="ex-heading"
+           data-export data-timeout="{{ timeout_seconds }}">
+    <h2 class="foldo-ex__card-title" id="ex-heading">Create your PDF</h2>
+
+    {# Works without JavaScript: a plain download link of the chosen size. #}
+    <form method="get" action="{% url 'portfolios:pdf' portfolio.pk %}" data-export-form>
+      <fieldset class="foldo-ex__sizes">
+        <legend class="foldo-ex__legend">Page size</legend>
+        {% for size in page_sizes %}
+          <label class="foldo-ex__size">
+            <input type="radio" name="size" value="{{ size }}" {% if size == default_page_size %}checked{% endif %}>
+            <span>{{ size }}</span>
+          </label>
+        {% endfor %}
+      </fieldset>
+      <button type="submit" class="btn btn-primary" data-export-start>Create PDF</button>
+      <a class="btn btn-outline-secondary" href="{% url 'portfolios:content' portfolio.pk %}">Choose content</a>
+    </form>
+
+    {# State panels. Only one is visible at a time; the page sets data-state on this section. #}
+    <div class="foldo-ex__state foldo-ex__state--progress" data-state-panel="progress" role="status" aria-live="polite" hidden>
+      <span class="foldo-ex__spinner" aria-hidden="true"></span>
+      <div>
+        <p class="foldo-ex__state-title">Creating your PDF&hellip; <span data-elapsed>0</span>s</p>
+        <p class="foldo-ex__state-text">Long portfolios can take up to a minute. Please keep this page open.</p>
+        <button type="button" class="btn btn-sm btn-outline-secondary" data-export-cancel>Cancel</button>
+      </div>
+    </div>
+
+    <div class="foldo-ex__state foldo-ex__state--success" data-state-panel="success" role="status" aria-live="polite" hidden>
+      <div>
+        <p class="foldo-ex__state-title">Your PDF is ready</p>
+        <p class="foldo-ex__state-text"><span data-result-name></span> &middot; <span data-result-size></span></p>
+        <a class="btn btn-primary" data-export-download download>Download PDF</a>
+        <a class="btn btn-outline-secondary" data-export-open target="_blank" rel="noopener">Open</a>
+        <button type="button" class="btn btn-outline-secondary" data-export-again>Create another</button>
+      </div>
+    </div>
+
+    <div class="foldo-ex__state foldo-ex__state--failure" data-state-panel="failure" role="alert" hidden>
+      <div>
+        <p class="foldo-ex__state-title">The PDF could not be created</p>
+        <p class="foldo-ex__state-text" data-error-text>Something went wrong.</p>
+        <button type="button" class="btn btn-primary" data-export-retry>Try again</button>
+        <a class="btn btn-outline-secondary" href="{% url 'portfolios:preview' portfolio.pk %}">Check the preview</a>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% static 'portfolios/pdf_export.js' %}" defer></script>{% endblock %}

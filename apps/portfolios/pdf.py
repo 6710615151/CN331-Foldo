@@ -30,11 +30,24 @@ _BASE_HOST = urlparse(BASE_URL).netloc
 # The only outside hosts the PDF renderer may contact (the page's web fonts).
 ALLOWED_REMOTE_HOSTS = {"fonts.googleapis.com", "fonts.gstatic.com"}
 
-PRINT_CSS = """
-@page { size: A4; margin: 10mm; }
-body.pf { background: #fff; }
-.pf-page { margin: 0; box-shadow: none; border-radius: 0; }
+# Page sizes offered on the export page (FOLDO-11). Anything else falls back to the default.
+PAGE_SIZES = ("A4", "Letter")
+DEFAULT_PAGE_SIZE = "A4"
+
+
+def normalize_page_size(value) -> str:
+    return value if value in PAGE_SIZES else DEFAULT_PAGE_SIZE
+
+
+def print_css(page_size: str = DEFAULT_PAGE_SIZE) -> str:
+    return f"""
+@page {{ size: {normalize_page_size(page_size)}; margin: 10mm; }}
+body.pf {{ background: #fff; }}
+.pf-page {{ margin: 0; box-shadow: none; border-radius: 0; }}
 """
+
+
+PRINT_CSS = print_css(DEFAULT_PAGE_SIZE)  # kept for code that imports it
 
 
 class PdfUnavailable(Exception):
@@ -87,7 +100,7 @@ def _make_fetcher(default_fetcher):
     return fetch
 
 
-def render_pdf(portfolio, *, request) -> bytes:
+def render_pdf(portfolio, *, request, page_size: str = DEFAULT_PAGE_SIZE) -> bytes:
     """Return the portfolio as PDF bytes. Raises PdfUnavailable if WeasyPrint can't be loaded."""
     try:
         from weasyprint import CSS, HTML, default_url_fetcher
@@ -100,4 +113,7 @@ def render_pdf(portfolio, *, request) -> bytes:
     html = render_version_html(portfolio, request=request, preview=False, toolbar=False)
 
     document = HTML(string=html, base_url=BASE_URL, url_fetcher=_make_fetcher(default_url_fetcher))
-    return document.write_pdf(stylesheets=[CSS(string=PRINT_CSS)])
+    data = document.write_pdf(stylesheets=[CSS(string=print_css(page_size))])
+    if not data.startswith(b"%PDF"):  # never hand out something that is not a PDF as a success
+        raise RuntimeError("The PDF renderer returned no PDF data")
+    return data

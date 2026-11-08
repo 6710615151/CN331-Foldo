@@ -3,9 +3,9 @@ import logging
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import DatabaseError, transaction
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.utils.text import slugify
-from .pdf import PdfUnavailable, render_pdf
+from .pdf import PdfUnavailable, normalize_page_size, render_pdf
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.clickjacking import xframe_options_sameorigin
@@ -155,15 +155,25 @@ def portfolio_preview_frame(request, pk):
 @login_required
 def portfolio_pdf(request, pk):
     portfolio = _owned_or_404(request, pk)
+    page_size = normalize_page_size(request.GET.get("size"))
+    # The export page (JavaScript) sends this header and wants a status code it can show,
+    # not a redirect. Everything else (a plain link) keeps the redirect plus message.
+    in_page = request.headers.get("X-Foldo-Export") == "1"
     try:
-        pdf = render_pdf(portfolio, request=request)
+        pdf = render_pdf(portfolio, request=request, page_size=page_size)
     except PdfUnavailable:
         logger.warning("PDF export unavailable: WeasyPrint or Pango missing", exc_info=True)
-        messages.error(request, "PDF export isn't set up on this server yet.")
+        message = "PDF export isn't set up on this server yet."
+        if in_page:
+            return JsonResponse({"error": message}, status=503)
+        messages.error(request, message)
         return redirect("portfolios:list")
     except Exception:
         logger.exception("PDF export failed for portfolio %s", pk)
-        messages.error(request, "Couldn't create the PDF. Please try again.")
+        message = "Couldn't create the PDF. Please try again."
+        if in_page:
+            return JsonResponse({"error": message}, status=500)
+        messages.error(request, message)
         return redirect("portfolios:list")
 
     filename = f"{slugify(portfolio.title) or 'portfolio'}.pdf"
