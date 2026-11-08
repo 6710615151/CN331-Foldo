@@ -132,9 +132,7 @@ def portfolio_versions_for_profile(profile) -> list[VersionRef]:
         if raw_selected is None:
             frozen_selected = None
         else:
-            frozen_selected = {
-                sec: frozenset(ids) for sec, ids in raw_selected.items()
-            }
+            frozen_selected = {sec: frozenset(ids) for sec, ids in raw_selected.items()}
         versions.append(
             VersionRef(
                 id=portfolio.pk,

@@ -7,6 +7,7 @@ Part 2 (added when FOLDO-09 / FOLDO-17 / FOLDO-11 land): republish snapshot -> s
 Every step goes through a URL with the Django test client (no direct model writes),
 so a broken link between two features fails here even if each feature's own tests pass.
 """
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
@@ -30,30 +31,44 @@ class EndToEndPart1Tests(TestCase):
 
     def test_full_flow_part1(self):
         # 1. Register: signed in straight away and sent to the dashboard.
-        response = self.post_ok(reverse("accounts:register"), {
-            "username": "jeff", "email": "jeff@example.com",
-            "password1": PASSWORD, "password2": PASSWORD,
-        })
+        response = self.post_ok(
+            reverse("accounts:register"),
+            {
+                "username": "jeff",
+                "email": "jeff@example.com",
+                "password1": PASSWORD,
+                "password2": PASSWORD,
+            },
+        )
         self.assertRedirects(response, reverse("core:dashboard"))
         user = User.objects.get(username="jeff")
         self.assertEqual(self.client.get(reverse("core:dashboard")).status_code, 200)
 
         # 2. Main Profile: the first profile becomes the default.
-        self.post_ok(reverse("profiles:create"), {
-            "label": "Main", "full_name": "Jeff Tester", "headline": "CS student",
-            "contact_email": "jeff@example.com",
-        })
+        self.post_ok(
+            reverse("profiles:create"),
+            {
+                "label": "Main",
+                "full_name": "Jeff Tester",
+                "headline": "CS student",
+                "contact_email": "jeff@example.com",
+            },
+        )
         profile = MainProfile.objects.get(owner=user)
         self.assertTrue(profile.is_default)
 
         # 3. Profile sections: two skills, one project with a story, one without.
         self.post_ok(reverse("profiles:skill_add", args=[profile.pk]), {"name": "Python", "proficiency": "advanced"})
         self.post_ok(reverse("profiles:skill_add", args=[profile.pk]), {"name": "Figma", "proficiency": "beginner"})
-        self.post_ok(reverse("profiles:project_add", args=[profile.pk]), {
-            "project_name": "Resume Rocket", "description": "Portfolio builder",
-            "problem": "Students retype the same profile for every application",
-            "outcome": "One profile, many portfolios",
-        })
+        self.post_ok(
+            reverse("profiles:project_add", args=[profile.pk]),
+            {
+                "project_name": "Resume Rocket",
+                "description": "Portfolio builder",
+                "problem": "Students retype the same profile for every application",
+                "outcome": "One profile, many portfolios",
+            },
+        )
         self.post_ok(reverse("profiles:project_add", args=[profile.pk]), {"project_name": "Side project"})
         python = Skill.objects.get(profile=profile, name="Python")
         story_project = Project.objects.get(profile=profile, project_name="Resume Rocket")
@@ -61,26 +76,40 @@ class EndToEndPart1Tests(TestCase):
         self.assertFalse(Project.objects.get(profile=profile, project_name="Side project").has_story)
 
         # 4. Two portfolio versions with different templates, both private.
-        self.post_ok(reverse("portfolios:create"), {
-            "title": "Backend jobs", "profile": profile.pk, "template_key": "classic",
-        })
-        self.post_ok(reverse("portfolios:create"), {
-            "title": "Design jobs", "profile": "", "template_key": "modern",
-        })
+        self.post_ok(
+            reverse("portfolios:create"),
+            {
+                "title": "Backend jobs",
+                "profile": profile.pk,
+                "template_key": "classic",
+            },
+        )
+        self.post_ok(
+            reverse("portfolios:create"),
+            {
+                "title": "Design jobs",
+                "profile": "",
+                "template_key": "modern",
+            },
+        )
         backend = Portfolio.objects.get(owner=user, title="Backend jobs")
         design = Portfolio.objects.get(owner=user, title="Design jobs")
         self.assertFalse(backend.is_published)
 
         # 5. Content selection on one version only.
-        self.post_ok(reverse("portfolios:content", args=[backend.pk]), {
-            "projects": [story_project.pk], "skills": [python.pk],
-        })
+        self.post_ok(
+            reverse("portfolios:content", args=[backend.pk]),
+            {
+                "projects": [story_project.pk],
+                "skills": [python.pk],
+            },
+        )
 
         # 6. Preview shows the selection and the Project Story, in the version's own template.
         backend_page = self.client.get(reverse("portfolios:preview", args=[backend.pk])).content.decode()
         self.assertIn("pf--classic", backend_page)
         # Only the portfolio itself: the owner bar above it may show a pending "project added" message.
-        backend_html = backend_page[backend_page.index('<main class="pf-page">'):]
+        backend_html = backend_page[backend_page.index('<main class="pf-page">') :]
         self.assertIn("Resume Rocket", backend_html)
         self.assertIn("Students retype the same profile", backend_html)
         self.assertIn("Python", backend_html)
@@ -94,7 +123,10 @@ class EndToEndPart1Tests(TestCase):
             self.assertIn(text, design_html)
 
         # 7. Device preview (FOLDO-08) shows the same version at phone width.
-        self.assertEqual(self.client.get(reverse("portfolios:device_preview", args=[backend.pk]), {"mode": "mobile"}).status_code, 200)
+        self.assertEqual(
+            self.client.get(reverse("portfolios:device_preview", args=[backend.pk]), {"mode": "mobile"}).status_code,
+            200,
+        )
         frame_html = self.client.get(reverse("portfolios:preview_frame", args=[backend.pk])).content.decode()
         self.assertIn("Resume Rocket", frame_html)
         self.assertNotIn("Side project", frame_html)
@@ -112,9 +144,15 @@ class EndToEndPart1Tests(TestCase):
 
         # 10. Publish, then the public link opens without logging in and keeps the selection.
         self.client.login(username="jeff", password=PASSWORD)
-        self.post_ok(reverse("portfolios:update", args=[backend.pk]), {
-            "title": "Backend jobs", "profile": profile.pk, "template_key": "classic", "is_published": "on",
-        })
+        self.post_ok(
+            reverse("portfolios:update", args=[backend.pk]),
+            {
+                "title": "Backend jobs",
+                "profile": profile.pk,
+                "template_key": "classic",
+                "is_published": "on",
+            },
+        )
         self.client.logout()
         public = self.client.get(public_url)
         self.assertEqual(public.status_code, 200)
@@ -125,9 +163,14 @@ class EndToEndPart1Tests(TestCase):
 
         # 11. Unpublishing removes public access again.
         self.client.login(username="jeff", password=PASSWORD)
-        self.post_ok(reverse("portfolios:update", args=[backend.pk]), {
-            "title": "Backend jobs", "profile": profile.pk, "template_key": "classic",
-        })
+        self.post_ok(
+            reverse("portfolios:update", args=[backend.pk]),
+            {
+                "title": "Backend jobs",
+                "profile": profile.pk,
+                "template_key": "classic",
+            },
+        )
         self.client.logout()
         self.assertEqual(self.client.get(public_url).status_code, 404)
 

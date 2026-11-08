@@ -3,6 +3,7 @@
 Uses the real models (Skill, Experience, Project + story, Education), so a
 change in any of them that breaks rendering fails here.
 """
+
 import importlib
 from datetime import date
 
@@ -37,23 +38,39 @@ class VersionRenderingTests(TestCase):
         cls.alice = User.objects.create_user("alice", password=PASSWORD)
         cls.bob = User.objects.create_user("bob", password=PASSWORD)
         cls.profile = MainProfile.objects.create(
-            owner=cls.alice, full_name="Alice Doe", headline="Backend developer", is_default=True,
-            bio="Hello", contact_email="alice@example.com",
+            owner=cls.alice,
+            full_name="Alice Doe",
+            headline="Backend developer",
+            is_default=True,
+            bio="Hello",
+            contact_email="alice@example.com",
         )
         cls.python = Skill.objects.create(profile=cls.profile, name="Python", proficiency="advanced")
         cls.figma = Skill.objects.create(profile=cls.profile, name="Figma", proficiency="beginner")
         cls.job = Experience.objects.create(
-            profile=cls.profile, company="Acme", job_title="Backend Intern", start_date=date(2025, 6, 1),
+            profile=cls.profile,
+            company="Acme",
+            job_title="Backend Intern",
+            start_date=date(2025, 6, 1),
         )
         cls.foldo = Project.objects.create(
-            profile=cls.profile, project_name="FOLDO", description="Portfolio builder.",
-            project_url="https://example.com/foldo", start_date=date(2026, 1, 1),
-            problem="Students re-type CVs.", role="Team lead", solution="One profile, many portfolios.",
+            profile=cls.profile,
+            project_name="FOLDO",
+            description="Portfolio builder.",
+            project_url="https://example.com/foldo",
+            start_date=date(2026, 1, 1),
+            problem="Students re-type CVs.",
+            role="Team lead",
+            solution="One profile, many portfolios.",
         )
         cls.old = Project.objects.create(profile=cls.profile, project_name="Old project")
         cls.uni = Education.objects.create(
-            profile=cls.profile, institution="Thammasat University", degree="B.Eng.",
-            field_of_study="Computer Engineering", grade="3.75", start_date=date(2022, 8, 1),
+            profile=cls.profile,
+            institution="Thammasat University",
+            degree="B.Eng.",
+            field_of_study="Computer Engineering",
+            grade="3.75",
+            start_date=date(2022, 8, 1),
         )
 
         cls.backend = Portfolio.objects.create(owner=cls.alice, title="Backend jobs", template_key="modern")
@@ -82,15 +99,28 @@ class VersionRenderingTests(TestCase):
                 self.assertIn(f"pf--{theme.key}", html)
                 for key in SECTION_KEYS:
                     self.assertIn(f'id="pf-{key}"', html)
-                for text in ("Alice Doe", "Backend Intern", "Python", "Advanced", "FOLDO",
-                             "Thammasat University", "Grade: 3.75", "Team lead",
-                             "One profile, many portfolios."):
+                for text in (
+                    "Alice Doe",
+                    "Backend Intern",
+                    "Python",
+                    "Advanced",
+                    "FOLDO",
+                    "Thammasat University",
+                    "Grade: 3.75",
+                    "Team lead",
+                    "One profile, many portfolios.",
+                ):
                     self.assertIn(text, html)
 
     def test_changing_one_versions_template_leaves_the_other_alone(self):
-        response = self.client.post(reverse("portfolios:update", args=[self.backend.pk]), {
-            "title": "Backend jobs", "profile": "", "template_key": "classic",
-        })
+        response = self.client.post(
+            reverse("portfolios:update", args=[self.backend.pk]),
+            {
+                "title": "Backend jobs",
+                "profile": "",
+                "template_key": "classic",
+            },
+        )
         self.assertEqual(response.status_code, 302)
         self.backend.refresh_from_db()
         self.design.refresh_from_db()
@@ -129,7 +159,8 @@ class VersionRenderingTests(TestCase):
     def test_long_text_is_kept_and_user_text_is_escaped(self):
         long_text = "word " * 900 + "x" * 600  # ~5000 characters, one very long word
         Project.objects.filter(pk=self.foldo.pk).update(
-            description=long_text, role="<script>alert('x')</script>",
+            description=long_text,
+            role="<script>alert('x')</script>",
         )
         for theme in THEMES:
             with self.subTest(theme=theme.key):
@@ -146,9 +177,14 @@ class VersionRenderingTests(TestCase):
         self.assertEqual(section_keys(build_version_content(self.backend)), SECTION_KEYS)
 
     def test_selection_keeps_only_chosen_items(self):
-        content = build_version_content(self.backend, selected={
-            "skills": {self.python.pk}, "projects": {self.old.pk}, "education": {self.uni.pk},
-        })
+        content = build_version_content(
+            self.backend,
+            selected={
+                "skills": {self.python.pk},
+                "projects": {self.old.pk},
+                "education": {self.uni.pk},
+            },
+        )
         self.assertEqual(section_keys(content), {"skills", "projects", "education"})
         self.assertEqual(titles(content, "skills"), ["Python"])
         self.assertEqual(titles(content, "projects"), ["Old project"])
@@ -250,10 +286,16 @@ class LegacyTemplateMigrationTests(TestCase):
         migration.forwards(django_apps, None)
 
         result = dict(Portfolio.objects.values_list("title", "template_key"))
-        self.assertEqual(result, {
-            "classic": "classic", "midnight": "modern", "ocean": "creative",
-            "mono": "classic", "something-else": "classic",
-        })
+        self.assertEqual(
+            result,
+            {
+                "classic": "classic",
+                "midnight": "modern",
+                "ocean": "creative",
+                "mono": "classic",
+                "something-else": "classic",
+            },
+        )
 
 
 class MoveEducationMigrationTests(TestCase):
@@ -296,9 +338,9 @@ class MoveEducationMigrationTests(TestCase):
 
         self.insert(
             (7, self.alice.pk, "undergraduate", "Thammasat University", "Computer Engineering", "3.75", 2022, None),
-            (8, self.alice.pk, "high_school", "", "", "", None, None),          # blank: never shown
-            (9, self.carol.pk, "phd", "Somewhere", "", "", 2020, 2024),        # no profile to hold it
-            (10, self.alice.pk, "graduate", "", "AI", "", 2027, 2025),         # end before start
+            (8, self.alice.pk, "high_school", "", "", "", None, None),  # blank: never shown
+            (9, self.carol.pk, "phd", "Somewhere", "", "", 2020, 2024),  # no profile to hold it
+            (10, self.alice.pk, "graduate", "", "AI", "", 2027, 2025),  # end before start
         )
         PortfolioContentSelection.objects.create(portfolio=self.portfolio, section="education", item_id=7)
         PortfolioContentSelection.objects.create(portfolio=self.portfolio, section="education", item_id=8)
@@ -309,8 +351,14 @@ class MoveEducationMigrationTests(TestCase):
         self.assertEqual(
             [(e.institution, e.degree, e.field_of_study, e.grade, e.start_date, e.end_date) for e in moved],
             [
-                ("Thammasat University", "Undergraduate degree", "Computer Engineering", "3.75",
-                 date(2022, 1, 1), None),
+                (
+                    "Thammasat University",
+                    "Undergraduate degree",
+                    "Computer Engineering",
+                    "3.75",
+                    date(2022, 1, 1),
+                    None,
+                ),
                 ("Graduate degree (Master's)", "Graduate degree (Master's)", "AI", "", date(2027, 1, 1), None),
             ],
         )

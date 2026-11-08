@@ -176,10 +176,12 @@ class CrudTests(EducationTestCase):
         self.assertContains(response, "ปัจจุบัน")
 
     def test_ordering_current_first_then_latest(self):
-        old = make_education(self.profile, institution="Old", start_date=datetime.date(2010, 1, 1),
-                             end_date=datetime.date(2013, 1, 1))
-        recent = make_education(self.profile, institution="Recent", start_date=datetime.date(2014, 1, 1),
-                                end_date=datetime.date(2018, 1, 1))
+        old = make_education(
+            self.profile, institution="Old", start_date=datetime.date(2010, 1, 1), end_date=datetime.date(2013, 1, 1)
+        )
+        recent = make_education(
+            self.profile, institution="Recent", start_date=datetime.date(2014, 1, 1), end_date=datetime.date(2018, 1, 1)
+        )
         current = make_education(self.profile, institution="Current", start_date=datetime.date(2020, 1, 1))
         self.assertEqual(list(self.profile.educations.all()), [current, recent, old])
 

@@ -196,12 +196,13 @@ pip install -r requirements-ci.txt
 coverage run manage.py test && coverage report   # fails below 80% (.coveragerc)
 coverage html                                    # browsable report in htmlcov/
 flake8 apps config                               # PEP 8 (.flake8)
+black apps config                                # format (pyproject.toml); CI runs --check
 bandit -r apps config -ll -x "*/migrations/*,*/tests.py,*/test_*.py"
 ```
 
 Every push and pull request to `main` runs `.github/workflows/ci.yml`: tests on
 Python 3.11 and 3.12 with an 80% coverage gate, a `DEBUG=False` deploy check,
-a missing-migrations check, Flake8 and Bandit. `main` is protected: changes land
+a missing-migrations check, Flake8, Black and Bandit. `main` is protected: changes land
 through a pull request with one approval and green checks.
 
 ---

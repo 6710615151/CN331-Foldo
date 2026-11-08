@@ -1,4 +1,5 @@
 """Reading the selection page's POST (FOLDO-06). Anything not offered to the owner is ignored later."""
+
 from __future__ import annotations
 
 from .sources import SECTION_KEYS

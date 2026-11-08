@@ -7,6 +7,7 @@ always returns a fully populated structure, so templates need no defensive logic
 
 Every lookup is scoped to the given user, so one user can never read another's profile.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

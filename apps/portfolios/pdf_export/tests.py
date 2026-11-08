@@ -1,4 +1,5 @@
 """Tests for the PDF export workflow and layout (FOLDO-11, Dev 2)."""
+
 import contextlib
 import datetime
 import io
@@ -195,16 +196,24 @@ def heavy_profile(owner):
     profile = MainProfile.objects.create(owner=owner, label="Heavy", full_name="Heavy Hitter", bio=LONG_SENTENCE * 20)
     for i in range(1, 7):
         Experience.objects.create(
-            profile=profile, company=f"Company {i}", job_title=f"Engineer {i}",
-            start_date=datetime.date(2010 + i, 1, 1), end_date=datetime.date(2011 + i, 1, 1),
+            profile=profile,
+            company=f"Company {i}",
+            job_title=f"Engineer {i}",
+            start_date=datetime.date(2010 + i, 1, 1),
+            end_date=datetime.date(2011 + i, 1, 1),
             description=LONG_SENTENCE * 10 + f"ENDMARK-EXP-{i}",
         )
     for i in range(1, 5):
         Project.objects.create(
-            profile=profile, project_name=f"Project {i}", description=LONG_SENTENCE * 6,
+            profile=profile,
+            project_name=f"Project {i}",
+            description=LONG_SENTENCE * 6,
             project_url="https://example.com/" + "very-long-path-" * 10 + "end",
-            problem=LONG_SENTENCE * 6, role="Team lead", process=LONG_SENTENCE * 6,
-            solution=LONG_SENTENCE * 6, outcome=f"ENDMARK-PRJ-{i}",
+            problem=LONG_SENTENCE * 6,
+            role="Team lead",
+            process=LONG_SENTENCE * 6,
+            solution=LONG_SENTENCE * 6,
+            outcome=f"ENDMARK-PRJ-{i}",
         )
     for i in range(1, 31):
         Skill.objects.create(profile=profile, name=f"Skill {i}", proficiency="advanced")
@@ -253,8 +262,9 @@ class RealPdfTests(ExportTestCase):
         from weasyprint import CSS, HTML, default_url_fetcher
 
         def write():
-            document = HTML(string=html, base_url=pdf_module.BASE_URL,
-                            url_fetcher=pdf_module._make_fetcher(default_url_fetcher))
+            document = HTML(
+                string=html, base_url=pdf_module.BASE_URL, url_fetcher=pdf_module._make_fetcher(default_url_fetcher)
+            )
             return document.write_pdf(stylesheets=[CSS(string=pdf_module.print_css(page_size))])
 
         return run_with_limit(write, RENDER_TIME_LIMIT)

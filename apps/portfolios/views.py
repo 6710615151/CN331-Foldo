@@ -83,10 +83,16 @@ def portfolio_create(request):
     response, form = _process_form(request, None)
     if response:
         return response
-    return render(request, "portfolios/form.html", {
-        "form": form, "is_new": True, "portfolio": None,
-        "has_profiles": profile_choices(request.user).exists(),
-    })
+    return render(
+        request,
+        "portfolios/form.html",
+        {
+            "form": form,
+            "is_new": True,
+            "portfolio": None,
+            "has_profiles": profile_choices(request.user).exists(),
+        },
+    )
 
 
 @login_required
@@ -95,10 +101,16 @@ def portfolio_edit(request, pk):
     response, form = _process_form(request, portfolio)
     if response:
         return response
-    return render(request, "portfolios/form.html", {
-        "form": form, "is_new": False, "portfolio": portfolio,
-        "has_profiles": profile_choices(request.user).exists(),
-    })
+    return render(
+        request,
+        "portfolios/form.html",
+        {
+            "form": form,
+            "is_new": False,
+            "portfolio": portfolio,
+            "has_profiles": profile_choices(request.user).exists(),
+        },
+    )
 
 
 @login_required
@@ -109,9 +121,7 @@ def portfolio_preview(request, pk):
 
 def portfolio_public(request, slug):
     """Anyone with the link, but only if the owner has published it."""
-    portfolio = get_object_or_404(
-        Portfolio.objects.select_related("owner", "profile"), slug=slug, is_published=True
-    )
+    portfolio = get_object_or_404(Portfolio.objects.select_related("owner", "profile"), slug=slug, is_published=True)
     return _render_portfolio(request, portfolio, preview=False)
 
 
@@ -160,9 +170,15 @@ def portfolio_device_preview(request, pk):
     mode = request.GET.get("mode")
     if mode not in PREVIEW_MODES:
         mode = "desktop"
-    return render(request, "portfolios/device_preview.html", {
-        "portfolio": portfolio, "mode": mode, "modes": PREVIEW_MODES,
-    })
+    return render(
+        request,
+        "portfolios/device_preview.html",
+        {
+            "portfolio": portfolio,
+            "mode": mode,
+            "modes": PREVIEW_MODES,
+        },
+    )
 
 
 @xframe_options_sameorigin

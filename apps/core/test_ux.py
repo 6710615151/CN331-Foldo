@@ -101,7 +101,7 @@ class WayfindingTests(_Signed):
 
     def sidebar(self, url):
         html = self.client.get(url).content.decode()
-        return html[html.index("<header"):html.index("</header>")]
+        return html[html.index("<header") : html.index("</header>")]
 
     def test_sidebar_sections_follow_the_profile_being_viewed(self):
         nav = self.sidebar(reverse("profiles:projects", args=[self.design.pk]))
@@ -128,9 +128,9 @@ class WayfindingTests(_Signed):
         for url, label in pages.items():
             with self.subTest(url=url):
                 html = self.client.get(url).content.decode()
-                nav = html[html.index('class="foldo-subnav"'):]
-                nav = nav[:nav.index("</nav>")]
-                current = nav[nav.index('aria-current="page"'):]
+                nav = html[html.index('class="foldo-subnav"') :]
+                nav = nav[: nav.index("</nav>")]
+                current = nav[nav.index('aria-current="page"') :]
                 self.assertIn(label, current[:200])
                 self.assertIn("ว่าง", nav)  # empty sections are flagged
 
@@ -156,8 +156,8 @@ class BuilderStepperTests(_Signed):
         for name, label in pages.items():
             with self.subTest(page=name):
                 html = self.client.get(reverse(name, args=[self.portfolio.pk])).content.decode()
-                flow = html[html.index('class="foldo-flow"'):]
-                current = flow[flow.index('aria-current="step"'):]
+                flow = html[html.index('class="foldo-flow"') :]
+                current = flow[flow.index('aria-current="step"') :]
                 self.assertIn(label, current[:400])
 
     def test_stepper_reflects_real_state(self):
@@ -208,8 +208,11 @@ class AddAnotherTests(_Signed):
         cases = [
             ("profiles:education_add", {"institution": "KU", "start_date": "2022-08-01"}, Education),
             ("profiles:skill_add", {"name": "Python", "proficiency": "advanced"}, Skill),
-            ("profiles:experience_add", {"company": "Agoda", "job_title": "Intern",
-                                         "start_date": "2024-06-01"}, Experience),
+            (
+                "profiles:experience_add",
+                {"company": "Agoda", "job_title": "Intern", "start_date": "2024-06-01"},
+                Experience,
+            ),
             ("profiles:project_add", {"project_name": "Bus Tracker"}, Project),
         ]
         for name, data, model in cases:
@@ -220,13 +223,16 @@ class AddAnotherTests(_Signed):
                 self.assertEqual(model.objects.filter(profile=self.profile).count(), 1)
 
     def test_plain_save_keeps_its_old_destination(self):
-        response = self.client.post(reverse("profiles:skill_add", args=[self.profile.pk]),
-                                    {"name": "Go", "proficiency": "beginner"})
+        response = self.client.post(
+            reverse("profiles:skill_add", args=[self.profile.pk]), {"name": "Go", "proficiency": "beginner"}
+        )
         self.assertRedirects(response, reverse("profiles:skills_experience", args=[self.profile.pk]))
 
     def test_invalid_add_another_stays_on_the_form_with_a_linked_error_summary(self):
-        response = self.client.post(reverse("profiles:education_add", args=[self.profile.pk]),
-                                    {"institution": "", "start_date": "2022-08-01", "add_another": "1"})
+        response = self.client.post(
+            reverse("profiles:education_add", args=[self.profile.pk]),
+            {"institution": "", "start_date": "2022-08-01", "add_another": "1"},
+        )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "data-error-summary")
         self.assertContains(response, 'href="#id_institution"')
@@ -235,7 +241,9 @@ class AddAnotherTests(_Signed):
     def test_edit_pages_do_not_offer_add_another(self):
         skill = Skill.objects.create(profile=self.profile, name="SQL", proficiency="beginner")
         self.assertNotContains(self.client.get(reverse("profiles:skill_edit", args=[skill.pk])), 'name="add_another"')
-        self.assertContains(self.client.get(reverse("profiles:skill_add", args=[self.profile.pk])), 'name="add_another"')
+        self.assertContains(
+            self.client.get(reverse("profiles:skill_add", args=[self.profile.pk])), 'name="add_another"'
+        )
 
 
 class GalleryUsageTests(_Signed):
@@ -272,9 +280,11 @@ class SaveFeedbackTests(_Signed):
 
     def test_publish_confirmation_is_shown_on_the_page_the_user_lands_on(self):
         self.complete_profile()
-        response = self.client.post(reverse("portfolios:create"),
-                                    {"title": "Frontend Intern", "template_key": "modern", "is_published": "on"},
-                                    follow=True)
+        response = self.client.post(
+            reverse("portfolios:create"),
+            {"title": "Frontend Intern", "template_key": "modern", "is_published": "on"},
+            follow=True,
+        )
         self.assertContains(response, "pf-toolbar__msg")
         self.assertContains(response, "บันทึก “Frontend Intern” แล้ว (เผยแพร่แล้ว)")
 

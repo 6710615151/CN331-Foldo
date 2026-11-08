@@ -1,4 +1,5 @@
 """Tests for per-version content selection (FOLDO-06, Dev 2)."""
+
 import datetime
 
 from django.contrib.auth import get_user_model

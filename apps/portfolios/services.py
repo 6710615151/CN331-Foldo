@@ -14,6 +14,7 @@ Rendering a version (FOLDO-07):
 Every output (owner preview, device-preview frame, public page, later the PDF)
 goes through ``render_version_html`` so they can never disagree.
 """
+
 from __future__ import annotations
 
 from django.db import transaction
@@ -146,8 +147,9 @@ def _preview_toolbar(portfolio: Portfolio, theme: PortfolioTheme) -> dict:
     }
 
 
-def render_version_html(portfolio: Portfolio, *, request=None, preview: bool = False,
-                        toolbar: bool | None = None) -> str:
+def render_version_html(
+    portfolio: Portfolio, *, request=None, preview: bool = False, toolbar: bool | None = None
+) -> str:
     """The complete HTML page of one version in its own template.
 
     ``preview`` — owner is looking (not the public page): adds ``noindex``.

@@ -38,9 +38,7 @@ class DnaBuildTests(TestCase):
     def test_portfolio_with_no_selection_uses_everything(self):
         """selected_ids() is None until FOLDO-06 configures a selection -> 'uses everything'."""
         Skill.objects.create(profile=self.profile, name="Python")
-        Experience.objects.create(
-            profile=self.profile, company="Acme", job_title="Dev", start_date="2024-01-01"
-        )
+        Experience.objects.create(profile=self.profile, company="Acme", job_title="Dev", start_date="2024-01-01")
         Portfolio.objects.create(owner=self.user, profile=self.profile, title="Career")
 
         dna = build_dna(self.profile)
@@ -80,9 +78,7 @@ class DnaBuildTests(TestCase):
 
     def test_education_experience_and_project_all_appear(self):
         Education.objects.create(profile=self.profile, institution="TU", start_date="2020-01-01")
-        Experience.objects.create(
-            profile=self.profile, company="Acme", job_title="Dev", start_date="2024-01-01"
-        )
+        Experience.objects.create(profile=self.profile, company="Acme", job_title="Dev", start_date="2024-01-01")
         Project.objects.create(profile=self.profile, project_name="FOLDO")
         dna = build_dna(self.profile)
         self.assertEqual(dna.total_items, 3)
@@ -134,9 +130,7 @@ class PortfolioVersionsSourceTests(TestCase):
         self.assertEqual(portfolio_versions(self.profile), [])
 
     def test_version_ref_carries_the_template_key(self):
-        Portfolio.objects.create(
-            owner=self.user, profile=self.profile, title="Career", template_key="modern"
-        )
+        Portfolio.objects.create(owner=self.user, profile=self.profile, title="Career", template_key="modern")
         [version] = portfolio_versions(self.profile)
         self.assertEqual(version.template, "modern")
 
@@ -176,9 +170,7 @@ class PortfolioDnaViewTests(TestCase):
     def test_visitor_is_sent_to_login(self):
         self.client.logout()
         response = self.client.get(self.url)
-        self.assertRedirects(
-            response, f"{reverse('accounts:login')}?next={self.url}", fetch_redirect_response=False
-        )
+        self.assertRedirects(response, f"{reverse('accounts:login')}?next={self.url}", fetch_redirect_response=False)
 
     def test_viewing_dna_changes_nothing(self):
         Skill.objects.create(profile=self.profile, name="Python")
