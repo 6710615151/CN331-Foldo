@@ -235,6 +235,7 @@ class DashboardViewTests(SignedInTestCase):
     def test_dashboard_shows_empty_portfolio_state(self):
         response = self.client.get(reverse("core:dashboard"))
         self.assertEqual(response.context["summary"]["portfolios"], [])
+        self.assertContains(response, reverse("rendering:gallery"))
 
     def test_dashboard_page_has_no_placeholder_links(self):
         response = self.client.get(reverse("core:dashboard"))

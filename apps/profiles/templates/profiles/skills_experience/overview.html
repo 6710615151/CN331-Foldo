@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Skills &amp; experience · {{ profile.label }}{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'profiles/skills_experience.css' %}">{% endblock %}
+{% block content %}
+<div class="foldo-se container py-5" style="max-width: 760px;">
+  <a class="foldo-back" href="{% url 'profiles:view' profile.pk %}"><span aria-hidden="true">&larr;</span> {{ profile.label }}</a>
+  <header class="foldo-se__header">
+    <p class="foldo-se__eyebrow" lang="en">Profile</p>
+    <h1 class="foldo-se__title">Skills &amp; <span class="foldo-text-lime">experience</span></h1>
+    <div class="foldo-se__bands" aria-hidden="true"><span></span><span></span></div>
+    <p class="foldo-se__subtitle">What you can do and where you've done it.</p>
+  </header>
+
+  <section class="mb-5" aria-labelledby="skills-heading">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <h2 class="h5 mb-0 foldo-se__section-title" id="skills-heading">Skills</h2>
+      {% if skills %}<a class="btn btn-primary btn-sm" href="{% url 'profiles:skill_add' profile.pk %}">Add skill</a>{% endif %}
+    </div>
+
+    {% if skills %}
+      <ul class="list-group">
+        {% for skill in skills %}
+          <li class="list-group-item d-flex align-items-center justify-content-between gap-2 flex-wrap">
+            <span>
+              <strong>{{ skill.name }}</strong>
+              <span class="badge foldo-level ms-2">{{ skill.get_proficiency_display }}</span>
+            </span>
+            <span class="d-flex gap-2">
+              <a class="btn btn-outline-secondary btn-sm" href="{% url 'profiles:skill_edit' skill.pk %}">Edit<span class="visually-hidden"> {{ skill.name }}</span></a>
+              <a class="btn btn-outline-danger btn-sm" href="{% url 'profiles:skill_delete' skill.pk %}" data-bs-toggle="modal" data-bs-target="#delete-skill-{{ skill.pk }}">Delete<span class="visually-hidden"> {{ skill.name }}</span></a>
+            </span>
+          </li>
+        {% endfor %}
+      </ul>
+      {% for skill in skills %}
+        {% url 'profiles:skill_delete' skill.pk as delete_url %}
+        {% include "profiles/skills_experience/_delete_modal.html" with key="skill" pk=skill.pk kind="skill" item_label=skill.name %}
+      {% endfor %}
+    {% else %}
+      {% url 'profiles:skill_add' profile.pk as add_skill_url %}
+      {% include "partials/empty_state.html" with message="No skills yet. Add the skills you want on your portfolios." action_url=add_skill_url action_label="Add your first skill" %}
+    {% endif %}
+  </section>
+
+  <section aria-labelledby="experience-heading">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <h2 class="h5 mb-0 foldo-se__section-title" id="experience-heading">Experience</h2>
+      {% if experiences %}<a class="btn btn-primary btn-sm" href="{% url 'profiles:experience_add' profile.pk %}">Add experience</a>{% endif %}
+    </div>
+
+    {% if experiences %}
+      {% for experience in experiences %}
+        <article class="card foldo-se__card foldo-se__card--accent mb-3">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
+              <div>
+                <h3 class="h6 mb-1">{{ experience.job_title }}</h3>
+                <p class="mb-1 text-body-secondary">{{ experience.company }}</p>
+                <p class="mb-0 small text-body-secondary">
+                  {{ experience.start_date|date:"M Y" }} &ndash;
+                  {% if experience.is_current %}Present{% else %}{{ experience.end_date|date:"M Y" }}{% endif %}
+                </p>
+              </div>
+              <span class="d-flex gap-2">
+                <a class="btn btn-outline-secondary btn-sm" href="{% url 'profiles:experience_edit' experience.pk %}">Edit<span class="visually-hidden"> {{ experience.job_title }}</span></a>
+                <a class="btn btn-outline-danger btn-sm" href="{% url 'profiles:experience_delete' experience.pk %}" data-bs-toggle="modal" data-bs-target="#delete-experience-{{ experience.pk }}">Delete<span class="visually-hidden"> {{ experience.job_title }}</span></a>
+              </span>
+            </div>
+            {% if experience.description %}<p class="mt-3 mb-0">{{ experience.description|linebreaksbr }}</p>{% endif %}
+          </div>
+        </article>
+        {% url 'profiles:experience_delete' experience.pk as delete_url %}
+        {% include "profiles/skills_experience/_delete_modal.html" with key="experience" pk=experience.pk kind="experience" item_label=experience.job_title %}
+      {% endfor %}
+    {% else %}
+      {% url 'profiles:experience_add' profile.pk as add_experience_url %}
+      {% include "partials/empty_state.html" with message="No experience yet. Add jobs, internships or volunteering." action_url=add_experience_url action_label="Add your first experience" %}
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

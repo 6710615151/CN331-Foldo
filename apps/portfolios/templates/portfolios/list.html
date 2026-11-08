@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}My portfolios – FOLDO{% endblock %}
+{% block content %}
+<div class="container py-4" style="max-width: 900px;">
+   <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+    <h1 class="h3 mb-0">My portfolios</h1>
+    <div class="d-flex flex-wrap gap-2">
+      <a class="btn btn-outline-secondary" href="{% url 'education:settings' %}">Education</a>
+      <a class="btn btn-primary" href="{% url 'portfolios:create' %}">New portfolio</a>
+    </div>
+  </div>
+
+  {% if portfolios %}
+    <div class="row g-3">
+      {% for portfolio in portfolios %}
+        <div class="col-md-6">
+          <article class="card h-100">
+            <div class="card-body d-flex flex-column">
+              <h2 class="h5 mb-1">
+                {{ portfolio.title }}
+                {% if portfolio.is_published %}
+                  <span class="badge text-bg-success ms-1">Published</span>
+                {% else %}
+                  <span class="badge text-bg-secondary ms-1">Private</span>
+                {% endif %}
+              </h2>
+              <p class="small text-body-secondary mb-1">
+                Profile:
+                {% if portfolio.profile %}{{ portfolio.profile.label }}{% else %}your default profile{% endif %}
+                &middot; Template: {{ portfolio.get_template_key_display }}
+              </p>
+              {% if portfolio.is_published %}
+                <p class="small mb-1">
+                  Public link:
+                  <a href="{% url 'portfolios:public' portfolio.slug %}">{{ request.scheme }}://{{ request.get_host }}{% url 'portfolios:public' portfolio.slug %}</a>
+                </p>
+              {% endif %}
+
+              <div class="d-flex flex-wrap gap-2 mt-auto pt-2">
+                <a class="btn btn-sm btn-outline-primary" href="{% url 'portfolios:preview' portfolio.pk %}">Preview</a>
+                <a class="btn btn-sm btn-outline-secondary" href="{% url 'portfolios:update' portfolio.pk %}">Edit</a>
+                <a class="btn btn-sm btn-outline-danger ms-auto" href="{% url 'portfolios:delete' portfolio.pk %}">Delete</a>
+              </div>
+            </div>
+          </article>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="card card-body text-center py-5">
+      <p class="mb-3">You don't have a portfolio yet. Pick one of your profiles and a template to create one.</p>
+      <div><a class="btn btn-primary" href="{% url 'portfolios:create' %}">Create your first portfolio</a></div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

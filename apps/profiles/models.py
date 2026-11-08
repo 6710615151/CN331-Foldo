@@ -6,15 +6,11 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator, RegexValidator
 from django.db import models, transaction
+from django.db.models.functions import Lower
 from django.urls import reverse
 
-from apps.core.validators import (
-    MAX_LONG_TEXT,
-    MAX_SHORT_TEXT,
-    MAX_URL,
-    safe_url_validator,
-    validate_date_order,
-)
+from apps.core.validators import MAX_URL, safe_url_validator, validate_date_order 
+from apps.core.validators import MAX_LONG_TEXT, MAX_SHORT_NAME, MAX_SHORT_TEXT
 
 logger = logging.getLogger(__name__)
 
@@ -172,6 +168,67 @@ class MainProfile(models.Model):
         return result
 
 
+class Skill(models.Model):
+    """One skill on a main profile (FOLDO-04). Names are unique per profile, ignoring case."""
+
+    class Proficiency(models.TextChoices):
+        BEGINNER = "beginner", "Beginner"
+        INTERMEDIATE = "intermediate", "Intermediate"
+        ADVANCED = "advanced", "Advanced"
+        EXPERT = "expert", "Expert"
+
+    profile = models.ForeignKey(MainProfile, on_delete=models.CASCADE, related_name="skills")
+    name = models.CharField(max_length=MAX_SHORT_NAME)
+    proficiency = models.CharField(
+        max_length=20, choices=Proficiency.choices, default=Proficiency.INTERMEDIATE
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = [Lower("name")]
+        constraints = [
+            models.UniqueConstraint(
+                Lower("name"), "profile", name="uniq_skill_name_per_profile"
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.name} ({self.get_proficiency_display()})"
+
+
+class Experience(models.Model):
+    """One work experience / internship on a main profile (FOLDO-04).
+
+    An empty ``end_date`` means the user is still there ("Present").
+    """
+
+    profile = models.ForeignKey(MainProfile, on_delete=models.CASCADE, related_name="experiences")
+    company = models.CharField(max_length=MAX_SHORT_TEXT)
+    job_title = models.CharField(max_length=MAX_SHORT_TEXT)
+    description = models.TextField(max_length=MAX_LONG_TEXT, blank=True)
+    start_date = models.DateField()
+    end_date = models.DateField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-start_date", "-pk"]
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(end_date__isnull=True) | models.Q(end_date__gte=models.F("start_date")),
+                name="experience_end_not_before_start",
+            ),
+        ]
+
+    @property
+    def is_current(self):
+        return self.end_date is None
+
+    def __str__(self):
+        return f"{self.job_title} at {self.company}"
 
 class Project(models.Model):
     """One project on a main profile (FOLDO-04) with an optional Project Story (FOLDO-15).

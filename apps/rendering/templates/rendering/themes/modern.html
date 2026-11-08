@@ -1,0 +1,25 @@
+{% extends "rendering/portfolio_base.html" %}
+{% comment %} Modern: sidebar (identity, contact, skills) + main column (the rest). {% endcomment %}
+{% block portfolio %}
+<div class="pf-layout">
+  <aside class="pf-sidebar">
+    {% include "rendering/partials/identity.html" with size="lg" %}
+    {% include "rendering/partials/contact.html" %}
+    {% for section in content.sections %}
+      {% if section.key == "skills" %}{% include "rendering/partials/section.html" %}{% endif %}
+    {% endfor %}
+  </aside>
+
+  <div class="pf-main">
+    {% if profile.bio %}
+      <section class="pf-section" aria-labelledby="pf-about">
+        <h2 class="pf-section__title" id="pf-about">About</h2>
+        <p class="pf-item__text">{{ profile.bio|linebreaksbr }}</p>
+      </section>
+    {% endif %}
+    {% for section in content.sections %}
+      {% if section.key != "skills" %}{% include "rendering/partials/section.html" %}{% endif %}
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -147,3 +147,20 @@ private data gets these tests, copied from `OwnerRequiredMixinTests`:
 FOLDO renders HTML with Django templates; there is no JSON API in Sprint 1.
 The only JSON endpoint is `/health/`, which must never expose settings,
 secrets or environment variable names.
+## 8. Profile section names — the contract renderers rely on
+
+Portfolio rendering (`apps.rendering`), Portfolio DNA and the Quality Check
+read profile sections through these names. Use them in FOLDO-04/15 models so
+your section shows up in portfolios without extra wiring:
+
+| Model | FK + `related_name` | Fields the renderer reads |
+| --- | --- | --- |
+| Skill | `profile` → `"skills"` | `name`, `proficiency` (+ `get_proficiency_display`) |
+| Experience | `profile` → `"experiences"` | `job_title`, `company`, `description`, `start_date`, `end_date` |
+| Education | `profile` → `"educations"` | `institution`, `degree`, `field_of_study`, `description`, `start_date`, `end_date` |
+| Project | `profile` → `"projects"` | `project_name`, `description`, `project_url`, `start_date`, `end_date` |
+| ProjectStory | `OneToOneField(project)` → `"story"` | `problem`, `role`, `process`, `solution`, `outcome` (all optional) |
+| ProjectEvidence | `project` → `"evidence"` | `caption`, `evidence_type`, `file_url` |
+
+Missing fields are fine (they just don't print); an empty `end_date` reads as
+"Present". Links are only rendered when they start with `http://`/`https://`.
