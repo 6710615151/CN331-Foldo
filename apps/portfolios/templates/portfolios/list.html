@@ -2,9 +2,12 @@
 {% block title %}My portfolios – FOLDO{% endblock %}
 {% block content %}
 <div class="container py-4" style="max-width: 900px;">
-  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+   <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
     <h1 class="h3 mb-0">My portfolios</h1>
-    <a class="btn btn-primary" href="{% url 'portfolios:create' %}">New portfolio</a>
+    <div class="d-flex flex-wrap gap-2">
+      <a class="btn btn-outline-secondary" href="{% url 'education:settings' %}">Education</a>
+      <a class="btn btn-primary" href="{% url 'portfolios:create' %}">New portfolio</a>
+    </div>
   </div>
 
   {% if portfolios %}

@@ -1,13 +1,23 @@
 {% comment %}
-  PLACEHOLDER. Included by the portfolio layouts with `education` = get_education_display(owner).
-  Render nothing when `education` is empty. Example for the real implementation:
-
-  {% if education %}
-    <section class="card border-0 shadow-sm mb-4" aria-labelledby="education-heading">
-      <div class="card-body p-4">
-        <h2 id="education-heading" class="h5">Education</h2>
-        ...
-      </div>
-    </section>
-  {% endif %}
+  Included by the portfolio layouts with `education` = get_education_display(owner).
+  Renders nothing when the user has filled in no education details.
 {% endcomment %}
+{% if education %}
+  <section class="card pf-card border-0 mb-4" aria-labelledby="education-heading">
+    <div class="card-body p-4">
+      <h2 id="education-heading" class="h5 pf-heading">Education</h2>
+      <ul class="list-unstyled mb-0">
+        {% for entry in education.entries %}
+          <li{% if not forloop.last %} class="mb-3"{% endif %}>
+            <div class="d-flex justify-content-between flex-wrap gap-1">
+              <strong>{{ entry.title }}</strong>
+              {% if entry.years %}<span class="text-body-secondary small">{{ entry.years }}</span>{% endif %}
+            </div>
+            {% if entry.subtitle %}<div>{{ entry.subtitle }}</div>{% endif %}
+            {% if entry.grade %}<div class="small text-body-secondary">Grade: {{ entry.grade }}</div>{% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </section>
+{% endif %}
