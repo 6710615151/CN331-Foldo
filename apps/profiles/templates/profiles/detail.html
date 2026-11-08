@@ -32,6 +32,7 @@
           <button type="submit" class="btn btn-outline-secondary">Make default</button>
         </form>
       {% endif %}
+      <a class="btn btn-outline-secondary" href="{% url 'profiles:projects' profile.pk %}">Projects</a>
       <a class="btn btn-outline-danger" href="{% url 'profiles:delete' profile.pk %}">Delete</a>
       <a class="btn btn-primary" href="{% url 'profiles:update' profile.pk %}">Edit profile</a>
     </div>

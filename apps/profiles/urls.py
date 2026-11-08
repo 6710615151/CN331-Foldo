@@ -1,5 +1,5 @@
 from django.urls import path
-
+from django.urls import include 
 from . import views
 
 app_name = "profiles"
@@ -14,4 +14,5 @@ urlpatterns = [
     path("<int:pk>/edit/", views.profile_edit, name="update"),
     path("<int:pk>/default/", views.profile_make_default, name="make_default"),
     path("<int:pk>/delete/", views.profile_delete, name="delete"),
+    path("", include("apps.profiles.projects.urls")),
 ]

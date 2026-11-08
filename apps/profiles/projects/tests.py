@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 from django.template import Context, Template
 from django.test import TestCase
-
+from django.urls import reverse
 from ..models import MainProfile, Project
 from .forms import ProjectForm
 
@@ -144,3 +144,146 @@ class ProjectFormTests(ProjectTestCase):
     def test_fields_use_the_shared_bootstrap_look(self):
         html = str(ProjectForm()["project_name"])
         self.assertIn("form-control", html)
+
+
+
+class ProjectPagesTests(ProjectTestCase):
+    """The pages: list / add / detail / edit / delete, and who may open them."""
+
+    def setUp(self):
+        super().setUp()
+        self.project = self.make_project(project_name="FOLDO", problem="Slow sign-up")
+        self.client.force_login(self.alice)
+
+    def urls_for(self, project, profile):
+        return {
+            "list": reverse("profiles:projects", args=[profile.pk]),
+            "add": reverse("profiles:project_add", args=[profile.pk]),
+            "detail": reverse("profiles:project_detail", args=[project.pk]),
+            "edit": reverse("profiles:project_edit", args=[project.pk]),
+            "delete": reverse("profiles:project_delete", args=[project.pk]),
+        }
+
+    # --- the 3 privacy tests (docs/CONVENTIONS.md section 6) -----------------
+
+    def test_owner_can_open_every_page(self):
+        for name, url in self.urls_for(self.project, self.alice_profile).items():
+            with self.subTest(page=name):
+                self.assertEqual(self.client.get(url).status_code, 200)
+
+    def test_other_user_gets_404_on_every_page(self):
+        self.client.force_login(self.bobby)
+        for name, url in self.urls_for(self.project, self.alice_profile).items():
+            with self.subTest(page=name):
+                self.assertEqual(self.client.get(url).status_code, 404)
+
+    def test_not_signed_in_is_sent_to_login(self):
+        self.client.logout()
+        for name, url in self.urls_for(self.project, self.alice_profile).items():
+            with self.subTest(page=name):
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, 302)
+                self.assertIn(reverse("accounts:login"), response.url)
+
+    # --- list ---------------------------------------------------------------
+
+    def test_list_shows_only_this_profiles_projects(self):
+        self.make_project(profile=self.bobby_profile, project_name="Bobby's secret")
+        response = self.client.get(reverse("profiles:projects", args=[self.alice_profile.pk]))
+        self.assertContains(response, "FOLDO")
+        self.assertNotContains(response, "Bobby&#x27;s secret")
+        self.assertNotContains(response, "Bobby's secret")
+
+    def test_empty_list_shows_the_empty_state(self):
+        self.project.delete()
+        response = self.client.get(reverse("profiles:projects", args=[self.alice_profile.pk]))
+        self.assertContains(response, "ยังไม่มีโปรเจกต์")
+        self.assertContains(response, reverse("profiles:project_add", args=[self.alice_profile.pk]))
+
+    # --- add ----------------------------------------------------------------
+
+    def test_add_saves_the_project_on_this_profile(self):
+        response = self.client.post(
+            reverse("profiles:project_add", args=[self.alice_profile.pk]),
+            {"project_name": "Portfolio site", "outcome": "Got an internship"},
+        )
+        project = Project.objects.get(project_name="Portfolio site")
+        self.assertEqual(project.profile, self.alice_profile)
+        self.assertRedirects(response, reverse("profiles:project_detail", args=[project.pk]))
+
+    def test_add_ignores_a_posted_profile(self):
+        """Mass assignment: sending someone else's profile id must not move the project."""
+        self.client.post(
+            reverse("profiles:project_add", args=[self.alice_profile.pk]),
+            {"project_name": "Sneaky", "profile": self.bobby_profile.pk},
+        )
+        self.assertEqual(Project.objects.get(project_name="Sneaky").profile, self.alice_profile)
+
+    def test_cannot_add_to_someone_elses_profile(self):
+        response = self.client.post(
+            reverse("profiles:project_add", args=[self.bobby_profile.pk]), {"project_name": "Sneaky"}
+        )
+        self.assertEqual(response.status_code, 404)
+        self.assertFalse(Project.objects.filter(project_name="Sneaky").exists())
+
+    def test_invalid_add_shows_errors_and_saves_nothing(self):
+        response = self.client.post(
+            reverse("profiles:project_add", args=[self.alice_profile.pk]),
+            {"project_name": "Bad dates", "start_date": "2026-05-01", "end_date": "2026-04-30"},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "is-invalid")
+        self.assertFalse(Project.objects.filter(project_name="Bad dates").exists())
+
+    # --- detail -------------------------------------------------------------
+
+    def test_detail_shows_the_story(self):
+        response = self.client.get(reverse("profiles:project_detail", args=[self.project.pk]))
+        self.assertContains(response, "Slow sign-up")
+
+    def test_detail_of_old_project_without_story_still_works(self):
+        old = self.make_project(project_name="Old project")
+        response = self.client.get(reverse("profiles:project_detail", args=[old.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "foldo-story")
+
+    # --- edit / delete ------------------------------------------------------
+
+    def test_edit_changes_the_project(self):
+        self.client.post(
+            reverse("profiles:project_edit", args=[self.project.pk]),
+            {"project_name": "FOLDO v2", "role": "Dev 4"},
+        )
+        self.project.refresh_from_db()
+        self.assertEqual((self.project.project_name, self.project.role), ("FOLDO v2", "Dev 4"))
+
+    def test_other_user_cannot_edit(self):
+        self.client.force_login(self.bobby)
+        response = self.client.post(
+            reverse("profiles:project_edit", args=[self.project.pk]), {"project_name": "Hacked"}
+        )
+        self.assertEqual(response.status_code, 404)
+        self.project.refresh_from_db()
+        self.assertEqual(self.project.project_name, "FOLDO")
+
+    def test_delete_removes_the_project(self):
+        response = self.client.post(reverse("profiles:project_delete", args=[self.project.pk]))
+        self.assertRedirects(response, reverse("profiles:projects", args=[self.alice_profile.pk]))
+        self.assertFalse(Project.objects.filter(pk=self.project.pk).exists())
+
+    def test_other_user_cannot_delete(self):
+        self.client.force_login(self.bobby)
+        response = self.client.post(reverse("profiles:project_delete", args=[self.project.pk]))
+        self.assertEqual(response.status_code, 404)
+        self.assertTrue(Project.objects.filter(pk=self.project.pk).exists())
+
+    def test_saved_project_is_still_there_after_signing_in_again(self):
+        """Sprint 2: changes persist after refresh and login."""
+        self.client.post(
+            reverse("profiles:project_add", args=[self.alice_profile.pk]),
+            {"project_name": "Persisted", "solution": "Kept it simple"},
+        )
+        self.client.logout()
+        self.client.force_login(self.alice)
+        response = self.client.get(reverse("profiles:projects", args=[self.alice_profile.pk]))
+        self.assertContains(response, "Persisted")
