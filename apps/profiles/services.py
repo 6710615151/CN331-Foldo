@@ -74,7 +74,16 @@ def get_or_create_profile(user) -> MainProfile:
     return profile
 
 
+@transaction.atomic
 def set_default_profile(profile: MainProfile) -> None:
+    """Make ``profile`` its owner's only default.
+
+    Two "make default" requests at once (double click, two tabs) would each demote
+    the others and then both save as default; on PostgreSQL the second hits the
+    one-default-per-owner constraint as a 500. Locking the owner's profile rows
+    first (SELECT ... FOR UPDATE) makes them run one after the other.
+    """
+    list(MainProfile.objects.select_for_update().filter(owner_id=profile.owner_id).values_list("pk", flat=True))
     profile.is_default = True
     profile.save(update_fields=["is_default"])
 
