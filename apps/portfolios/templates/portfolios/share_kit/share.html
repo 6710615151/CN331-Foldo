@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Share · {{ portfolio.title }}{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'portfolios/share_kit.css' %}">{% endblock %}
+
+{% block content %}
+<div class="foldo-sk container py-5" style="max-width: 760px;">
+  <a class="foldo-back" href="{% url 'portfolios:list' %}"><span aria-hidden="true">&larr;</span> My portfolios</a>
+
+  <header class="foldo-sk__header">
+    <p class="foldo-sk__eyebrow" lang="en">{{ portfolio.title }}</p>
+    <h1 class="foldo-sk__title">Share <span class="foldo-text-lime">kit</span></h1>
+    <div class="foldo-sk__bands" aria-hidden="true"><span></span><span></span></div>
+    {% if published %}
+      <span class="foldo-sk__status foldo-sk__status--on" role="status">Published &middot; anyone with the link can view it</span>
+    {% else %}
+      <span class="foldo-sk__status" role="status">Unpublished &middot; only you can see it</span>
+    {% endif %}
+  </header>
+
+  {% if published %}
+    <section class="foldo-sk__card card card-body" aria-labelledby="sk-link-heading">
+      <h2 class="foldo-sk__card-title" id="sk-link-heading">Public link</h2>
+      <div class="input-group">
+        <input type="text" class="form-control" id="sk-url" value="{{ public_url }}" readonly
+               aria-label="Public URL" onfocus="this.select()">
+        <button type="button" class="btn btn-primary" id="sk-copy" data-copy-target="#sk-url" hidden>Copy link</button>
+        <a class="btn btn-outline-secondary" href="{{ public_url }}" target="_blank" rel="noopener">Open</a>
+      </div>
+      <p class="foldo-sk__hint mb-0" id="sk-copy-status" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="foldo-sk__card card card-body" aria-labelledby="sk-qr-heading">
+      <h2 class="foldo-sk__card-title" id="sk-qr-heading">QR code</h2>
+      <div class="foldo-sk__qr">{{ qr_svg|safe }}</div>
+      <p class="foldo-sk__hint">Scanning it opens the link above. It stops working if you unpublish this version.</p>
+      <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-primary" href="{% url 'portfolios:share_qr_png' portfolio.pk %}" download>Download PNG</a>
+        <a class="btn btn-outline-secondary" href="{% url 'portfolios:share_qr_svg' portfolio.pk %}" download>Download SVG</a>
+      </div>
+    </section>
+  {% else %}
+    <section class="foldo-sk__empty">
+      <p class="mb-2"><strong>This version is not published yet.</strong></p>
+      <p class="mb-3 text-body-secondary">
+        A link or QR code would lead to a page that does not exist, so none is shown.
+        Turn on &ldquo;Publish this portfolio&rdquo; and come back here.
+      </p>
+      <a class="btn btn-primary" href="{% url 'portfolios:update' portfolio.pk %}">Edit &amp; publish</a>
+      <a class="btn btn-outline-secondary" href="{% url 'portfolios:preview' portfolio.pk %}">Preview</a>
+    </section>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% static 'portfolios/share_kit.js' %}" defer></script>{% endblock %}
