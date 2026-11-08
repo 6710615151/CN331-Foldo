@@ -212,6 +212,15 @@ files, and Render PostgreSQL.
 | `DATABASE_URL` | from the Render database |
 | `RENDER_EXTERNAL_HOSTNAME` | set by Render; added to `ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS` |
 | `DJANGO_SERVE_MEDIA` | `true` on the free plan (no object storage) |
+| `EMAIL_HOST`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `DEFAULT_FROM_EMAIL` | SMTP for password-reset mail (below) |
+
+**Password-reset email.** Until `EMAIL_HOST` is set, reset emails are only
+written to the service log. With Gmail: turn on 2-Step Verification, create an
+App Password, then set `EMAIL_HOST=smtp.gmail.com`, `EMAIL_HOST_USER=<address>`,
+`EMAIL_HOST_PASSWORD=<app password>`, `DEFAULT_FROM_EMAIL=FOLDO <address>`
+(port 587 + TLS are the defaults). Test it with “ลืมรหัสผ่าน” before the demo;
+if the host blocks outbound SMTP, use an email provider with an SMTP relay on
+port 2525 and set `EMAIL_PORT=2525`.
 
 Known limit of the free plan: the disk is ephemeral, so uploaded profile photos
 disappear after a redeploy; profiles fall back to initials.
