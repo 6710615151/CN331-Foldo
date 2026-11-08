@@ -786,3 +786,6 @@ main:has(> .foldo-hero) {
     scroll-behavior: auto !important;
   }
 }
+
+main a[href^="mailto:"],
+main a[href^="http"] { overflow-wrap: anywhere; }
