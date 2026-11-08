@@ -125,10 +125,10 @@ def _preview_toolbar(portfolio: Portfolio, theme: PortfolioTheme) -> dict:
     if portfolio.is_published:
         status = f"ตัวอย่าง · {theme.name} · เผยแพร่แล้ว"
     else:
-        status = f"ตัวอย่าง · {theme.name} · ส่วนตัว เห็นได้เฉพาะคุณ"
+        status = f"ตัวอย่าง · {theme.name} · ยังไม่เผยแพร่ เห็นได้เฉพาะคุณ"
     # Same order as the builder steps in the app (setup → content → preview → quality → share).
     links = [
-        ("แก้ไขเวอร์ชันและเทมเพลต", reverse("portfolios:update", args=[portfolio.pk])),
+        ("ตั้งค่าและเทมเพลต", reverse("portfolios:update", args=[portfolio.pk])),
         ("เลือกเนื้อหา", reverse("portfolios:content", args=[portfolio.pk])),
         ("Desktop / Mobile", reverse("portfolios:device_preview", args=[portfolio.pk])),
         ("ดาวน์โหลด PDF", reverse("portfolios:pdf", args=[portfolio.pk])),

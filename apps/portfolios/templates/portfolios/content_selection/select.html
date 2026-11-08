@@ -10,13 +10,13 @@
     <div class="foldo-page-head__text tone-blue">
       <p class="foldo-eyebrow foldo-eyebrow--plain">{{ portfolio.title }}</p>
       <h1 class="foldo-page-title">เลือก<em>เนื้อหา</em></h1>
-      <p class="foldo-page-lead">เฉพาะรายการที่ติ๊กจะแสดงในเวอร์ชันนี้ คัดเฉพาะที่ตรงกับงานที่สมัคร การเอาติ๊กออกไม่ลบอะไรจากโปรไฟล์ และไม่เปลี่ยนเวอร์ชันอื่น</p>
+      <p class="foldo-page-lead">ติ๊กเฉพาะที่ตรงกับงานที่สมัคร เอาติ๊กออกแล้วข้อมูลยังอยู่ในโปรไฟล์ และไม่กระทบพอร์ตโฟลิโออื่น</p>
     </div>
     <div class="foldo-page-head__actions">
       {% if customised %}
-        <span class="foldo-badge tone-lime">{% include "partials/icon.html" with name="sliders" %}เลือกเนื้อหาเองแล้ว</span>
+        <span class="foldo-badge tone-lime">{% include "partials/icon.html" with name="sliders" %}เลือกเนื้อหาแล้ว</span>
       {% else %}
-        <span class="foldo-badge tone-muted">แสดงทุกอย่าง (ยังไม่ได้ปรับ)</span>
+        <span class="foldo-badge tone-muted">แสดงทุกอย่างในโปรไฟล์</span>
       {% endif %}
     </div>
   </div>
@@ -26,7 +26,7 @@
   {% if not has_content %}
     {% with source=portfolio.profile|default:shell.profile %}
       {% if source %}{% url 'profiles:view' source.pk as profiles_url %}{% else %}{% url 'profiles:list' as profiles_url %}{% endif %}
-      {% include "partials/empty_state.html" with title="ยังไม่มีเนื้อหาให้เลือก" message="Nothing to choose from yet · เพิ่มการศึกษา ทักษะ ประสบการณ์ หรือโปรเจกต์ในโปรไฟล์ที่เวอร์ชันนี้ใช้ก่อน แล้วกลับมาเลือกที่นี่" action_url=profiles_url action_label="ไปเพิ่มข้อมูลในโปรไฟล์" %}
+      {% include "partials/empty_state.html" with title="ยังไม่มีเนื้อหาให้เลือก" message="เพิ่มการศึกษา ทักษะ ประสบการณ์ หรือโปรเจกต์ในโปรไฟล์ที่พอร์ตโฟลิโอนี้ใช้ก่อน แล้วกลับมาเลือกที่นี่" action_url=profiles_url action_label="ไปเพิ่มข้อมูลในโปรไฟล์" %}
     {% endwith %}
   {% else %}
   <form method="post" data-loading data-unsaved-guard>
@@ -38,7 +38,6 @@
             <legend class="foldo-cs__title">
               <span class="foldo-icon-tile foldo-icon-tile--sm foldo-icon-tile--solid">{% if section.key == "experience" %}{% include "partials/icon.html" with name="briefcase" %}{% elif section.key == "education" %}{% include "partials/icon.html" with name="cap" %}{% elif section.key == "projects" %}{% include "partials/icon.html" with name="code" %}{% else %}{% include "partials/icon.html" with name="spark" %}{% endif %}</span>
               {% if section.key == "experience" %}ประสบการณ์{% elif section.key == "education" %}การศึกษา{% elif section.key == "projects" %}โปรเจกต์{% else %}ทักษะ{% endif %}
-              <span class="visually-hidden" lang="en">{{ section.title }}</span>
             </legend>
             {% if section.items %}<span class="foldo-cs__count" data-cs-count aria-live="polite">{{ section.items|length }}</span>{% endif %}
             {% if section.items %}
@@ -80,7 +79,7 @@
   </form>
 
   {% url 'portfolios:device_preview' portfolio.pk as next_url %}
-  {% include "portfolios/_workflow_next.html" with url=next_url label="ดูตัวอย่าง" hint="บันทึกการเลือกแล้ว ดูว่าเวอร์ชันนี้ออกมาเป็นอย่างไรบนจอคอมและมือถือ" tone="lime" %}
+  {% include "portfolios/_workflow_next.html" with url=next_url label="ดูตัวอย่าง" hint="บันทึกการเลือกแล้ว ดูว่าพอร์ตโฟลิโอนี้ออกมาเป็นอย่างไรบนจอคอมและมือถือ" tone="lime" %}
   {% endif %}
 </div>
 {% endblock %}

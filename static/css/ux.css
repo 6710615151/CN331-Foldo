@@ -469,3 +469,17 @@ a.is-busy { pointer-events: none; opacity: 0.8; }
 @media (prefers-reduced-motion: reduce) {
   .is-spotlit { animation: none; box-shadow: 0 0 0 3px rgba(196, 245, 0, 0.5); }
 }
+
+/* --- 6. Thai typography -------------------------------------------------- */
+/* Caps tracking is for Latin text. Thai has no capitals, and wide tracking
+   pulls vowels and tone marks away from their consonants, so any eyebrow or
+   group label that is not explicitly English gets normal spacing. */
+.foldo-eyebrow:not([lang="en"]),
+.foldo-nav-group__label:not([lang="en"]),
+.foldo-shortcuts__label,
+.foldo-next__eyebrow {
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+.foldo-nav-group__label:not([lang="en"]) { font-size: 0.78rem; }

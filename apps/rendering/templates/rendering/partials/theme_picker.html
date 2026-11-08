@@ -1,11 +1,11 @@
-{% comment %}
+{% load foldo_tags %}{% comment %}
   Template choice as visual cards (FOLDO-07). Params: field (a bound choice field
   whose values are theme keys), themes (apps.rendering.themes.THEMES).
   Plain radio inputs, so it works without JavaScript and with the keyboard.
 {% endcomment %}
 <fieldset class="mb-2" id="{{ field.auto_id }}" tabindex="-1"{% if field.help_text or field.errors %} aria-describedby="{% if field.help_text %}{{ field.auto_id }}_helptext{% endif %}{% if field.errors %} {{ field.auto_id }}_error{% endif %}"{% endif %}>
   <legend class="form-label fs-6 mb-2">
-    เลือกเทมเพลต <span lang="en">({{ field.label }})</span>{% if field.field.required %} <span class="foldo-required" aria-hidden="true">*</span>{% endif %}
+    เลือกเทมเพลต{% if field.field.required %} <span class="foldo-required" aria-hidden="true">*</span>{% endif %}
   </legend>
   <div class="foldo-theme-picker">
     {% for theme in themes %}
@@ -15,7 +15,7 @@
         {% include "partials/theme_thumb.html" with key=theme.key %}
         <span class="foldo-theme-option__check" aria-hidden="true">{% include "partials/icon.html" with name="check" %}</span>
         <span class="foldo-theme-option__text">
-          <span class="foldo-theme-option__cat">{{ theme.category }}</span>
+          <span class="foldo-theme-option__cat">{{ theme.category|category_th }}</span>
           <strong>{{ theme.name }}</strong>
           <span class="foldo-theme-option__desc">{{ theme.description }}</span>
         </span>

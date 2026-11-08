@@ -11,7 +11,7 @@
 
   <div class="foldo-page-head">
     <div class="foldo-page-head__text tone-purple">
-      <p class="foldo-eyebrow" lang="en">Quality check</p>
+      <p class="foldo-eyebrow foldo-eyebrow--plain">ตรวจคุณภาพ</p>
       <h1 class="foldo-page-title">{{ portfolio.title }}</h1>
       <p class="foldo-page-lead">ระบบแค่ตรวจและแนะนำ ไม่แก้ไข บันทึก หรือเผยแพร่อะไรให้อัตโนมัติ กดปุ่มข้างแต่ละข้อเพื่อไปแก้ตรงจุด แล้วกลับมากด “ตรวจอีกครั้ง”</p>
     </div>
@@ -73,7 +73,7 @@
     </section>
   {% empty %}
     <div class="foldo-card text-center">
-      <p class="mb-0 foldo-muted">{% include "partials/icon.html" with name="check-circle" class="foldo-text-lime" %} ไม่มีข้อแนะนำเพิ่มเติม พอร์ตโฟลิโอนี้พร้อมส่งแล้ว</p>
+      <p class="mb-0 foldo-muted">{% include "partials/icon.html" with name="check-circle" class="foldo-text-lime" %} ไม่พบอะไรต้องแก้ พอร์ตโฟลิโอนี้พร้อมส่ง</p>
     </div>
   {% endfor %}
 
@@ -86,10 +86,10 @@
   {% elif not portfolio.is_published %}
     {% url 'portfolios:update' portfolio.pk as publish_url %}
     {% url 'portfolios:share' portfolio.pk as share_url %}
-    {% include "portfolios/_workflow_next.html" with url=publish_url|add:"#id_is_published" label="เผยแพร่เวอร์ชันนี้" hint="ไม่มีปัญหาที่ต้องแก้แล้ว เปิดการเผยแพร่เพื่อรับลิงก์สาธารณะและ QR code" secondary_url=share_url secondary_label="ดู Share Kit" tone="lime" %}
+    {% include "portfolios/_workflow_next.html" with url=publish_url|add:"#id_is_published" label="เผยแพร่พอร์ตโฟลิโอนี้" hint="ไม่มีปัญหาที่ต้องแก้แล้ว เปิดการเผยแพร่เพื่อรับลิงก์สาธารณะและ QR code" secondary_url=share_url secondary_label="ดูหน้าแชร์" tone="lime" %}
   {% else %}
     {% url 'portfolios:share' portfolio.pk as share_url %}
-    {% include "portfolios/_workflow_next.html" with url=share_url label="เปิด Share Kit" hint="เวอร์ชันนี้เผยแพร่อยู่ คัดลอกลิงก์หรือดาวน์โหลด QR code ไปใช้ได้เลย" tone="lime" %}
+    {% include "portfolios/_workflow_next.html" with url=share_url label="แชร์ลิงก์และ QR" hint="พอร์ตโฟลิโอนี้เผยแพร่อยู่ คัดลอกลิงก์หรือดาวน์โหลด QR code ไปใช้ได้เลย" tone="lime" %}
   {% endif %}
 </div>
 {% endblock %}

@@ -175,7 +175,7 @@ class VersionRenderingTests(TestCase):
 
     def test_owner_preview_has_the_bar_and_noindex(self):
         response = self.preview(self.backend)
-        self.assertContains(response, "ส่วนตัว เห็นได้เฉพาะคุณ")
+        self.assertContains(response, "ยังไม่เผยแพร่ เห็นได้เฉพาะคุณ")
         self.assertContains(response, reverse("portfolios:update", args=[self.backend.pk]))
         self.assertContains(response, '<meta name="robots" content="noindex">')
 
@@ -233,7 +233,7 @@ class TemplatePickerTests(TestCase):
     def test_unknown_template_is_rejected_and_kept_unsaved(self):
         response = self.client.post(reverse("portfolios:create"), {"title": "X", "profile": "", "template_key": "neon"})
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Select a valid choice")
+        self.assertContains(response, "ตัวเลือกนี้ใช้ไม่ได้แล้ว")
         self.assertFalse(Portfolio.objects.exists())
 
 

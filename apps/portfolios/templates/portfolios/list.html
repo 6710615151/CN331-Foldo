@@ -5,9 +5,9 @@
 <div class="foldo-page">
   <div class="foldo-page-head">
     <div class="foldo-page-head__text tone-magenta">
-      <p class="foldo-eyebrow" lang="en">Portfolio versions</p>
-      <h1 id="portfolios-heading" class="foldo-page-title">เวอร์ชัน<em>พอร์ตโฟลิโอ</em></h1>
-      <p class="foldo-page-lead">หนึ่งโปรไฟล์ หลายเวอร์ชัน แต่ละเวอร์ชันมีเทมเพลต เนื้อหา และลิงก์ของตัวเอง โดยไม่กระทบเวอร์ชันอื่น</p>
+      <p class="foldo-eyebrow foldo-eyebrow--plain">พอร์ตโฟลิโอ</p>
+      <h1 id="portfolios-heading" class="foldo-page-title">พอร์ตโฟลิโอ<em>ของฉัน</em></h1>
+      <p class="foldo-page-lead">งานละหนึ่งพอร์ตโฟลิโอ แต่ละอันมีเทมเพลต เนื้อหา และลิงก์ของตัวเอง แก้อันหนึ่งไม่กระทบอันอื่น</p>
     </div>
     <div class="foldo-page-head__actions">
       <a class="btn btn-lime" href="{% url 'portfolios:create' %}">{% include "partials/icon.html" with name="plus" %}สร้างพอร์ตโฟลิโอใหม่</a>
@@ -19,9 +19,9 @@
       <div class="foldo-chip-row" data-filter-group="versions" role="group" aria-label="กรองตามสถานะ" hidden>
         <button type="button" class="foldo-chip" data-filter="all" aria-pressed="true">ทั้งหมด</button>
         <button type="button" class="foldo-chip" data-filter="published" aria-pressed="false">เผยแพร่แล้ว</button>
-        <button type="button" class="foldo-chip" data-filter="private" aria-pressed="false">ส่วนตัว</button>
+        <button type="button" class="foldo-chip" data-filter="private" aria-pressed="false">ยังไม่เผยแพร่</button>
       </div>
-      <p class="foldo-muted small mb-0"><span data-filter-count="versions">{{ portfolios|length }}</span> เวอร์ชัน</p>
+      <p class="foldo-muted small mb-0"><span data-filter-count="versions">{{ portfolios|length }}</span> พอร์ตโฟลิโอ</p>
     </div>
 
     <ul class="foldo-versions" aria-labelledby="portfolios-heading">
@@ -31,16 +31,16 @@
             {% include "partials/theme_thumb.html" with key=portfolio.template_key %}
             <span class="foldo-version__status">
               {% if portfolio.is_published %}
-                <span class="foldo-badge foldo-badge--solid tone-lime foldo-badge--live"><span class="foldo-badge__dot"></span>เผยแพร่แล้ว<span class="visually-hidden" lang="en"> (Published)</span></span>
+                <span class="foldo-badge foldo-badge--solid tone-lime foldo-badge--live"><span class="foldo-badge__dot"></span>เผยแพร่แล้ว</span>
               {% else %}
-                <span class="foldo-badge foldo-badge--solid tone-muted">{% include "partials/icon.html" with name="lock" %}ส่วนตัว<span class="visually-hidden" lang="en"> (Private)</span></span>
+                <span class="foldo-badge foldo-badge--solid tone-muted">{% include "partials/icon.html" with name="lock" %}ยังไม่เผยแพร่</span>
               {% endif %}
             </span>
           </div>
           <div class="foldo-version__body">
             <h2 class="foldo-version__title"><a class="foldo-card__link" href="{% url 'portfolios:device_preview' portfolio.pk %}">{{ portfolio.title }}</a></h2>
             <dl class="foldo-version__meta">
-              <div><dt>โปรไฟล์</dt><dd>{% if portfolio.profile %}{{ portfolio.profile.label }}{% else %}โปรไฟล์ Default{% endif %}</dd></div>
+              <div><dt>โปรไฟล์</dt><dd>{% if portfolio.profile %}{{ portfolio.profile.label }}{% else %}โปรไฟล์หลัก{% endif %}</dd></div>
               <div><dt>เทมเพลต</dt><dd>{{ portfolio.get_template_key_display }}</dd></div>
               <div><dt>แก้ไขล่าสุด</dt><dd>{{ portfolio.updated_at|ago }}</dd></div>
             </dl>
@@ -61,7 +61,7 @@
                   {% include "partials/icon.html" with name="more" %}<span class="visually-hidden">ตัวเลือกของ {{ portfolio.title }}</span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
-                  <li><span class="dropdown-header">ขั้นตอนของเวอร์ชันนี้</span></li>
+                  <li><span class="dropdown-header">ขั้นตอน</span></li>
                   <li><a class="dropdown-item" href="{% url 'portfolios:content' portfolio.pk %}">{% include "partials/icon.html" with name="sliders" %}เลือกเนื้อหา</a></li>
                   <li><a class="dropdown-item" href="{% url 'portfolios:quality' portfolio.pk %}">{% include "partials/icon.html" with name="gauge" %}ตรวจคุณภาพ</a></li>
                   <li><a class="dropdown-item" href="{% url 'portfolios:share' portfolio.pk %}">{% include "partials/icon.html" with name="share" %}แชร์ลิงก์ / QR</a></li>
@@ -86,7 +86,7 @@
     </ul>
   {% else %}
     {% url 'portfolios:create' as create_url %}
-    {% include "partials/empty_state.html" with title="ยังไม่มีพอร์ตโฟลิโอ" message="You don't have a portfolio yet. เลือกโปรไฟล์และเทมเพลตเพื่อสร้างเวอร์ชันแรกของคุณ" action_url=create_url action_label="สร้างพอร์ตโฟลิโอแรก" tone="magenta" %}
+    {% include "partials/empty_state.html" with title="ยังไม่มีพอร์ตโฟลิโอ" message="สร้างพอร์ตโฟลิโอสำหรับงานที่จะสมัคร เลือกโปรไฟล์และเทมเพลต แล้วค่อยเลือกเนื้อหา" action_url=create_url action_label="สร้างพอร์ตโฟลิโอแรก" tone="magenta" %}
   {% endif %}
 </div>
 {% endblock %}

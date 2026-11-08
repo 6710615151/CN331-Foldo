@@ -3,7 +3,7 @@
 
 {% block html_lang %}th{% endblock %}
 {% block title %}FOLDO — One Profile. Many Forms.{% endblock %}
-{% block meta_description %}FOLDO — เก็บทุกผลงานไว้ที่เดียว แล้วสร้าง Portfolio ได้หลายเวอร์ชัน{% endblock %}
+{% block meta_description %}FOLDO — เก็บโปรไฟล์ไว้ที่เดียว แล้วสร้างพอร์ตโฟลิโอให้ตรงกับทุกงานที่สมัคร{% endblock %}
 
 {# Full-bleed hero: the landing page carries its own large logo, so no navbar or footer. #}
 {% block frame_class %}foldo-frame--bare{% endblock %}
@@ -37,15 +37,15 @@
         One Profile. <span class="foldo-text-lime">Many Forms.</span>
       </h1>
       <p class="foldo-hero__lead">
-        เก็บทุกผลงานไว้ที่เดียว<br>
-        แล้วสร้าง <span lang="en">Portfolio</span> ได้หลายเวอร์ชัน
+        เก็บโปรไฟล์ไว้ที่เดียว<br>
+        แล้วสร้างพอร์ตโฟลิโอให้ตรงกับทุกงานที่สมัคร
       </p>
 
       <div class="d-flex flex-wrap align-items-center gap-3">
         {# New visitors sign up first; signed-in users go straight to their dashboard. #}
         {% if user.is_authenticated %}{% url 'core:dashboard' as cta_url %}{% else %}{% url 'accounts:register' as cta_url %}{% endif %}
         <a class="btn btn-lime btn-lg foldo-hero__cta" href="{{ cta_url }}">
-          <span lang="en">Get Started</span>
+          {% if user.is_authenticated %}ไปที่แดชบอร์ด{% else %}สมัครใช้งานฟรี{% endif %}
           <span class="foldo-arrow foldo-arrow--out" aria-hidden="true">&nearr;</span>
         </a>
 

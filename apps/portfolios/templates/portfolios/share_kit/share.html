@@ -9,12 +9,12 @@
   <div class="foldo-page-head">
     <div class="foldo-page-head__text tone-lime">
       <p class="foldo-eyebrow foldo-eyebrow--plain">{{ portfolio.title }}</p>
-      <h1 class="foldo-page-title">Share <em>Kit</em></h1>
-      <p class="foldo-page-lead">ลิงก์สาธารณะและ QR code ของเวอร์ชันนี้ ใส่ในเรซูเม่ อีเมล หรือพิมพ์ติดโปสเตอร์ได้เลย</p>
+      <h1 class="foldo-page-title">แชร์<em>ลิงก์และ QR</em></h1>
+      <p class="foldo-page-lead">ใส่ลิงก์ในเรซูเม่หรืออีเมล หรือพิมพ์ QR code ไว้บนเอกสารสมัครงาน</p>
     </div>
     <div class="foldo-page-head__actions">
       {% if published %}
-        <span class="foldo-badge tone-lime foldo-badge--live" role="status"><span class="foldo-badge__dot"></span>เผยแพร่แล้ว · ใครมีลิงก์ก็ดูได้<span class="visually-hidden" lang="en"> (Published)</span></span>
+        <span class="foldo-badge tone-lime foldo-badge--live" role="status"><span class="foldo-badge__dot"></span>เผยแพร่แล้ว · ใครมีลิงก์ก็ดูได้</span>
       {% else %}
         <span class="foldo-badge tone-muted" role="status">{% include "partials/icon.html" with name="lock" %}ยังไม่เผยแพร่ · เห็นได้เฉพาะคุณ</span>
       {% endif %}
@@ -30,7 +30,7 @@
           <span class="foldo-icon-tile foldo-icon-tile--sm tone-lime">{% include "partials/icon.html" with name="link" %}</span>ลิงก์สาธารณะ
         </h2>
         <div class="foldo-copy-field">
-          <input type="text" class="form-control" id="sk-url" value="{{ public_url }}" readonly aria-label="ลิงก์สาธารณะ (Public URL)" onfocus="this.select()">
+          <input type="text" class="form-control" id="sk-url" value="{{ public_url }}" readonly aria-label="ลิงก์สาธารณะ" onfocus="this.select()">
           <button type="button" class="btn btn-lime" id="sk-copy" data-copy="#sk-url" data-copy-status="#sk-copy-status" hidden>
             {% include "partials/icon.html" with name="copy" %}<span data-copy-label>คัดลอกลิงก์</span>
           </button>
@@ -60,7 +60,7 @@
         <h2 class="foldo-qr-poster__title" id="sk-qr-heading">QR code</h2>
         <div class="foldo-qr-poster__code foldo-sk__qr">{{ qr_svg|safe }}</div>
         <p class="foldo-qr-poster__name">{{ portfolio.title }}</p>
-        <p class="foldo-qr-poster__hint">สแกนแล้วเปิดลิงก์ด้านซ้าย จะใช้ไม่ได้ถ้าเลิกเผยแพร่เวอร์ชันนี้</p>
+        <p class="foldo-qr-poster__hint">สแกนแล้วเปิดลิงก์เดียวกับด้านซ้าย ใช้ไม่ได้ถ้าเลิกเผยแพร่</p>
         <div class="d-flex flex-wrap justify-content-center gap-2">
           <a class="btn btn-lime btn-sm" href="{% url 'portfolios:share_qr_png' portfolio.pk %}" download>{% include "partials/icon.html" with name="download" %}PNG</a>
           <a class="btn btn-outline-light btn-sm" href="{% url 'portfolios:share_qr_svg' portfolio.pk %}" download>{% include "partials/icon.html" with name="download" %}SVG</a>
@@ -71,12 +71,12 @@
   {% else %}
     <section class="foldo-empty tone-lime">
       <div class="foldo-empty__art">{% include "partials/geo_art.html" with variant="empty" %}</div>
-      <p class="foldo-empty__title h5">เวอร์ชันนี้ยังไม่เผยแพร่ <span class="visually-hidden" lang="en">(This version is not published yet.)</span></p>
-      <p class="foldo-empty__message">ลิงก์หรือ QR code จะพาไปหน้าที่ยังไม่มีอยู่ จึงยังไม่แสดง เปิดสวิตช์ “เผยแพร่พอร์ตโฟลิโอนี้” แล้วกดบันทึก ลิงก์และ QR จะขึ้นที่นี่</p>
+      <p class="foldo-empty__title h5">พอร์ตโฟลิโอนี้ยังไม่เผยแพร่</p>
+      <p class="foldo-empty__message">ลิงก์และ QR code จะใช้ได้หลังเผยแพร่ ทำตาม 3 ขั้นนี้</p>
       <ol class="foldo-mini-steps">
         <li><b>1</b>กด “ไปเปิดการเผยแพร่”</li>
         <li><b>2</b>เปิดสวิตช์ “เผยแพร่พอร์ตโฟลิโอนี้”</li>
-        <li><b>3</b>กดบันทึก แล้วกลับมาที่ Share Kit</li>
+        <li><b>3</b>กดบันทึก แล้วกลับมาที่หน้านี้</li>
       </ol>
       <div class="d-flex flex-wrap justify-content-center gap-2 mt-3">
         <a class="btn btn-lime" href="{% url 'portfolios:update' portfolio.pk %}#id_is_published">{% include "partials/icon.html" with name="globe" %}ไปเปิดการเผยแพร่</a>
@@ -88,7 +88,7 @@
   {% if published %}
     {% url 'portfolios:create' as next_url %}
     {% url 'portfolios:list' as list_url %}
-    {% include "portfolios/_workflow_next.html" with url=next_url label="สร้างเวอร์ชันใหม่" hint="เวอร์ชันนี้พร้อมแชร์แล้ว สมัครงานอื่นต่อ? สร้างอีกเวอร์ชันจากโปรไฟล์เดิม หรือทำสำเนาจากหน้ารวมพอร์ตโฟลิโอ" secondary_url=list_url secondary_label="พอร์ตโฟลิโอทั้งหมด" tone="lime" %}
+    {% include "portfolios/_workflow_next.html" with url=next_url label="สร้างพอร์ตโฟลิโอใหม่" hint="จะสมัครงานอื่นต่อ สร้างพอร์ตโฟลิโอใหม่จากโปรไฟล์เดิม หรือทำสำเนาอันนี้จากหน้าพอร์ตโฟลิโอของฉัน" secondary_url=list_url secondary_label="พอร์ตโฟลิโอของฉัน" tone="lime" %}
   {% endif %}
 </div>
 {% endblock %}

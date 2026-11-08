@@ -64,7 +64,7 @@ class EducationForm(BootstrapFormMixin, forms.ModelForm):
     def clean_institution(self):
         value = _squash(self.cleaned_data["institution"])
         if not value:
-            raise forms.ValidationError("Enter the school or university name.")
+            raise forms.ValidationError("ต้องกรอกชื่อโรงเรียนหรือมหาวิทยาลัย")
         return value
 
     def clean_degree(self):
@@ -82,20 +82,20 @@ class EducationForm(BootstrapFormMixin, forms.ModelForm):
     def clean_start_date(self):
         start = self.cleaned_data["start_date"]
         if start < EARLIEST_START:
-            raise forms.ValidationError("Start date looks too early. Please check the year.")
+            raise forms.ValidationError("วันที่เริ่มเก่าเกินไป ตรวจปีอีกครั้ง (ใช้ปี ค.ศ. เช่น 2022)")
         if start > _today():
-            raise forms.ValidationError("Start date can't be in the future.")
+            raise forms.ValidationError("วันที่เริ่มต้องไม่อยู่ในอนาคต")
         return start
 
     def clean_end_date(self):
         end = self.cleaned_data["end_date"]
         if end is not None and end.year > _today().year + MAX_YEARS_AHEAD:
-            raise forms.ValidationError(f"End date can be at most {MAX_YEARS_AHEAD} years from now.")
+            raise forms.ValidationError(f"วันที่จบต้องไม่เกิน {MAX_YEARS_AHEAD} ปีจากนี้")
         return end
 
     def clean(self):
         cleaned = super().clean()
         start, end = cleaned.get("start_date"), cleaned.get("end_date")
         if start and end and end < start:
-            self.add_error("end_date", "End date can't be before the start date.")
+            self.add_error("end_date", "วันที่จบต้องไม่อยู่ก่อนวันที่เริ่ม")
         return cleaned

@@ -5,9 +5,9 @@
   <a class="foldo-back" href="{{ cancel_url }}">{% include "partials/icon.html" with name="arrow-left" %}การศึกษา · {{ profile.label }}</a>
   <div class="foldo-page-head">
     <div class="foldo-page-head__text tone-blue">
-      <p class="foldo-eyebrow" lang="en">{{ heading }}</p>
+      <p class="foldo-eyebrow foldo-eyebrow--plain">การศึกษา · {{ profile.label }}</p>
       <h1 id="education-form-heading" class="foldo-page-title">{% if form.instance.pk %}แก้ไข<em>การศึกษา</em>{% else %}เพิ่ม<em>การศึกษา</em>{% endif %}</h1>
-      <p class="foldo-page-lead">ต้องกรอกชื่อสถาบันและวันที่เริ่ม ที่เหลือไม่บังคับ ช่องที่มี <span class="foldo-required">*</span> ต้องกรอก</p>
+      <p class="foldo-page-lead">กรอกแค่ชื่อสถาบันและวันที่เริ่มก็บันทึกได้</p>
     </div>
   </div>
 

@@ -16,7 +16,7 @@
       <h1 id="project-heading" class="foldo-case__title">{{ project.project_name }}</h1>
       <div class="foldo-chip-row">
         {% if project.start_date %}
-          <span class="foldo-chip foldo-chip--light">{% include "partials/icon.html" with name="calendar" %}{{ project.start_date|th_month }} – {% if project.end_date %}{{ project.end_date|th_month }}{% else %}<span lang="en">Present</span>{% endif %}</span>
+          <span class="foldo-chip foldo-chip--light">{% include "partials/icon.html" with name="calendar" %}{{ project.start_date|th_month }} – {% if project.end_date %}{{ project.end_date|th_month }}{% else %}ปัจจุบัน{% endif %}</span>
         {% endif %}
         {% if project.project_url %}
           <a class="foldo-chip foldo-chip--light" href="{{ project.project_url }}" target="_blank" rel="noopener noreferrer">{% include "partials/icon.html" with name="external" %}{{ project.project_url|domain|truncatechars:40 }}<span class="visually-hidden"> (เปิดในแท็บใหม่)</span></a>

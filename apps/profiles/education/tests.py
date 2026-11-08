@@ -132,7 +132,7 @@ class AccessControlTests(EducationTestCase):
 class CrudTests(EducationTestCase):
     def test_empty_state(self):
         response = self.client.get(reverse("profiles:education_list", args=[self.profile.pk]))
-        self.assertContains(response, "ยังไม่มีข้อมูลการศึกษา")
+        self.assertContains(response, "ยังไม่มีการศึกษา")
         self.assertContains(response, reverse("profiles:education_add", args=[self.profile.pk]))
 
     def test_create_with_all_fields(self):
@@ -164,7 +164,7 @@ class CrudTests(EducationTestCase):
     def test_delete_asks_first_then_removes(self):
         education = make_education(self.profile)
         url = reverse("profiles:education_delete", args=[education.pk])
-        self.assertContains(self.client.get(url), "ยืนยันลบ")
+        self.assertContains(self.client.get(url), "ลบการศึกษา")
         self.assertTrue(Education.objects.filter(pk=education.pk).exists())
         response = self.client.post(url)
         self.assertRedirects(response, reverse("profiles:education_list", args=[self.profile.pk]))
@@ -270,7 +270,7 @@ class ValidationTests(EducationTestCase):
         url = reverse("profiles:education_add", args=[self.profile.pk])
         response = self.client.post(url, form_data(start_date="2022-08-01", end_date="2020-01-01"))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "End date can&#x27;t be before the start date.")
+        self.assertContains(response, "วันที่จบต้องไม่อยู่ก่อนวันที่เริ่ม")
         self.assertContains(response, 'value="Computer Engineering"')
         self.assertContains(response, 'aria-invalid="true"')
         self.assertIn("danger", self.levels(response))
@@ -284,7 +284,7 @@ class ErrorStateTests(EducationTestCase):
             with self.assertLogs("apps.profiles.education.views", level="ERROR"):
                 response = self.client.post(url, form_data())
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "temporary problem")
+        self.assertContains(response, "ระบบขัดข้องชั่วคราว")
         self.assertContains(response, 'value="Thammasat University"')
         self.assertIn("danger", self.levels(response))
 

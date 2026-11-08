@@ -7,13 +7,13 @@
   <div class="foldo-page-head">
     <div class="foldo-page-head__text tone-magenta">
       {% if is_new %}
-        <p class="foldo-eyebrow" lang="en">New version</p>
+        <p class="foldo-eyebrow foldo-eyebrow--plain">พอร์ตโฟลิโอ</p>
         <h1 id="portfolio-form-heading" class="foldo-page-title">สร้าง<em>พอร์ตโฟลิโอ</em></h1>
-        <p class="foldo-page-lead">เริ่มจากชื่อ โปรไฟล์ และหน้าตา (เทมเพลต) ก่อน — ขั้นนี้ไม่ต้องเลือกเนื้อหา ทุกอย่างในโปรไฟล์จะแสดงไว้ก่อน แล้วค่อยคัดออกในขั้นที่ 2</p>
+        <p class="foldo-page-lead">ตั้งชื่อ เลือกโปรไฟล์และเทมเพลต ยังไม่ต้องเลือกเนื้อหา ทุกอย่างในโปรไฟล์จะแสดงไว้ก่อน แล้วค่อยคัดออกในขั้นที่ 2</p>
       {% else %}
         <p class="foldo-eyebrow foldo-eyebrow--plain"><span class="foldo-badge tone-magenta me-1">{% include "partials/icon.html" with name="edit" %}กำลังแก้ไข</span>{{ portfolio.title }}</p>
         <h1 id="portfolio-form-heading" class="foldo-page-title">ตั้งค่าและ<em>ดีไซน์</em></h1>
-        <p class="foldo-page-lead">ชื่อ โปรไฟล์ที่ใช้ เทมเพลต และการเผยแพร่ของเวอร์ชันนี้ เปลี่ยนแล้วไม่กระทบเวอร์ชันอื่น</p>
+        <p class="foldo-page-lead">ชื่อ โปรไฟล์ เทมเพลต และการเผยแพร่ เปลี่ยนแล้วไม่กระทบพอร์ตโฟลิโออื่น</p>
       {% endif %}
     </div>
   </div>
@@ -34,10 +34,10 @@
     <section class="foldo-form-section tone-magenta" aria-labelledby="sec-basics">
       <div class="foldo-form-section__head">
         <span class="foldo-form-section__num">1</span>
-        <div><h2 id="sec-basics" class="foldo-form-section__title">ชื่อและโปรไฟล์</h2><p class="foldo-form-section__hint">ตั้งชื่อตามงานที่สมัคร เช่น “Backend Intern @ บริษัท A”</p></div>
+        <div><h2 id="sec-basics" class="foldo-form-section__title">ชื่อและโปรไฟล์</h2><p class="foldo-form-section__hint">พอร์ตโฟลิโอนี้ใช้สมัครงานไหน และดึงข้อมูลจากโปรไฟล์ไหน</p></div>
       </div>
       <div class="row">
-        <div class="col-md-6">{% include "partials/form_field.html" with field=form.title label="ชื่อเวอร์ชัน (Portfolio title)" %}</div>
+        <div class="col-md-6">{% include "partials/form_field.html" with field=form.title label="ชื่อพอร์ตโฟลิโอ" %}</div>
         <div class="col-md-6">{% include "partials/form_field.html" with field=form.profile label="โปรไฟล์ที่ใช้แสดง" %}</div>
       </div>
     </section>
@@ -45,7 +45,7 @@
     <section class="foldo-form-section tone-lime" aria-labelledby="sec-template">
       <div class="foldo-form-section__head">
         <span class="foldo-form-section__num">2</span>
-        <div><h2 id="sec-template" class="foldo-form-section__title">เทมเพลต</h2><p class="foldo-form-section__hint">เปลี่ยนได้ตลอด ไม่กระทบโปรไฟล์หรือเวอร์ชันอื่น</p></div>
+        <div><h2 id="sec-template" class="foldo-form-section__title">เทมเพลต</h2><p class="foldo-form-section__hint">หน้าตาของพอร์ตโฟลิโอ เนื้อหาเหมือนเดิมทุกเทมเพลต</p></div>
       </div>
       {% include "rendering/partials/theme_picker.html" with field=form.template_key themes=form.themes %}
     </section>
@@ -53,9 +53,9 @@
     <section class="foldo-form-section tone-blue" id="publish" aria-labelledby="sec-visibility">
       <div class="foldo-form-section__head">
         <span class="foldo-form-section__num">3</span>
-        <div><h2 id="sec-visibility" class="foldo-form-section__title">การมองเห็น</h2><p class="foldo-form-section__hint">ปิดไว้ = ฉบับร่างส่วนตัว มีแค่คุณที่ดูได้</p></div>
+        <div><h2 id="sec-visibility" class="foldo-form-section__title">การเผยแพร่</h2><p class="foldo-form-section__hint">ตอนนี้หรือทีหลังก็ได้ ระหว่างยังไม่เผยแพร่ มีแค่คุณที่เห็น</p></div>
       </div>
-      {% include "partials/form_field.html" with field=form.is_published label="เผยแพร่พอร์ตโฟลิโอนี้ (Publish)" %}
+      {% include "partials/form_field.html" with field=form.is_published label="เผยแพร่พอร์ตโฟลิโอนี้" %}
       {# Spell out what flipping the switch will do, before the user saves. #}
       <p class="foldo-publish-note tone-warning" data-publish-note="off" hidden role="status">
         {% include "partials/icon.html" with name="alert" %}<span>เมื่อบันทึก ลิงก์สาธารณะและ QR code ที่เคยแชร์ไปจะใช้ไม่ได้ทันที เปิดอีกครั้งเมื่อไรลิงก์เดิมจะกลับมาใช้ได้</span>

@@ -1,8 +1,7 @@
 {% extends "layouts/auth.html" %}
 {% block title %}สมัครสมาชิก — FOLDO{% endblock %}
-{% block auth_eyebrow %}Get started{% endblock %}
-{% block auth_title %}สร้างบัญชี FOLDO{% endblock %}
-{% block auth_lead %}ใช้เวลาไม่ถึงนาที แล้วเริ่มสร้างโปรไฟล์หลักได้ทันที{% endblock %}
+{% block auth_title %}สมัครสมาชิก{% endblock %}
+{% block auth_lead %}ใช้เวลาไม่ถึงนาที จากนั้นเริ่มสร้างโปรไฟล์ได้เลย{% endblock %}
 {% block auth_body %}
 <form method="post" novalidate data-loading>
   {% csrf_token %}

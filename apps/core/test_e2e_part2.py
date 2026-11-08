@@ -83,7 +83,7 @@ class EndToEndPart2Tests(TestCase):
 
     def test_unpublished_version_has_no_link_and_no_qr(self):
         page = self.client.get(reverse("portfolios:share", args=[self.draft.pk]))
-        self.assertContains(page, "not published")
+        self.assertContains(page, "ยังไม่เผยแพร่")
         self.assertEqual(self.client.get(reverse("portfolios:share_qr_png", args=[self.draft.pk])).status_code, 404)
         self.assertEqual(self.client.get(reverse("portfolios:share_qr_svg", args=[self.draft.pk])).status_code, 404)
 

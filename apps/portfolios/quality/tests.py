@@ -72,9 +72,9 @@ class RulesTests(QualityTestCase):
     def test_missing_required_fields_are_warnings_linked_to_the_profile_form(self):
         MainProfile.objects.filter(pk=self.profile.pk).update(headline="", contact_email="")
         report = run_quality_check(self.portfolio)
-        self.assertIn("ยังไม่ได้กรอก Headline", titles(report, WARNING))
-        self.assertIn("ยังไม่ได้กรอก Contact email", titles(report, WARNING))
-        self.assertEqual(finding(report, "Headline").fix_url, reverse("profiles:update", args=[self.profile.pk]))
+        self.assertIn("ยังไม่ได้กรอกหัวข้อแนะนำตัว", titles(report, WARNING))
+        self.assertIn("ยังไม่ได้กรอกอีเมลติดต่อ", titles(report, WARNING))
+        self.assertEqual(finding(report, "หัวข้อแนะนำตัว").fix_url, reverse("profiles:update", args=[self.profile.pk]))
 
     def test_recommended_fields_are_suggestions(self):
         MainProfile.objects.filter(pk=self.profile.pk).update(bio="", location="")
@@ -100,26 +100,26 @@ class RulesTests(QualityTestCase):
     def test_malformed_project_link_only_counts_when_the_project_is_shown(self):
         Project.objects.filter(pk=self.project.pk).update(project_url="javascript:alert(1)")
         report = run_quality_check(self.portfolio)
-        bad = finding(report, "ลิงก์ของผลงาน")
+        bad = finding(report, "ลิงก์ของโปรเจกต์")
         self.assertEqual(bad.severity, ERROR)
         self.assertEqual(bad.fix_url, reverse("profiles:project_edit", args=[self.project.pk]))
 
         save_selection(self.portfolio, {"skills": [self.skill.pk]})  # this version leaves the project out
-        self.assertNotIn("ลิงก์ของผลงาน “FOLDO” ไม่ถูกต้อง", titles(run_quality_check(self.portfolio)))
+        self.assertNotIn("ลิงก์ของโปรเจกต์ “FOLDO” ไม่ถูกต้อง", titles(run_quality_check(self.portfolio)))
 
     def test_section_with_no_data_is_a_warning_linked_to_its_edit_screen(self):
         Skill.objects.all().delete()
         report = run_quality_check(self.portfolio)
-        skills = finding(report, "ยังไม่มีข้อมูลส่วน Skills")
+        skills = finding(report, "ยังไม่มีข้อมูลส่วนทักษะ")
         self.assertEqual(skills.severity, WARNING)
         self.assertEqual(skills.fix_url, reverse("profiles:skills_experience", args=[self.profile.pk]))
-        self.assertEqual(finding(report, "ส่วน Education").severity, WARNING)
-        self.assertTrue(finding(report, "ส่วน Education").fix_url)
+        self.assertEqual(finding(report, "ส่วนการศึกษา").severity, WARNING)
+        self.assertTrue(finding(report, "ส่วนการศึกษา").fix_url)
 
     def test_section_left_out_on_purpose_is_only_a_suggestion(self):
         save_selection(self.portfolio, {"skills": [self.skill.pk], "projects": [self.project.pk]})
         report = run_quality_check(self.portfolio)
-        left_out = finding(report, "ไม่ได้เลือกส่วน Experience")
+        left_out = finding(report, "ไม่ได้เลือกส่วนประสบการณ์")
         self.assertEqual(left_out.severity, INFO)
         self.assertEqual(left_out.fix_url, reverse("portfolios:content", args=[self.portfolio.pk]))
 
@@ -132,20 +132,20 @@ class RulesTests(QualityTestCase):
     def test_version_without_any_profile_is_an_error(self):
         carol = User.objects.create_user("carol", password=PASSWORD)
         report = run_quality_check(Portfolio.objects.create(owner=carol, title="Empty"))
-        self.assertEqual(titles(report, ERROR), ["เวอร์ชันนี้ยังไม่มีโปรไฟล์"])
+        self.assertEqual(titles(report, ERROR), ["พอร์ตโฟลิโอนี้ยังไม่มีโปรไฟล์"])
         self.assertEqual(report.errors[0].fix_url, reverse("profiles:create"))
 
     def test_selected_item_that_was_deleted_is_reported(self):
         save_selection(self.portfolio, {"skills": [self.skill.pk], "projects": [self.project.pk]})
         Skill.objects.filter(pk=self.skill.pk).delete()
         report = run_quality_check(self.portfolio)
-        self.assertIn("ข้อมูลที่เลือกไว้ในส่วน Skills ถูกลบไปแล้ว", titles(report, WARNING))
+        self.assertIn("ข้อมูลที่เลือกไว้ในส่วนทักษะถูกลบไปแล้ว", titles(report, WARNING))
 
     def test_project_story_missing_core_parts_is_a_suggestion(self):
         Project.objects.filter(pk=self.project.pk).update(outcome="")
         item = finding(run_quality_check(self.portfolio), "Project Story")
         self.assertEqual(item.severity, INFO)
-        self.assertIn("Outcome", item.detail)
+        self.assertIn("ผลลัพธ์", item.detail)
 
     def test_project_without_any_story_is_not_nagged(self):
         Project.objects.filter(pk=self.project.pk).update(problem="", role="", outcome="")
@@ -207,9 +207,9 @@ class PageTests(QualityTestCase):
 
     def test_rerunning_after_an_edit_shows_the_new_result(self):
         MainProfile.objects.filter(pk=self.profile.pk).update(headline="")
-        self.assertContains(self.client.get(self.url()), "ยังไม่ได้กรอก Headline")
+        self.assertContains(self.client.get(self.url()), "ยังไม่ได้กรอกหัวข้อแนะนำตัว")
         MainProfile.objects.filter(pk=self.profile.pk).update(headline="Backend developer")
-        self.assertNotContains(self.client.get(self.url()), "ยังไม่ได้กรอก Headline")
+        self.assertNotContains(self.client.get(self.url()), "ยังไม่ได้กรอกหัวข้อแนะนำตัว")
         self.assertContains(self.client.get(self.url()), f'href="{self.url()}"')  # "check again" link
 
     def test_reached_from_the_list_and_the_preview_bar(self):

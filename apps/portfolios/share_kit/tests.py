@@ -74,14 +74,14 @@ class PrivacyTests(ShareKitTestCase):
 class PublishedTests(ShareKitTestCase):
     def test_page_shows_status_url_and_qr(self):
         html = self.share(self.live).content.decode()
-        self.assertIn("Published", html)
+        self.assertIn("เผยแพร่แล้ว", html)
         self.assertIn(self.expected_url(self.live), html)
         self.assertIn("<svg", html)
         self.assertIn(reverse("portfolios:share_qr_png", args=[self.live.pk]), html)
 
     def test_inline_qr_is_built_from_the_exact_public_url(self):
         html = self.share(self.live).content.decode()
-        expected = services.qr_svg_inline(self.expected_url(self.live), title=f"QR code for {self.live.title}")
+        expected = services.qr_svg_inline(self.expected_url(self.live), title=f"QR code ของ {self.live.title}")
         self.assertIn(expected, html)
 
     def test_inline_qr_scales_instead_of_being_cropped(self):
@@ -125,7 +125,7 @@ class PublishedTests(ShareKitTestCase):
 class UnpublishedTests(ShareKitTestCase):
     def test_page_says_unpublished_and_shows_no_link_or_qr(self):
         html = self.share(self.draft).content.decode()
-        self.assertIn("not published yet", html)
+        self.assertIn("ยังไม่เผยแพร่", html)
         self.assertNotIn("<svg", html)
         self.assertNotIn("sk-url", html)
         self.assertNotIn(self.draft.slug, html)

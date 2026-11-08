@@ -93,7 +93,7 @@ class ProjectUpdateView(OwnProjectMixin, UpdateView):
 
     def form_valid(self, form):
         self.object = services.save_project(form)
-        messages.success(self.request, "บันทึกการแก้ไขแล้ว")
+        messages.success(self.request, f"บันทึก “{self.object.project_name}” แล้ว")
         return HttpResponseRedirect(reverse("profiles:project_detail", args=[self.object.pk]))
 
     def get_context_data(self, **kwargs):

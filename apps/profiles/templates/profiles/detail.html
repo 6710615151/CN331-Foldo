@@ -7,10 +7,10 @@
 
   <div class="foldo-page-head foldo-page-head--tight">
     <div class="foldo-page-head__text tone-blue">
-      <p class="foldo-eyebrow" lang="en">Main profile</p>
+      <p class="foldo-eyebrow foldo-eyebrow--plain">โปรไฟล์</p>
       <h1 class="foldo-page-title">
         {{ profile.label }}
-        {% if profile.is_default %}<span class="foldo-badge foldo-badge--solid tone-lime align-middle">Default</span>{% endif %}
+        {% if profile.is_default %}<span class="foldo-badge foldo-badge--solid tone-lime align-middle">โปรไฟล์หลัก</span>{% endif %}
       </h1>
     </div>
     <div class="foldo-page-head__actions">
@@ -18,7 +18,7 @@
         <form method="post" action="{% url 'profiles:make_default' profile.pk %}" class="m-0" data-loading>
           {% csrf_token %}
           <input type="hidden" name="next" value="{% url 'profiles:view' profile.pk %}">
-          <button type="submit" class="btn btn-outline-foldo" data-loading-text="กำลังตั้งค่า…">{% include "partials/icon.html" with name="star" %}ตั้งเป็น Default</button>
+          <button type="submit" class="btn btn-outline-foldo" data-loading-text="กำลังตั้งค่า…">{% include "partials/icon.html" with name="star" %}ตั้งเป็นโปรไฟล์หลัก</button>
         </form>
       {% endif %}
       <a class="btn btn-lime" href="{% url 'profiles:update' profile.pk %}">{% include "partials/icon.html" with name="edit" %}แก้ไขโปรไฟล์</a>
@@ -53,21 +53,21 @@
         {% endif %}
       </section>
 
-      <nav class="foldo-section-tiles" aria-label="ส่วนของโปรไฟล์ (Profile sections)">
+      <nav class="foldo-section-tiles" aria-label="ส่วนของโปรไฟล์">
         <a class="foldo-section-tile tone-blue" href="{% url 'profiles:education_list' profile.pk %}">
           <span class="foldo-icon-tile foldo-icon-tile--solid">{% include "partials/icon.html" with name="cap" %}</span>
           <span class="foldo-section-tile__count">{{ profile.educations.count }}</span>
-          <strong>การศึกษา</strong><span lang="en">Education</span>
+          <strong>การศึกษา</strong>
         </a>
         <a class="foldo-section-tile tone-purple" href="{% url 'profiles:skills_experience' profile.pk %}">
           <span class="foldo-icon-tile foldo-icon-tile--solid">{% include "partials/icon.html" with name="spark" %}</span>
           <span class="foldo-section-tile__count">{{ profile.skills.count }}<small> / {{ profile.experiences.count }}</small></span>
-          <strong>ทักษะและประสบการณ์</strong><span lang="en">Skills &amp; experience</span>
+          <strong>ทักษะและประสบการณ์</strong>
         </a>
         <a class="foldo-section-tile tone-pink" href="{% url 'profiles:projects' profile.pk %}">
           <span class="foldo-icon-tile foldo-icon-tile--solid">{% include "partials/icon.html" with name="code" %}</span>
           <span class="foldo-section-tile__count">{{ profile.projects.count }}</span>
-          <strong>โปรเจกต์</strong><span lang="en">Projects</span>
+          <strong>โปรเจกต์</strong>
         </a>
       </nav>
 
@@ -85,12 +85,12 @@
               <li>
                 {% include "partials/theme_thumb.html" with key=v.template_key class="foldo-mini-list__thumb" %}
                 <a href="{% url 'portfolios:device_preview' v.pk %}">{{ v.title }}</a>
-                {% if v.is_published %}<span class="foldo-badge tone-lime">เผยแพร่แล้ว</span>{% else %}<span class="foldo-badge tone-muted">ส่วนตัว</span>{% endif %}
+                {% if v.is_published %}<span class="foldo-badge tone-lime">เผยแพร่แล้ว</span>{% else %}<span class="foldo-badge tone-muted">ยังไม่เผยแพร่</span>{% endif %}
               </li>
             {% endfor %}
           </ul>
         {% else %}
-          <p class="foldo-muted small mb-0">ยังไม่มีพอร์ตโฟลิโอที่เลือกโปรไฟล์นี้โดยตรง{% if profile.is_default %} (เวอร์ชันที่ตั้งเป็น “ใช้โปรไฟล์ Default” จะแสดงโปรไฟล์นี้){% endif %}</p>
+          <p class="foldo-muted small mb-0">ยังไม่มีพอร์ตโฟลิโอที่เลือกโปรไฟล์นี้โดยตรง{% if profile.is_default %} (พอร์ตโฟลิโอที่เลือก “โปรไฟล์หลักของฉัน” จะแสดงโปรไฟล์นี้){% endif %}</p>
         {% endif %}
       </section>
       {% endwith %}
@@ -105,16 +105,16 @@
           </div>
           <p class="mb-0 small">
             {% if profile.is_complete %}
-              ข้อมูลที่จำเป็นครบแล้ว พร้อมใช้ในทุกพอร์ตโฟลิโอ
+              ข้อมูลที่จำเป็นครบแล้ว
             {% else %}
-              <span lang="en">Profile incomplete.</span> ยังขาดข้อมูลที่พอร์ตโฟลิโอต้องใช้
+              ยังขาดข้อมูลที่พอร์ตโฟลิโอต้องใช้
             {% endif %}
           </p>
         </div>
         <ul class="foldo-checklist">
           {% url 'profiles:update' profile.pk as edit_url %}
           <li class="{% if profile.full_name %}is-done{% endif %}">{% if profile.full_name %}{% include "partials/icon.html" with name="check-circle" %}ชื่อ-นามสกุล{% else %}{% include "partials/icon.html" with name="x" %}<a href="{{ edit_url }}#id_full_name">ชื่อ-นามสกุล</a>{% endif %}</li>
-          <li class="{% if profile.headline %}is-done{% endif %}">{% if profile.headline %}{% include "partials/icon.html" with name="check-circle" %}หัวข้อแนะนำตัว{% else %}{% include "partials/icon.html" with name="x" %}<a href="{{ edit_url }}#id_headline">หัวข้อแนะนำตัว</a>{% endif %} <span lang="en">(Headline)</span></li>
+          <li class="{% if profile.headline %}is-done{% endif %}">{% if profile.headline %}{% include "partials/icon.html" with name="check-circle" %}หัวข้อแนะนำตัว{% else %}{% include "partials/icon.html" with name="x" %}<a href="{{ edit_url }}#id_headline">หัวข้อแนะนำตัว</a>{% endif %}</li>
           <li class="{% if profile.contact_email %}is-done{% endif %}">{% if profile.contact_email %}{% include "partials/icon.html" with name="check-circle" %}อีเมลติดต่อ{% else %}{% include "partials/icon.html" with name="x" %}<a href="{{ edit_url }}#id_contact_email">อีเมลติดต่อ</a>{% endif %}</li>
           <li class="is-optional{% if profile.bio %} is-done{% endif %}">{% if profile.bio %}{% include "partials/icon.html" with name="check-circle" %}ประวัติย่อ{% else %}{% include "partials/icon.html" with name="info" %}<a href="{{ edit_url }}#id_bio">ประวัติย่อ</a>{% endif %} <small>(แนะนำ)</small></li>
           <li class="is-optional{% if profile.photo %} is-done{% endif %}">{% if profile.photo %}{% include "partials/icon.html" with name="check-circle" %}รูปโปรไฟล์{% else %}{% include "partials/icon.html" with name="info" %}<a href="{{ edit_url }}#id_photo">รูปโปรไฟล์</a>{% endif %} <small>(แนะนำ)</small></li>
@@ -125,7 +125,7 @@
       </section>
       {% if next_steps %}
         <section class="foldo-card mt-3" aria-labelledby="profile-next-heading">
-          <h2 id="profile-next-heading" class="foldo-section-title mb-2">ทำต่อให้โปรไฟล์นี้แข็งแรงขึ้น</h2>
+          <h2 id="profile-next-heading" class="foldo-section-title mb-2">เติมโปรไฟล์นี้ต่อ</h2>
           {% include "partials/next_steps.html" with steps=next_steps compact=True %}
         </section>
       {% endif %}

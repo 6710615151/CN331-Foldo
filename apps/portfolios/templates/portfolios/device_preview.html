@@ -15,14 +15,14 @@
       <div class="min-w-0">
         <h1 class="foldo-preview__title">{{ portfolio.title }}</h1>
         <p class="foldo-preview__meta">
-          {% if portfolio.is_published %}<span class="foldo-badge tone-lime foldo-badge--live"><span class="foldo-badge__dot"></span>เผยแพร่แล้ว</span>{% else %}<span class="foldo-badge tone-muted">{% include "partials/icon.html" with name="lock" %}ส่วนตัว เห็นได้เฉพาะคุณ</span>{% endif %}
+          {% if portfolio.is_published %}<span class="foldo-badge tone-lime foldo-badge--live"><span class="foldo-badge__dot"></span>เผยแพร่แล้ว</span>{% else %}<span class="foldo-badge tone-muted">{% include "partials/icon.html" with name="lock" %}ยังไม่เผยแพร่ · เห็นได้เฉพาะคุณ</span>{% endif %}
           <span>เทมเพลต {{ portfolio.get_template_key_display }}</span>
           <span class="foldo-mode-chip">{% include "partials/icon.html" with name="eye" %}โหมดดูตัวอย่าง · อ่านอย่างเดียว</span>
         </p>
       </div>
     </div>
 
-    <div class="foldo-segmented" role="group" aria-label="ขนาดตัวอย่าง (Preview size)">
+    <div class="foldo-segmented" role="group" aria-label="ขนาดหน้าจอ">
       {% for key, label in modes.items %}
         <a class="foldo-segmented__item{% if key == mode %} active{% endif %}" href="?mode={{ key }}"{% if key == mode %} aria-current="true"{% endif %}>
           {% if key == "mobile" %}{% include "partials/icon.html" with name="phone" %}{% else %}{% include "partials/icon.html" with name="monitor" %}{% endif %}{{ label }}
@@ -32,7 +32,7 @@
 
     <div class="foldo-preview__actions">
       <a class="btn btn-outline-foldo btn-sm" href="{% url 'portfolios:update' portfolio.pk %}">{% include "partials/icon.html" with name="edit" %}แก้ไข</a>
-      <a class="btn btn-lime btn-sm" href="{% url 'portfolios:pdf' portfolio.pk %}" data-busy-text="กำลังสร้าง PDF…">{% include "partials/icon.html" with name="download" %}PDF</a>
+      <a class="btn btn-lime btn-sm" href="{% url 'portfolios:export' portfolio.pk %}">{% include "partials/icon.html" with name="download" %}PDF</a>
     </div>
   </div>
 
@@ -41,7 +41,7 @@
       {% if mode == "desktop" %}
         <div class="foldo-device__chrome" aria-hidden="true">
           <span class="foldo-device__dots"><i></i><i></i><i></i></span>
-          <span class="foldo-device__url">{% include "partials/icon.html" with name="lock" %}{% if portfolio.is_published %}{{ request.get_host }}{{ portfolio.public_path }}{% else %}ตัวอย่างส่วนตัว — ยังไม่เผยแพร่{% endif %}</span>
+          <span class="foldo-device__url">{% include "partials/icon.html" with name="lock" %}{% if portfolio.is_published %}{{ request.get_host }}{{ portfolio.public_path }}{% else %}ยังไม่เผยแพร่ · ยังไม่มีลิงก์สาธารณะ{% endif %}</span>
         </div>
       {% else %}
         <span class="foldo-device__notch" aria-hidden="true"></span>
@@ -49,7 +49,7 @@
       <div class="foldo-device__screen">
         <div class="foldo-device__loading" role="status" data-preview-loading>
           <div class="foldo-skeleton" aria-hidden="true"><i class="is-hero"></i><i></i><i class="is-short"></i><i></i><i class="is-short"></i></div>
-          <span class="d-inline-flex align-items-center gap-2"><span class="spinner-border spinner-border-sm" aria-hidden="true"></span>กำลังโหลดตัวอย่าง…<span class="visually-hidden" lang="en">Loading preview</span></span>
+          <span class="d-inline-flex align-items-center gap-2"><span class="spinner-border spinner-border-sm" aria-hidden="true"></span>กำลังโหลดตัวอย่าง…</span>
         </div>
         <noscript><style>[data-preview-loading] { display: none; }</style></noscript>
         <iframe src="{% url 'portfolios:preview_frame' portfolio.pk %}"
@@ -79,7 +79,7 @@
           <h3>ไฟล์ PDF</h3>
           <p>ใช้แนบอีเมลหรือระบบรับสมัคร หน้าตาเหมือนตัวอย่างนี้</p>
           <div class="d-flex flex-wrap gap-2">
-            <a class="btn btn-lime btn-sm" href="{% url 'portfolios:pdf' portfolio.pk %}" data-busy-text="กำลังสร้าง PDF…">{% include "partials/icon.html" with name="download" %}ดาวน์โหลด PDF</a>
+            <a class="btn btn-lime btn-sm" href="{% url 'portfolios:export' portfolio.pk %}">{% include "partials/icon.html" with name="download" %}ดาวน์โหลด PDF</a>
             <a class="btn btn-outline-foldo btn-sm" href="{% url 'portfolios:pdf' portfolio.pk %}?inline=1" target="_blank" rel="noopener">เปิดดู</a>
           </div>
         </div>
@@ -89,7 +89,7 @@
         <div>
           <h3>ลิงก์และ QR code</h3>
           <p>{% if portfolio.is_published %}เผยแพร่อยู่ คัดลอกลิงก์หรือดาวน์โหลด QR ได้เลย{% else %}เผยแพร่ก่อนเพื่อรับลิงก์สาธารณะและ QR code{% endif %}</p>
-          <a class="btn btn-foldo btn-sm" href="{% url 'portfolios:share' portfolio.pk %}">เปิด Share Kit</a>
+          <a class="btn btn-foldo btn-sm" href="{% url 'portfolios:share' portfolio.pk %}">แชร์ลิงก์และ QR</a>
         </div>
       </div>
       <div class="foldo-export__card tone-purple">
@@ -103,7 +103,7 @@
       <div class="foldo-export__card tone-pink">
         <span class="foldo-icon-tile foldo-icon-tile--solid">{% include "partials/icon.html" with name="sliders" %}</span>
         <div>
-          <h3>ปรับเนื้อหา</h3>
+          <h3>เลือกเนื้อหา</h3>
           <p>เลือกการศึกษา ทักษะ ประสบการณ์ และโปรเจกต์ที่จะแสดง</p>
           <a class="btn btn-outline-foldo btn-sm" href="{% url 'portfolios:content' portfolio.pk %}">เลือกเนื้อหา</a>
         </div>

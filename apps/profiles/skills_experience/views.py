@@ -23,7 +23,7 @@ from .forms import ExperienceForm, SkillForm
 
 FORM_TEMPLATE = "profiles/skills_experience/form.html"
 DELETE_TEMPLATE = "profiles/skills_experience/confirm_delete.html"
-DUPLICATE_SKILL = "You already have this skill on this profile."
+DUPLICATE_SKILL = "มีทักษะนี้ในโปรไฟล์อยู่แล้ว แก้ระดับความชำนาญจากรายการเดิมได้"
 
 
 def overview_url(profile_pk):
@@ -62,7 +62,7 @@ class _FormPageMixin:
     """Context shared by the add / edit pages, which use one template."""
 
     heading = ""
-    submit_label = "Save"
+    submit_label = "บันทึก"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -101,8 +101,8 @@ class SkillCreateView(AddAnotherMixin, OwnedProfileMixin, _FormPageMixin, Create
     model = Skill
     form_class = SkillForm
     template_name = FORM_TEMPLATE
-    heading = "Add skill"
-    submit_label = "Add skill"
+    heading = "เพิ่มทักษะ"
+    submit_label = "เพิ่มทักษะ"
 
     def get_profile(self):
         return self.profile
@@ -118,11 +118,11 @@ class SkillCreateView(AddAnotherMixin, OwnedProfileMixin, _FormPageMixin, Create
         except IntegrityError:  # two requests raced past the form's duplicate check
             form.add_error("name", DUPLICATE_SKILL)
             return self.form_invalid(form)
-        messages.success(self.request, f"Skill “{skill.name}” added.")
+        messages.success(self.request, f"เพิ่มทักษะ “{skill.name}” แล้ว")
         return HttpResponseRedirect(overview_url(self.profile.pk))
 
     def form_invalid(self, form):
-        messages.error(self.request, "Not saved. Please fix the highlighted fields.")
+        messages.error(self.request, "ยังไม่ได้บันทึก — แก้ช่องที่ไฮไลต์ ข้อมูลอื่นที่กรอกไว้ยังอยู่ครบ")
         return super().form_invalid(form)
 
 
@@ -131,7 +131,7 @@ class SkillUpdateView(OwnerRequiredMixin, _EditFormMixin, UpdateView):
     owner_field = "profile__owner"
     form_class = SkillForm
     template_name = FORM_TEMPLATE
-    heading = "Edit skill"
+    heading = "แก้ไขทักษะ"
 
     def form_valid(self, form):
         try:
@@ -139,11 +139,11 @@ class SkillUpdateView(OwnerRequiredMixin, _EditFormMixin, UpdateView):
         except IntegrityError:
             form.add_error("name", DUPLICATE_SKILL)
             return self.form_invalid(form)
-        messages.success(self.request, f"Skill “{skill.name}” saved.")
+        messages.success(self.request, f"บันทึกทักษะ “{skill.name}” แล้ว")
         return HttpResponseRedirect(self.get_success_url())
 
     def form_invalid(self, form):
-        messages.error(self.request, "Not saved. Please fix the highlighted fields.")
+        messages.error(self.request, "ยังไม่ได้บันทึก — แก้ช่องที่ไฮไลต์ ข้อมูลอื่นที่กรอกไว้ยังอยู่ครบ")
         return super().form_invalid(form)
 
 
@@ -151,7 +151,7 @@ class SkillDeleteView(OwnerRequiredMixin, _ChildMixin, DeleteView):
     model = Skill
     owner_field = "profile__owner"
     template_name = DELETE_TEMPLATE
-    heading = "Delete skill"
+    heading = "ลบทักษะ"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -161,7 +161,7 @@ class SkillDeleteView(OwnerRequiredMixin, _ChildMixin, DeleteView):
     def form_valid(self, form):
         success_url, name = self.get_success_url(), self.object.name
         services.delete_skill(skill=self.object)
-        messages.success(self.request, f"Skill “{name}” deleted.")
+        messages.success(self.request, f"ลบทักษะ “{name}” แล้ว")
         return HttpResponseRedirect(success_url)
 
 
@@ -173,8 +173,8 @@ class ExperienceCreateView(AddAnotherMixin, OwnedProfileMixin, _FormPageMixin, C
     model = Experience
     form_class = ExperienceForm
     template_name = FORM_TEMPLATE
-    heading = "Add experience"
-    submit_label = "Add experience"
+    heading = "เพิ่มประสบการณ์"
+    submit_label = "เพิ่มประสบการณ์"
 
     def get_profile(self):
         return self.profile
@@ -186,11 +186,11 @@ class ExperienceCreateView(AddAnotherMixin, OwnedProfileMixin, _FormPageMixin, C
 
     def form_valid(self, form):
         experience = services.create_experience(profile=self.profile, data=form.cleaned_data)
-        messages.success(self.request, f"Experience “{experience.job_title}” added.")
+        messages.success(self.request, f"เพิ่มประสบการณ์ “{experience.job_title}” แล้ว")
         return HttpResponseRedirect(overview_url(self.profile.pk))
 
     def form_invalid(self, form):
-        messages.error(self.request, "Not saved. Please fix the highlighted fields.")
+        messages.error(self.request, "ยังไม่ได้บันทึก — แก้ช่องที่ไฮไลต์ ข้อมูลอื่นที่กรอกไว้ยังอยู่ครบ")
         return super().form_invalid(form)
 
 
@@ -199,15 +199,15 @@ class ExperienceUpdateView(OwnerRequiredMixin, _EditFormMixin, UpdateView):
     owner_field = "profile__owner"
     form_class = ExperienceForm
     template_name = FORM_TEMPLATE
-    heading = "Edit experience"
+    heading = "แก้ไขประสบการณ์"
 
     def form_valid(self, form):
         experience = services.update_experience(experience=self.object, data=form.cleaned_data)
-        messages.success(self.request, f"Experience “{experience.job_title}” saved.")
+        messages.success(self.request, f"บันทึกประสบการณ์ “{experience.job_title}” แล้ว")
         return HttpResponseRedirect(self.get_success_url())
 
     def form_invalid(self, form):
-        messages.error(self.request, "Not saved. Please fix the highlighted fields.")
+        messages.error(self.request, "ยังไม่ได้บันทึก — แก้ช่องที่ไฮไลต์ ข้อมูลอื่นที่กรอกไว้ยังอยู่ครบ")
         return super().form_invalid(form)
 
 
@@ -215,7 +215,7 @@ class ExperienceDeleteView(OwnerRequiredMixin, _ChildMixin, DeleteView):
     model = Experience
     owner_field = "profile__owner"
     template_name = DELETE_TEMPLATE
-    heading = "Delete experience"
+    heading = "ลบประสบการณ์"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -225,5 +225,5 @@ class ExperienceDeleteView(OwnerRequiredMixin, _ChildMixin, DeleteView):
     def form_valid(self, form):
         success_url, title = self.get_success_url(), self.object.job_title
         services.delete_experience(experience=self.object)
-        messages.success(self.request, f"Experience “{title}” deleted.")
+        messages.success(self.request, f"ลบประสบการณ์ “{title}” แล้ว")
         return HttpResponseRedirect(success_url)
