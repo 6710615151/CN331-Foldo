@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block html_lang %}th{% endblock %}
+{% block title %}Portfolio DNA — {{ profile.label }} — FOLDO{% endblock %}
+{% block content %}
+<section class="foldo-section foldo-profile" aria-labelledby="dna-heading">
+  <div class="container">
+    <a class="foldo-profile__back" href="{% url 'profiles:view' profile.pk %}">&larr; {{ profile.label }}</a>
+    <header class="mt-2 mb-4">
+      <p class="foldo-eyebrow" lang="en">Portfolio DNA</p>
+      <h1 id="dna-heading" class="foldo-section__title">ข้อมูลไหนถูกใช้ในพอร์ตโฟลิโอไหน</h1>
+      <p class="foldo-section__subtitle mb-0">
+        แก้ข้อมูลในโปรไฟล์ครั้งเดียว ทุกเวอร์ชันที่ใช้ข้อมูลนั้นจะเปลี่ยนตามทันที
+        หน้านี้ช่วยให้รู้ก่อนแก้ว่าจะกระทบเวอร์ชันไหนบ้าง
+      </p>
+    </header>
+
+    <dl class="foldo-dna__stats">
+      <div class="foldo-card"><dt>ข้อมูลทั้งหมด</dt><dd>{{ dna.total_items }}</dd></div>
+      <div class="foldo-card"><dt>พอร์ตโฟลิโอ</dt><dd>{{ dna.versions|length }}</dd></div>
+      <div class="foldo-card"><dt>ยังไม่ถูกใช้</dt><dd>{{ dna.unused_items|length }}</dd></div>
+      <div class="foldo-card"><dt>ใช้ซ้ำหลายเวอร์ชัน</dt><dd>{{ dna.reused_items|length }}</dd></div>
+    </dl>
+
+    {% if not dna.versions %}
+      <div class="alert alert-info" role="status">
+        ยังไม่มีพอร์ตโฟลิโอเวอร์ชันไหนเลือกข้อมูลจากโปรไฟล์นี้ ข้อมูลทุกชิ้นจึงขึ้นว่า "ยังไม่ถูกใช้"
+      </div>
+    {% endif %}
+
+    {% if dna.missing %}
+      <div class="alert alert-warning" role="alert">
+        <strong>มีเวอร์ชันที่ยังอ้างถึงข้อมูลที่ถูกลบไปแล้ว</strong> ข้อมูลที่ลบจะไม่แสดงในพอร์ตโฟลิโอ
+        <ul class="mb-0 mt-2">
+          {% for gap in dna.missing %}
+            <li><a href="{{ gap.version.url }}">{{ gap.version.name }}</a> — {{ gap.section }} #{{ gap.item_id }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    {% if not dna.total_items %}
+      {% include "partials/empty_state.html" with message="โปรไฟล์นี้ยังไม่มีการศึกษา ทักษะ ประสบการณ์ หรือผลงาน" %}
+    {% endif %}
+
+    {% for section in dna.sections %}
+      {% if section.rows %}
+        <section class="mt-4" aria-labelledby="dna-{{ section.key }}">
+          <h2 id="dna-{{ section.key }}" class="h5">{{ section.title }}</h2>
+          <div class="table-responsive">
+            <table class="table foldo-dna__table align-middle">
+              <thead>
+                <tr><th scope="col">ข้อมูล</th><th scope="col">ใช้ในเวอร์ชัน</th><th scope="col"><span class="visually-hidden">แก้ไข</span></th></tr>
+              </thead>
+              <tbody>
+                {% for row in section.rows %}
+                  <tr>
+                    <th scope="row">{{ row.item.title }}</th>
+                    <td>
+                      {% for version in row.used_in %}
+                        <a class="badge foldo-badge text-decoration-none" href="{{ version.url }}">{{ version.name }}</a>
+                      {% empty %}
+                        <span class="foldo-profile__warn">ยังไม่ถูกใช้</span>
+                      {% endfor %}
+                    </td>
+                    <td class="text-end">
+                      {% if row.used_in %}
+                        <span class="small foldo-section__subtitle d-block">แก้แล้วจะเปลี่ยนใน {{ row.used_in|length }} เวอร์ชัน</span>
+                      {% endif %}
+                      <a class="btn btn-sm btn-outline-foldo" href="{{ row.item.edit_url }}">แก้ไข<span class="visually-hidden"> {{ row.item.title }}</span></a>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      {% endif %}
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
+
