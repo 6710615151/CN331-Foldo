@@ -6,7 +6,7 @@ None of those apps import portfolios.
 """
 from __future__ import annotations
 
-from apps.education.services import get_education_display
+from apps.education.services import get_education_display, get_entries
 from apps.profiles.services import build_display, get_default_profile, get_profiles
 
 from .models import Portfolio
@@ -45,14 +45,32 @@ def resolve_profile(portfolio: Portfolio):
 
 def build_portfolio_context(portfolio: Portfolio) -> dict:
     """Everything a layout needs. Every value is safe to render when data is missing."""
+    from .content_selection.selectors import get_selected_ids  # local: avoids an import cycle
+
     owner = portfolio.owner
     profile = resolve_profile(portfolio)
+    education = get_education_display(owner)
+    skills = list(profile.skills.all()) if profile else []
+    experiences = list(profile.experiences.all()) if profile else []
+
+    # FOLDO-06: None = never customised = show everything.
+    selected = get_selected_ids(portfolio)
+    if selected is not None:
+        skills = [s for s in skills if s.pk in selected["skills"]]
+        experiences = [e for e in experiences if e.pk in selected["experience"]]
+        if education is not None:
+            levels = set(
+                get_entries(owner).filter(pk__in=selected["education"]).values_list("level", flat=True)
+            )
+            kept = [entry for entry in education.entries if entry.level in levels]
+            education = type(education)(entries=kept) if kept else None
+
     return {
         "portfolio": portfolio,
         "display": build_display(owner, profile),
-        "education": get_education_display(owner),
-        "skills": list(profile.skills.all()) if profile else [],
-        "experiences": list(profile.experiences.all()) if profile else [],
+        "education": education,
+        "skills": skills,
+        "experiences": experiences,
     }
 
 

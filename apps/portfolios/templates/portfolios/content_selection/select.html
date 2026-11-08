@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Choose content · {{ portfolio.title }}{% endblock %}
+{% block content %}
+<div class="container py-4" style="max-width: 760px;">
+  <a class="small" href="{% url 'portfolios:list' %}">&larr; My portfolios</a>
+  <h1 class="h3 mt-2 mb-1">Choose content</h1>
+  <p class="text-body-secondary">
+    For <strong>{{ portfolio.title }}</strong>. Only ticked items appear in this version.
+    Unticking never deletes anything from your profile and never changes other versions.
+    {% if not customised %}<span class="d-block small mt-1">Not customised yet: this version currently shows everything.</span>{% endif %}
+  </p>
+
+  {% if not has_content %}
+    <div class="card card-body text-center py-5">
+      <p class="mb-3">Nothing to choose from yet. Add education, skills or experience to your profile first.</p>
+      <div><a class="btn btn-primary" href="{% url 'profiles:list' %}">Go to my profiles</a></div>
+    </div>
+  {% else %}
+  <form method="post" data-loading>
+    {% csrf_token %}
+    {% for section in sections %}
+      <fieldset class="card card-body mb-3">
+        <legend class="h5 mb-2">{{ section.title }}</legend>
+        {% for item in section.items %}
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="{{ section.key }}" value="{{ item.id }}"
+                   id="{{ section.key }}-{{ item.id }}" {% if item.checked %}checked{% endif %}>
+            <label class="form-check-label" for="{{ section.key }}-{{ item.id }}">
+              {{ item.label }}{% if item.detail %} <span class="text-body-secondary small">&middot; {{ item.detail }}</span>{% endif %}
+            </label>
+          </div>
+        {% empty %}
+          <p class="mb-0 text-body-secondary small">Nothing in this section yet.</p>
+        {% endfor %}
+      </fieldset>
+    {% endfor %}
+    <div class="d-flex flex-wrap gap-2">
+      <button type="submit" class="btn btn-primary" data-loading-text="Saving…">Save selection</button>
+      <a class="btn btn-outline-secondary" href="{% url 'portfolios:preview' portfolio.pk %}">Preview</a>
+      {% if customised %}<button type="submit" name="reset" value="1" class="btn btn-outline-danger ms-auto">Show everything again</button>{% endif %}
+    </div>
+  </form>
+  {% endif %}
+</div>
+{% endblock %}

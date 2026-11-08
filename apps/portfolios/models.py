@@ -72,3 +72,45 @@ class Portfolio(models.Model):
         if not self.slug:
             self.slug = self._make_slug()
         super().save(*args, **kwargs)
+
+
+class PortfolioContentSetup(models.Model):
+    """
+    Marks a portfolio whose owner has chosen its content (FOLDO-06).
+
+    No row = "never customised", and the portfolio shows everything from its profile.
+    A row with no PortfolioContentSelection rows = "customised to show nothing".
+    """
+
+    portfolio = models.OneToOneField(Portfolio, on_delete=models.CASCADE, related_name="content_setup")
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Content chosen for {self.portfolio_id}"
+
+
+class PortfolioContentSelection(models.Model):
+    """
+    One piece of profile content included in one portfolio version.
+
+    It only references the source row by section + item_id (it never copies it).
+    item_id is deliberately not a foreign key: one table serves education, skills,
+    experience and projects, and deleting a source row can never be blocked by (or silently
+    cascade into) a portfolio. Rows whose source has gone are ignored when reading and are
+    removed the next time the selection is saved.
+    """
+
+    portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE, related_name="content_selections")
+    section = models.CharField(max_length=20)
+    item_id = models.PositiveIntegerField()
+
+    class Meta:
+        ordering = ["section", "item_id"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["portfolio", "section", "item_id"], name="uniq_selection_per_portfolio_item"
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.section}:{self.item_id} in {self.portfolio_id}"
