@@ -569,6 +569,16 @@ main:has(> .foldo-hero) {
   color: var(--foldo-muted);
 }
 
+.foldo-step--done {
+  border-color: var(--foldo-lime);
+}
+
+.foldo-step__status {
+  color: var(--foldo-lime);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
 .foldo-card h2 {
   margin-bottom: 0.75rem;
 }
