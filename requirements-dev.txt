@@ -21,3 +21,7 @@ django-browser-reload>=1.21,<2.0
 # Active only when DEBUG=True (see INSTALLED_APPS in settings.py).
 # https://github.com/adamchainz/django-watchfiles
 django-watchfiles>=1.4,<2.0
+
+# Reads the text and page size back out of exported PDFs in the PDF export tests (FOLDO-11).
+# Those tests are skipped when it (or WeasyPrint's system libraries) is missing.
+pypdf>=4,<8
