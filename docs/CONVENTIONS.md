@@ -38,6 +38,9 @@ class EducationUpdateView(OwnerRequiredMixin, UpdateView):
 Child rows get their profile from the URL's profile id **looked up through the
 signed-in user** (`get_profile(request.user, pk)` → 404 if not theirs), never
 from a form field.
+Project Story (FOLDO-15) is stored **on the project row** (`PROFILE_PROJECTS`:
+`problem`, `role`, `process`, `solution`, `outcome`, all optional), so there is
+no separate `PROJECT_STORIES` table; projects use `"profile__owner"`.
 
 **`PORTFOLIO_CONTENT_SELECTIONS.content_id` has no foreign key.** The mixin only
 checks who owns the selection row. Before saving a selection, also check that
@@ -61,6 +64,10 @@ the item behind `content_id` belongs to the same profile.
 | `MAX_LONG_TEXT` | 5000 | bio, description, project story |
 
 - Database access goes through the Django ORM. No SQL built from strings.
+- Every start / end date pair is checked with `validate_date_order`
+  (`apps/core/validators.py`) in the form's or model's `clean()`: the end date
+  can't be before the start date, and either date may be left empty
+  ("still studying", "still working", "not finished").
 
 ## 3. Forms and error messages — the same look on every page
 
@@ -107,6 +114,17 @@ class AccountForm(BootstrapFormMixin, forms.ModelForm):
 {% empty %}
   {% include "partials/empty_state.html" with message="No education yet" action_url=add_url action_label="Add education" %}
 {% endfor %}
+```
+
+### Project Story
+
+`partials/project_story.html` shows a project's story (Problem, Role, Process,
+Solution, Outcome) and only the parts that are filled in. A project with no
+story shows nothing, so old projects never break the page. Use it wherever a
+project is shown (project detail now, portfolio templates in Sprint 3):
+
+```django
+{% include "partials/project_story.html" with project=project %}
 ```
 
 ## 5. Showing user text safely
