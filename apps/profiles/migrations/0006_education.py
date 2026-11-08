@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('profiles', '0003_set_default_profiles'),
+        ('profiles', '0005_projects'),
     ]
 
     operations = [

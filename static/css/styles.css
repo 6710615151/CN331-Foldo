@@ -634,6 +634,70 @@ main:has(> .foldo-hero) {
   --bs-alert-color: var(--foldo-ink);
 }
 
+/* --- Template gallery (FOLDO-07) --------------------------------------- */
+.foldo-theme__swatch {
+  display: flex;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+}
+
+.foldo-theme__swatch span {
+  flex: 1;
+  height: 2.5rem;
+  border-radius: 6px;
+}
+
+.foldo-theme--classic .foldo-theme__swatch span { background: #f5f7fb; }
+.foldo-theme--classic .foldo-theme__swatch span:first-child { background: #0b1530; flex: 0.3; }
+.foldo-theme--modern .foldo-theme__swatch span { background: #f5f7fb; }
+.foldo-theme--modern .foldo-theme__swatch span:first-child { background: #0b1530; flex: 0.6; }
+.foldo-theme--creative .foldo-theme__swatch span { background: #1a34d8; }
+.foldo-theme--creative .foldo-theme__swatch span:nth-child(2) { background: var(--foldo-lime); }
+.foldo-theme--creative .foldo-theme__swatch span:last-child { background: var(--foldo-orange); }
+
+/* --- Template picker on the portfolio version form (FOLDO-07) --------- */
+.foldo-theme-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem;
+}
+
+.foldo-theme-option {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0.85rem;
+  border: 2px solid var(--bs-border-color);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.foldo-theme-option .foldo-theme__swatch {
+  margin-right: 1.75rem; /* room for the radio in the corner */
+  margin-bottom: 0.6rem;
+}
+
+.foldo-theme-option .foldo-theme__swatch span {
+  height: 1.75rem;
+}
+
+.foldo-theme-option input {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+}
+
+.foldo-theme-option:has(input:checked) {
+  border-color: var(--bs-primary);
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+}
+
+.foldo-theme-option:has(input:focus-visible) {
+  outline: 3px solid var(--foldo-orange);
+  outline-offset: 2px;
+}
+
 /* --- Error pages (404 / 500) ------------------------------------------- */
 .foldo-state {
   max-width: 34rem;

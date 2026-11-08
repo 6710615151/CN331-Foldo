@@ -1,0 +1,49 @@
+{% comment %}
+  One profile section. Params: section, card ("1" renders projects as cards).
+  Skills render as chips; everything else as items with optional period,
+  description, link, project story and evidence. Only non-empty parts print.
+{% endcomment %}
+<section class="pf-section pf-section--{{ section.key }}" aria-labelledby="pf-{{ section.key }}">
+  <h2 class="pf-section__title" id="pf-{{ section.key }}">{{ section.title }}</h2>
+
+  {% if section.key == "skills" %}
+    <ul class="pf-chips">
+      {% for item in section.items %}
+        <li class="pf-chip">{{ item.title }}{% if item.level %} <span class="pf-chip__level">· {{ item.level }}</span>{% endif %}</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="pf-items{% if card %} pf-items--cards{% endif %}">
+      {% for item in section.items %}
+        <article class="pf-item">
+          <header class="pf-item__head">
+            <h3 class="pf-item__title">
+              {% if item.url %}<a href="{{ item.url }}" rel="noopener noreferrer">{{ item.title }}</a>{% else %}{{ item.title }}{% endif %}
+            </h3>
+            {% if item.period %}<p class="pf-item__period">{{ item.period }}</p>{% endif %}
+          </header>
+          {% if item.subtitle %}<p class="pf-item__subtitle">{{ item.subtitle }}</p>{% endif %}
+          {% if item.note %}<p class="pf-item__note">{{ item.note }}</p>{% endif %}
+          {% if item.description %}<p class="pf-item__text">{{ item.description|linebreaksbr }}</p>{% endif %}
+
+          {% if item.story %}
+            <dl class="pf-story">
+              {% for label, text in item.story %}
+                <dt>{{ label }}</dt>
+                <dd>{{ text|linebreaksbr }}</dd>
+              {% endfor %}
+            </dl>
+          {% endif %}
+
+          {% if item.evidence %}
+            <ul class="pf-evidence">
+              {% for label, url in item.evidence %}
+                <li><a href="{{ url }}" rel="noopener noreferrer">{{ label }}</a></li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </article>
+      {% endfor %}
+    </div>
+  {% endif %}
+</section>

@@ -125,14 +125,16 @@ Planned models arrive with their Issues:
 
 | App | Model (ER table) | Issue | Purpose |
 | --- | ---------------- | ----- | ------- |
-| `profiles` | `Skill` (`PROFILE_SKILLS`) | FOLDO-04 | Skill name, proficiency. |
-| `profiles` | `Experience` (`PROFILE_EXPERIENCES`) | FOLDO-04 | Company, job title, description, dates. |
+| `profiles` | `Education` (`PROFILE_EDUCATIONS`) | FOLDO-04 | Implemented. Institution, degree, field of study, dates, grade (see above). |
+| `profiles` | `Skill` (`PROFILE_SKILLS`) | FOLDO-04 | Implemented. Name (unique per profile, ignoring case), proficiency. |
+| `profiles` | `Experience` (`PROFILE_EXPERIENCES`) | FOLDO-04 | Implemented. Company, job title, description, start date, optional end date (empty = present). |
 | `profiles` | `Project` (`PROFILE_PROJECTS`) | FOLDO-04 | Project name, description, URL, dates. |
 | `profiles` | `ProjectStory` (`PROJECT_STORIES`) | FOLDO-15 | Optional problem / role / process / solution / outcome (0..1 per project). |
 | `profiles` | `ProjectEvidence` (`PROJECT_EVIDENCE`) | FOLDO-15 | Evidence links and images per project. |
 | `portfolios` | `PortfolioVersion` | FOLDO-05 | Version name, status, template. |
 | `portfolios` | `PortfolioContentSelection` | FOLDO-06 | References to profile content per version. |
 | `portfolios` | `PortfolioTemplate` | FOLDO-07 | Template key → renderer. |
+
 
 Relationships (planned): `User 1─* MainProfile 1─* {Education, Skill, Project,
 Experience}` (or `1─1` if the open decision above goes that way),

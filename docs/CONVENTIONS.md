@@ -38,6 +38,9 @@ class EducationUpdateView(OwnerRequiredMixin, UpdateView):
 Child rows get their profile from the URL's profile id **looked up through the
 signed-in user** (`get_profile(request.user, pk)` → 404 if not theirs), never
 from a form field.
+Project Story (FOLDO-15) is stored **on the project row** (`PROFILE_PROJECTS`:
+`problem`, `role`, `process`, `solution`, `outcome`, all optional), so there is
+no separate `PROJECT_STORIES` table; projects use `"profile__owner"`.
 
 **`PORTFOLIO_CONTENT_SELECTIONS.content_id` has no foreign key.** The mixin only
 checks who owns the selection row. Before saving a selection, also check that
@@ -61,6 +64,10 @@ the item behind `content_id` belongs to the same profile.
 | `MAX_LONG_TEXT` | 5000 | bio, description, project story |
 
 - Database access goes through the Django ORM. No SQL built from strings.
+- Every start / end date pair is checked with `validate_date_order`
+  (`apps/core/validators.py`) in the form's or model's `clean()`: the end date
+  can't be before the start date, and either date may be left empty
+  ("still studying", "still working", "not finished").
 
 ## 3. Forms and error messages — the same look on every page
 
@@ -109,6 +116,17 @@ class AccountForm(BootstrapFormMixin, forms.ModelForm):
 {% endfor %}
 ```
 
+### Project Story
+
+`partials/project_story.html` shows a project's story (Problem, Role, Process,
+Solution, Outcome) and only the parts that are filled in. A project with no
+story shows nothing, so old projects never break the page. Use it wherever a
+project is shown (project detail now, portfolio templates in Sprint 3):
+
+```django
+{% include "partials/project_story.html" with project=project %}
+```
+
 ## 5. Showing user text safely
 
 Django escapes everything in `{{ }}` automatically. Keep it that way: never use
@@ -129,3 +147,20 @@ private data gets these tests, copied from `OwnerRequiredMixinTests`:
 FOLDO renders HTML with Django templates; there is no JSON API in Sprint 1.
 The only JSON endpoint is `/health/`, which must never expose settings,
 secrets or environment variable names.
+## 8. Profile section names — the contract renderers rely on
+
+Portfolio rendering (`apps.rendering`), Portfolio DNA and the Quality Check
+read profile sections through these names. Use them in FOLDO-04/15 models so
+your section shows up in portfolios without extra wiring:
+
+| Model | FK + `related_name` | Fields the renderer reads |
+| --- | --- | --- |
+| Skill | `profile` → `"skills"` | `name`, `proficiency` (+ `get_proficiency_display`) |
+| Experience | `profile` → `"experiences"` | `job_title`, `company`, `description`, `start_date`, `end_date` |
+| Education | `profile` → `"educations"` | `institution`, `degree`, `field_of_study`, `description`, `start_date`, `end_date` |
+| Project | `profile` → `"projects"` | `project_name`, `description`, `project_url`, `start_date`, `end_date` |
+| ProjectStory | `OneToOneField(project)` → `"story"` | `problem`, `role`, `process`, `solution`, `outcome` (all optional) |
+| ProjectEvidence | `project` → `"evidence"` | `caption`, `evidence_type`, `file_url` |
+
+Missing fields are fine (they just don't print); an empty `end_date` reads as
+"Present". Links are only rendered when they start with `http://`/`https://`.

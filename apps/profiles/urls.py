@@ -16,4 +16,8 @@ urlpatterns = [
     path("<int:pk>/delete/", views.profile_delete, name="delete"),
     # FOLDO-04: education (Dev 1)
     path("", include("apps.profiles.education.urls")),
+    # FOLDO-04: skills and experience (Dev 2)
+    path("", include("apps.profiles.skills_experience.urls")),
+    path("", include("apps.profiles.projects.urls")),
 ]
+

@@ -1,0 +1,510 @@
+/* FOLDO portfolio documents (FOLDO-07): classic, modern, creative.
+   Standalone — no Bootstrap — so the same page prints cleanly to PDF. */
+
+:root {
+  --pf-ink: #0b1530;
+  --pf-muted: #5b6183;
+  --pf-line: #dfe3f0;
+  --pf-paper: #ffffff;
+  --pf-bg: #eef1f8;
+  --pf-accent: #1d4ed8;
+  --pf-lime: #b8f34a;
+  --pf-orange: #ff6a2b;
+  --pf-font: "Inter", "Noto Sans Thai", system-ui, sans-serif;
+  --pf-display: "Prompt", "Inter", "Noto Sans Thai", system-ui, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.pf {
+  margin: 0;
+  background: var(--pf-bg);
+  color: var(--pf-ink);
+  font-family: var(--pf-font);
+  line-height: 1.6;
+}
+
+.pf a {
+  color: var(--pf-accent);
+}
+
+.pf a:focus-visible {
+  outline: 3px solid var(--pf-orange);
+  outline-offset: 2px;
+}
+
+/* Long words and URLs wrap instead of breaking the layout. */
+.pf-page,
+.pf-page * {
+  overflow-wrap: anywhere;
+}
+
+.pf-page {
+  max-width: 860px;
+  margin: 2rem auto;
+  padding: 2.5rem;
+  background: var(--pf-paper);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(11, 21, 48, 0.08);
+}
+
+.pf-empty {
+  padding: 1rem;
+  border: 1px dashed var(--pf-line);
+  border-radius: 8px;
+  color: var(--pf-muted);
+}
+
+/* --- Preview toolbar (never printed) ----------------------------------- */
+.pf-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  padding: 0.6rem 1rem;
+  background: var(--pf-ink);
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.pf-toolbar a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.pf-toolbar__group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 1rem;
+}
+
+.pf-toolbar__status {
+  color: #c9d2ea;
+}
+
+.pf-toolbar__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pf-toolbar__links a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.pf-toolbar__themes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pf-toolbar__themes a {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+}
+
+.pf-toolbar__themes a[aria-current="page"] {
+  background: var(--pf-lime);
+  color: var(--pf-ink);
+  font-weight: 600;
+}
+
+/* --- Shared building blocks -------------------------------------------- */
+.pf-identity {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.pf-photo {
+  flex: 0 0 auto;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.pf-photo--lg {
+  width: 120px;
+  height: 120px;
+}
+
+.pf-photo--initials {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--pf-ink);
+  color: var(--pf-lime);
+  font-family: var(--pf-display);
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.pf-name {
+  margin: 0;
+  font-family: var(--pf-display);
+  font-size: 2rem;
+  line-height: 1.15;
+}
+
+.pf-headline {
+  margin: 0.25rem 0 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.pf-location {
+  margin: 0.15rem 0 0;
+  color: var(--pf-muted);
+  font-size: 0.9rem;
+}
+
+.pf-contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.25rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9rem;
+}
+
+.pf-contact__label {
+  margin-right: 0.35rem;
+  color: var(--pf-muted);
+  font-weight: 600;
+}
+
+.pf-section {
+  margin-top: 2rem;
+}
+
+.pf-section__title {
+  margin: 0 0 0.75rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 2px solid var(--pf-line);
+  font-family: var(--pf-display);
+  font-size: 1.2rem;
+}
+
+.pf-items {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.pf-item__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0 1rem;
+}
+
+.pf-item__title {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.pf-item__period {
+  margin: 0;
+  color: var(--pf-muted);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.pf-item__subtitle {
+  margin: 0.1rem 0 0;
+  font-weight: 500;
+}
+
+.pf-item__note {
+  margin: 0.1rem 0 0;
+  color: var(--pf-muted);
+  font-size: 0.9rem;
+}
+
+.pf-item__text {
+  margin: 0.4rem 0 0;
+}
+
+.pf-story {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.35rem 1rem;
+  margin: 0.75rem 0 0;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid var(--pf-accent);
+  background: #f6f8fd;
+}
+
+.pf-story dt {
+  font-weight: 600;
+}
+
+.pf-story dd {
+  margin: 0;
+}
+
+.pf-evidence {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9rem;
+}
+
+.pf-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pf-chip {
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--pf-line);
+  border-radius: 999px;
+  font-size: 0.9rem;
+}
+
+.pf-chip__level {
+  color: var(--pf-muted);
+}
+
+/* --- Classic ------------------------------------------------------------ */
+.pf--classic .pf-header {
+  padding-bottom: 1.25rem;
+  border-bottom: 3px solid var(--pf-ink);
+}
+
+.pf--classic .pf-section__title {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 1rem;
+}
+
+/* --- Modern ------------------------------------------------------------- */
+.pf--modern .pf-page {
+  max-width: 1040px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.pf-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+}
+
+.pf-sidebar {
+  padding: 2.5rem 1.75rem;
+  background: var(--pf-ink);
+  color: #fff;
+}
+
+.pf-sidebar a {
+  color: var(--pf-lime);
+}
+
+.pf-sidebar .pf-identity {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.pf-sidebar .pf-location,
+.pf-sidebar .pf-contact__label,
+.pf-sidebar .pf-chip__level {
+  color: #a9b4d0;
+}
+
+.pf-sidebar .pf-contact {
+  flex-direction: column;
+}
+
+.pf-sidebar .pf-section__title {
+  border-bottom-color: rgba(255, 255, 255, 0.2);
+}
+
+.pf-sidebar .pf-chip {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* The sidebar is already navy: invert the initials and keep headings readable. */
+.pf-sidebar .pf-photo--initials {
+  background: var(--pf-lime);
+  color: var(--pf-ink);
+}
+
+.pf--modern .pf-sidebar .pf-section__title {
+  color: var(--pf-lime);
+}
+
+.pf-main {
+  padding: 2.5rem;
+}
+
+.pf-main > .pf-section:first-child {
+  margin-top: 0;
+}
+
+.pf--modern .pf-section__title {
+  border-bottom: 0;
+  color: var(--pf-accent);
+}
+
+/* --- Creative ----------------------------------------------------------- */
+.pf--creative .pf-page {
+  max-width: 980px;
+  padding: 0 0 2.5rem;
+  overflow: hidden;
+}
+
+.pf--creative .pf-page > .pf-section,
+.pf--creative .pf-page > .pf-empty {
+  margin-left: 2.5rem;
+  margin-right: 2.5rem;
+}
+
+.pf-hero {
+  position: relative;
+  padding: 2.5rem 2.5rem 4rem;
+  background: #1a34d8;
+  color: #fff;
+}
+
+.pf-hero a {
+  color: var(--pf-lime);
+}
+
+.pf-hero .pf-location,
+.pf-hero .pf-contact__label {
+  color: #dfe5ff;
+}
+
+.pf-hero__bio {
+  max-width: 40rem;
+  margin: 1.25rem 0 0;
+}
+
+.pf-hero__bands {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: grid;
+  width: 55%;
+}
+
+.pf-hero__bands span {
+  display: block;
+  height: 0.9rem;
+}
+
+.pf-hero__bands span:first-child {
+  width: 96%;
+  background: var(--pf-lime);
+}
+
+.pf-hero__bands span:last-child {
+  background: var(--pf-orange);
+}
+
+.pf--creative .pf-section__title {
+  display: inline-block;
+  padding: 0.2rem 0.75rem;
+  border: 0;
+  border-radius: 6px;
+  background: var(--pf-lime);
+}
+
+.pf-items--cards {
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+.pf-items--cards .pf-item {
+  padding: 1.25rem;
+  border: 1px solid var(--pf-line);
+  border-radius: 12px;
+}
+
+.pf-items--cards .pf-story {
+  grid-template-columns: 1fr;
+}
+
+/* --- Small screens ------------------------------------------------------ */
+@media (max-width: 720px) {
+  .pf-page {
+    margin: 0;
+    padding: 1.25rem;
+    border-radius: 0;
+  }
+
+  .pf-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .pf-sidebar,
+  .pf-main,
+  .pf-hero {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .pf-hero {
+    padding-bottom: 3rem;
+  }
+
+  .pf--creative .pf-page > .pf-section,
+  .pf--creative .pf-page > .pf-empty {
+    margin-left: 1.25rem;
+    margin-right: 1.25rem;
+  }
+
+  .pf-story {
+    grid-template-columns: 1fr;
+  }
+
+  .pf-name {
+    font-size: 1.6rem;
+  }
+}
+
+/* --- Print / PDF -------------------------------------------------------- */
+@media print {
+  .pf {
+    background: #fff;
+  }
+
+  .pf-toolbar {
+    display: none;
+  }
+
+  .pf-page {
+    margin: 0;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .pf-item,
+  .pf-story {
+    break-inside: avoid;
+  }
+}

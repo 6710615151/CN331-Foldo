@@ -1,0 +1,19 @@
+{% extends "rendering/portfolio_base.html" %}
+{% comment %} Classic: one centred column, everything in reading order. {% endcomment %}
+{% block portfolio %}
+<header class="pf-header">
+  {% include "rendering/partials/identity.html" %}
+  {% include "rendering/partials/contact.html" %}
+</header>
+
+{% if profile.bio %}
+  <section class="pf-section" aria-labelledby="pf-about">
+    <h2 class="pf-section__title" id="pf-about">About</h2>
+    <p class="pf-item__text">{{ profile.bio|linebreaksbr }}</p>
+  </section>
+{% endif %}
+
+{% for section in content.sections %}
+  {% include "rendering/partials/section.html" %}
+{% endfor %}
+{% endblock %}

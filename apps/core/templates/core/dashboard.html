@@ -60,9 +60,10 @@
               {% endfor %}
             </ul>
           {% else %}
-            <p class="foldo-section__subtitle mb-0">
+            <p class="foldo-section__subtitle">
               ยังไม่มีพอร์ตโฟลิโอ สร้างเวอร์ชันแรกได้หลังจากกรอกโปรไฟล์หลักเสร็จ
             </p>
+            <a class="btn btn-outline-foldo" href="{% url 'rendering:gallery' %}">ดูเทมเพลตพอร์ตโฟลิโอ</a>
           {% endif %}
         </div>
       </div>

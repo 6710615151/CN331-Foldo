@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block html_lang %}th{% endblock %}
+{% block title %}เทมเพลตพอร์ตโฟลิโอ — FOLDO{% endblock %}
+{% block content %}
+<section class="foldo-section" aria-labelledby="themes-heading">
+  <div class="container">
+    <header class="mb-4">
+      <p class="foldo-eyebrow" lang="en">Portfolio templates</p>
+      <h1 id="themes-heading" class="foldo-section__title">เลือกหน้าตาพอร์ตโฟลิโอ</h1>
+      <p class="foldo-section__subtitle mb-0">
+        ทุกเทมเพลตใช้ข้อมูลจากโปรไฟล์หลักชุดเดียวกัน ลองดูว่าโปรไฟล์ของคุณออกมาเป็นแบบไหน
+      </p>
+    </header>
+
+    {% if not profile %}
+      {% url "profiles:create" as create_url %}
+      {% include "partials/empty_state.html" with message="สร้างโปรไฟล์หลักก่อน แล้วจึงดูตัวอย่างเทมเพลตได้" action_url=create_url action_label="สร้างโปรไฟล์หลัก" %}
+    {% endif %}
+
+    <div class="row g-4">
+      {% for theme in themes %}
+        <div class="col-12 col-md-4">
+          <article class="foldo-card h-100 d-flex flex-column foldo-theme foldo-theme--{{ theme.key }}">
+            <div class="foldo-theme__swatch" aria-hidden="true"><span></span><span></span><span></span></div>
+            <p class="foldo-eyebrow mb-1">{{ theme.category }}</p>
+            <h2 class="h5">{{ theme.name }}</h2>
+            <p class="foldo-section__subtitle flex-grow-1">{{ theme.description }}</p>
+            {% if profile %}
+              <a class="btn btn-foldo" href="{% url 'rendering:preview' theme.key profile.pk %}">
+                ดูตัวอย่างกับโปรไฟล์ของฉัน<span class="visually-hidden"> ({{ theme.name }})</span>
+              </a>
+            {% endif %}
+          </article>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

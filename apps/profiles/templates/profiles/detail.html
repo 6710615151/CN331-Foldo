@@ -24,6 +24,7 @@
 
   <nav class="d-flex flex-wrap gap-2 mb-4" aria-label="Profile sections">
     <a class="btn btn-outline-secondary" href="{% url 'profiles:education_list' profile.pk %}">Education</a>
+    <a class="btn btn-outline-secondary" href="{% url 'profiles:skills_experience' profile.pk %}">Skills &amp; experience</a>
   </nav>
 
   <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
@@ -36,6 +37,7 @@
           <button type="submit" class="btn btn-outline-secondary">Make default</button>
         </form>
       {% endif %}
+      <a class="btn btn-outline-secondary" href="{% url 'profiles:projects' profile.pk %}">Projects</a>
       <a class="btn btn-outline-danger" href="{% url 'profiles:delete' profile.pk %}">Delete</a>
       <a class="btn btn-primary" href="{% url 'profiles:update' profile.pk %}">Edit profile</a>
     </div>
