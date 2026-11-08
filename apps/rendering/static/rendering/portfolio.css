@@ -104,6 +104,24 @@
 
 .pf-toolbar__back:hover { border-color: #c4f500; color: #c4f500; }
 
+/* Save confirmation shown under the owner bar (never on the public page). */
+.pf-toolbar__messages {
+  position: sticky;
+  top: 3.1rem;
+  z-index: 9;
+  padding: 0.5rem 1rem;
+  background: #0b2a7a;
+  border-bottom: 1px solid rgba(196, 245, 0, 0.45);
+  color: #fff;
+  font-family: "Inter", "Noto Sans Thai", system-ui, sans-serif;
+  font-size: 0.88rem;
+}
+.pf-toolbar__msg { margin: 0; }
+.pf-toolbar__msg::before { content: "✓ "; color: #c4f500; font-weight: 700; }
+.pf-toolbar__msg--warning::before,
+.pf-toolbar__msg--danger::before { content: "! "; color: #ffb020; }
+@media print { .pf-toolbar__messages { display: none; } }
+
 .pf-toolbar__status {
   padding: 0.2rem 0.65rem;
   border-radius: 999px;

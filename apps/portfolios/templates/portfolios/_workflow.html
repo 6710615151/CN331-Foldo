@@ -17,7 +17,7 @@
       <li class="foldo-flow__step tone-blue{% if current == 'content' %} is-current{% endif %}">
         <a href="{% url 'portfolios:content' portfolio.pk %}"{% if current == 'content' %} aria-current="step"{% endif %}>
           <span class="foldo-flow__num">2</span>
-          <span class="foldo-flow__text"><strong>เลือกเนื้อหา</strong><small>{% if portfolio.content_setup %}เลือกเองแล้ว{% else %}แสดงทุกอย่าง{% endif %}</small></span>
+          <span class="foldo-flow__text"><strong>เลือกเนื้อหา</strong><small>{% if portfolio.content_setup %}เลือกเนื้อหาแล้ว{% else %}แสดงทุกอย่าง{% endif %}</small></span>
         </a>
       </li>
       <li class="foldo-flow__step tone-lime{% if current == 'preview' %} is-current{% endif %}">

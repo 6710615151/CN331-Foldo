@@ -131,7 +131,6 @@ def portfolio_delete(request, pk):
     return render(request, "portfolios/confirm_delete.html", {"portfolio": portfolio})
 
 
-
 @require_POST
 @login_required
 def portfolio_duplicate(request, pk):
@@ -143,7 +142,9 @@ def portfolio_duplicate(request, pk):
         logger.exception("Failed duplicating portfolio %s for user %s", pk, request.user.pk)
         messages.error(request, "ทำสำเนาไม่สำเร็จ ลองอีกครั้ง")
         return redirect("portfolios:list")
-    messages.success(request, f"สร้างสำเนา “{copy.title}” แล้ว สำเนายังไม่เผยแพร่ ตั้งชื่อใหม่ให้ตรงกับงานที่จะสมัครได้เลย")
+    messages.success(
+        request, f"สร้างสำเนา “{copy.title}” แล้ว สำเนายังไม่เผยแพร่ ตั้งชื่อใหม่ให้ตรงกับงานที่จะสมัครได้เลย"
+    )
     return redirect("portfolios:update", pk=copy.pk)
 
 

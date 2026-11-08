@@ -148,7 +148,9 @@ class ProfileMakeDefaultView(OwnProfileMixin, SingleObjectMixin, View):
     def post(self, request, *args, **kwargs):
         profile = self.get_object()
         services.set_default_profile(profile)
-        messages.success(request, f"ตั้ง “{profile.label}” เป็นโปรไฟล์หลักแล้ว พอร์ตโฟลิโอที่ใช้โปรไฟล์หลักจะแสดงข้อมูลชุดนี้")
+        messages.success(
+            request, f"ตั้ง “{profile.label}” เป็นโปรไฟล์หลักแล้ว พอร์ตโฟลิโอที่ใช้โปรไฟล์หลักจะแสดงข้อมูลชุดนี้"
+        )
         next_url = request.POST.get("next", "")
         if not url_has_allowed_host_and_scheme(
             next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()

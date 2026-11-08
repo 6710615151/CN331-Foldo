@@ -45,7 +45,7 @@ One concept, one word, everywhere (nav, titles, buttons, messages).
 | Public page address | ลิงก์สาธารณะ | public link | URL, ลิงก์แชร์ |
 | Share page (`share_kit`) | แชร์ลิงก์และ QR | share | Share Kit (as a page name) |
 | Quality Check | ตรวจคุณภาพ | quality check | — |
-| Severity | ต้องแก้ / ควรแก้ / แนะนำ | must fix / should fix / suggestion | Error / Warning / Info |
+| Severity | ต้องแก้ / ควรแก้ / คำแนะนำ | must fix / should fix / suggestion | Error / Warning / Info |
 | Preview | ดูตัวอย่าง | preview | พรีวิว |
 | Project (`Project`) | โปรเจกต์ | project | ผลงาน (for a project) |
 | Project Story (feature name) | Project Story | Project Story | เรื่องเล่า |

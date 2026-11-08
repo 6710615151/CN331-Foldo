@@ -31,6 +31,7 @@ class Choice:
 # UI labels for skill levels (the portfolio document keeps the English ones).
 SKILL_LEVELS_TH = {"beginner": "เริ่มต้น", "intermediate": "ปานกลาง", "advanced": "ชำนาญ", "expert": "เชี่ยวชาญ"}
 
+
 def _skills(profile, owner):
     if not profile:
         return []
