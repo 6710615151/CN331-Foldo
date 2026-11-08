@@ -7,7 +7,9 @@ import tempfile
 from django.contrib.auth import get_user_model
 from django.contrib.messages import get_messages
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase, override_settings
+from django.db import connection
+from django.db.migrations.executor import MigrationExecutor
+from django.test import TestCase, TransactionTestCase, override_settings
 from django.urls import reverse
 from PIL import Image
 
@@ -191,6 +193,22 @@ class CreateAndEditTests(ProfileTestCase):
                 self.assertIn(field, errors)
         self.assertFalse(MainProfile.objects.exists())
 
+    def test_ftp_links_are_rejected(self):
+        response = self.client.post(
+            reverse("profiles:create"), profile_form_data(github_url="ftp://example.com/code")
+        )
+        self.assertIn("github_url", response.context["form"].errors)
+        self.assertFalse(MainProfile.objects.exists())
+
+    def test_bare_domain_link_gets_https(self):
+        self.client.post(reverse("profiles:create"), profile_form_data(website="example.com"))
+        self.assertEqual(MainProfile.objects.get().website, "https://example.com")
+
+    def test_invalid_fields_are_marked_for_screen_readers(self):
+        response = self.client.post(reverse("profiles:create"), profile_form_data(full_name=""))
+        self.assertContains(response, 'aria-invalid="true"')
+        self.assertContains(response, "is-invalid")
+
     def test_profile_limit_is_enforced(self):
         for i in range(MAX_PROFILES_PER_USER):
             make_profile(self.alice, label=f"Profile {i}")
@@ -242,6 +260,21 @@ class DefaultProfileTests(ProfileTestCase):
         self.assertTrue(second.is_default)
         self.assertFalse(first.is_default)
 
+    def test_make_default_returns_to_a_page_on_this_site(self):
+        make_profile(self.alice, label="First")
+        second = make_profile(self.alice, label="Second")
+        back = reverse("profiles:view", args=[second.pk])
+        response = self.client.post(reverse("profiles:make_default", args=[second.pk]), {"next": back})
+        self.assertRedirects(response, back)
+
+    def test_make_default_ignores_an_external_next_url(self):
+        make_profile(self.alice, label="First")
+        second = make_profile(self.alice, label="Second")
+        response = self.client.post(
+            reverse("profiles:make_default", args=[second.pk]), {"next": "https://evil.example/phish"}
+        )
+        self.assertRedirects(response, reverse("profiles:list"))
+
     def test_deleting_the_default_promotes_another_profile(self):
         first = make_profile(self.alice, label="First")
         second = make_profile(self.alice, label="Second")
@@ -292,6 +325,35 @@ class PhotoUploadTests(ProfileTestCase):
         response = self.client.post(reverse("profiles:create"), {**profile_form_data(), "photo": fake})
         self.assertIn("photo", response.context["form"].errors)
         self.assertFalse(MainProfile.objects.exists())
+
+
+class SetDefaultProfilesMigrationTests(TransactionTestCase):
+    """0003 must leave exactly one default per owner, even with several profiles."""
+
+    before = [("profiles", "0002_alter_mainprofile_options_mainprofile_is_default_and_more")]
+    after = [("profiles", "0003_set_default_profiles")]
+
+    def test_owner_with_two_profiles_gets_one_default(self):
+        executor = MigrationExecutor(connection)
+        executor.migrate(self.before)
+        old_apps = executor.loader.project_state(self.before).apps
+        User = old_apps.get_model("accounts", "CustomUser")
+        Profile = old_apps.get_model("profiles", "MainProfile")
+        owner = User.objects.create(username="multi")
+        Profile.objects.create(owner_id=owner.pk, label="A", full_name="A", is_default=False)
+        newest = Profile.objects.create(owner_id=owner.pk, label="B", full_name="B", is_default=False)
+
+        executor = MigrationExecutor(connection)
+        executor.loader.build_graph()
+        executor.migrate(self.after)
+
+        defaults = MainProfile.objects.filter(owner_id=owner.pk, is_default=True)
+        self.assertEqual(list(defaults.values_list("pk", flat=True)), [newest.pk])
+
+    def tearDown(self):
+        executor = MigrationExecutor(connection)
+        executor.loader.build_graph()
+        executor.migrate(executor.loader.graph.leaf_nodes())
 
 
 class ServiceTests(ProfileTestCase):

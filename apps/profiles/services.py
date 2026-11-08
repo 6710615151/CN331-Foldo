@@ -11,7 +11,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from .models import MainProfile
+from django.db import transaction
+from django.utils import timezone
+
+from .models import MAX_PROFILES_PER_USER, MainProfile
 
 
 @dataclass(frozen=True)
@@ -74,6 +77,28 @@ def get_or_create_profile(user) -> MainProfile:
 def set_default_profile(profile: MainProfile) -> None:
     profile.is_default = True
     profile.save(update_fields=["is_default"])
+
+
+def can_create_profile(user) -> bool:
+    return get_profiles(user).count() < MAX_PROFILES_PER_USER
+
+
+@transaction.atomic
+def save_profile(form, owner) -> MainProfile:
+    """Save a validated MainProfileForm for ``owner``. Ownership never comes from the form."""
+    profile = form.save(commit=False)
+    profile.owner = owner
+    profile.save()
+    return profile
+
+
+def delete_profile(profile: MainProfile) -> None:
+    """Delete a profile (and its photo); the model promotes a new default if needed."""
+    profile.delete()
+
+
+def saved_at_label(profile: MainProfile) -> str:
+    return timezone.localtime(profile.updated_at).strftime("%H:%M")
 
 
 def _photo_url(profile: MainProfile) -> str:

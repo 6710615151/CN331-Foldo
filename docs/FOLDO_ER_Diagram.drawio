@@ -205,7 +205,7 @@
         <mxCell id="p1_attr_main_profiles_profile_id_ln" value="" style="endArrow=none;startArrow=none;html=1;rounded=0;strokeColor=#333333;strokeWidth=1;" edge="1" parent="page-core-1" source="p1_attr_main_profiles_profile_id" target="p1_ent_main_profiles">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="p1_attr_main_profiles_user_id" value="user_id (FK, UQ)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=11;fontFamily=Helvetica;shadow=0;" vertex="1" parent="page-core-1">
+        <mxCell id="p1_attr_main_profiles_user_id" value="owner_id (FK)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=11;fontFamily=Helvetica;shadow=0;" vertex="1" parent="page-core-1">
           <mxGeometry x="923" y="900" width="144" height="38" as="geometry" />
         </mxCell>
         <mxCell id="p1_attr_main_profiles_user_id_ln" value="" style="endArrow=none;startArrow=none;html=1;rounded=0;strokeColor=#333333;strokeWidth=1;" edge="1" parent="page-core-1" source="p1_attr_main_profiles_user_id" target="p1_ent_main_profiles">
@@ -528,7 +528,7 @@
         <mxCell id="p1_rel_0_owns_c" value="" style="shape=link;endArrow=none;html=1;rounded=0;strokeColor=#000000;width=4;strokeWidth=1;" edge="1" parent="page-core-1" source="p1_ent_main_profiles" target="p1_rel_0_owns">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="p1_rel_0_owns_card_c" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=13;fontStyle=1;fontColor=#000000;labelBackgroundColor=none;" vertex="1" connectable="0" parent="p1_rel_0_owns_c">
+        <mxCell id="p1_rel_0_owns_card_c" value="N" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=13;fontStyle=1;fontColor=#000000;labelBackgroundColor=none;" vertex="1" connectable="0" parent="p1_rel_0_owns_c">
           <mxGeometry x="-0.45" relative="1" as="geometry">
             <mxPoint x="16" y="0" as="offset" />
           </mxGeometry>
@@ -742,7 +742,7 @@
             <mxPoint x="-9" y="-13" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="p1_notes" value="&lt;b&gt;Assumptions &amp;amp; constraints (Page 1)&lt;/b&gt;&lt;br&gt;1. USER_SETTINGS.user_id and MAIN_PROFILES.user_id are UNIQUE (UQ) and NOT NULL &amp;rarr; APP_USERS 1:1 with each. APP_USERS participation is partial (a user may exist before the profile/settings row is created).&lt;br&gt;2. PROJECT_STORIES.project_id is UNIQUE &amp;rarr; a project has 0..1 story; every story belongs to exactly one project.&lt;br&gt;3. All other FKs are NOT NULL &amp;rarr; the child side participates totally (double line). PORTFOLIO_VERSIONS.template_id is assumed required.&lt;br&gt;4. PORTFOLIO_CONTENT_SELECTIONS.content_id is a &lt;b&gt;polymorphic&lt;/b&gt; reference: together with content_type it points to a row in PROFILE_EDUCATIONS, PROFILE_EXPERIENCES, PROFILE_SKILLS or PROFILE_PROJECTS. It is &lt;b&gt;not&lt;/b&gt; a FK, so no relationship is drawn for it.&lt;br&gt;5. Previewing a portfolio renders PORTFOLIO_VERSIONS + selections + sections live; it stores nothing. Publishing (Page 2) creates an immutable PORTFOLIO_PUBLICATIONS snapshot." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;dashed=1;fontColor=#222222;fontSize=11;align=left;verticalAlign=top;spacing=10;fontFamily=Helvetica;" vertex="1" parent="page-core-1">
+        <mxCell id="p1_notes" value="&lt;b&gt;Assumptions &amp;amp; constraints (Page 1)&lt;/b&gt;&lt;br&gt;1. USER_SETTINGS.user_id is UNIQUE (UQ) and NOT NULL &amp;rarr; APP_USERS 1:1 with USER_SETTINGS. MAIN_PROFILES.owner_id is NOT NULL but not unique &amp;rarr; APP_USERS 1:N MAIN_PROFILES (up to 10, exactly one is_default per owner; Sprint 2 decision). APP_USERS participation is partial (a user may exist before the profile/settings row is created).&lt;br&gt;2. PROJECT_STORIES.project_id is UNIQUE &amp;rarr; a project has 0..1 story; every story belongs to exactly one project.&lt;br&gt;3. All other FKs are NOT NULL &amp;rarr; the child side participates totally (double line). PORTFOLIO_VERSIONS.template_id is assumed required.&lt;br&gt;4. PORTFOLIO_CONTENT_SELECTIONS.content_id is a &lt;b&gt;polymorphic&lt;/b&gt; reference: together with content_type it points to a row in PROFILE_EDUCATIONS, PROFILE_EXPERIENCES, PROFILE_SKILLS or PROFILE_PROJECTS. It is &lt;b&gt;not&lt;/b&gt; a FK, so no relationship is drawn for it.&lt;br&gt;5. Previewing a portfolio renders PORTFOLIO_VERSIONS + selections + sections live; it stores nothing. Publishing (Page 2) creates an immutable PORTFOLIO_PUBLICATIONS snapshot." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;dashed=1;fontColor=#222222;fontSize=11;align=left;verticalAlign=top;spacing=10;fontFamily=Helvetica;" vertex="1" parent="page-core-1">
           <mxGeometry x="60" y="1978" width="1150" height="254" as="geometry" />
         </mxCell>
         <mxCell id="p1_legend_box" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;dashed=1;fontColor=#222222;fontSize=11;align=left;verticalAlign=top;spacing=10;fontFamily=Helvetica;" vertex="1" parent="page-core-1">

@@ -15,22 +15,29 @@ from apps.core.mixins import OwnerRequiredMixin
 
 class EducationUpdateView(OwnerRequiredMixin, UpdateView):
     model = Education
-    owner_field = "profile__user"
+    owner_field = "profile__owner"
 ```
 
 - Not signed in → redirected to the login page.
 - Another user's row → **404**, not 403, so nobody can tell whether an id exists (prevents IDOR).
 - The owner always comes from `request.user`. Never accept `user_id` or `profile_id` from a form or URL.
 
-`owner_field` per table (from the ER diagram):
+`owner_field` per table. `MainProfile` stores its user in a field named
+**`owner`** (a user may keep several profiles, one marked default — see
+`docs/DATABASE.md`), so every path through a profile ends in `__owner`:
 
 | Table | `owner_field` |
 | --- | --- |
-| `USER_SETTINGS`, `MAIN_PROFILES` | `"user"` (default) |
-| `PROFILE_EDUCATIONS`, `PROFILE_EXPERIENCES`, `PROFILE_SKILLS`, `PROFILE_PROJECTS`, `PORTFOLIO_VERSIONS` | `"profile__user"` |
-| `PROJECT_STORIES`, `PROJECT_EVIDENCE` | `"project__profile__user"` |
-| `PORTFOLIO_SECTIONS`, `PORTFOLIO_CONTENT_SELECTIONS` | `"version__profile__user"` |
+| `USER_SETTINGS` | `"user"` (default) |
+| `MAIN_PROFILES` | `"owner"` |
+| `PROFILE_EDUCATIONS`, `PROFILE_EXPERIENCES`, `PROFILE_SKILLS`, `PROFILE_PROJECTS`, `PORTFOLIO_VERSIONS` | `"profile__owner"` |
+| `PROJECT_STORIES`, `PROJECT_EVIDENCE` | `"project__profile__owner"` |
+| `PORTFOLIO_SECTIONS`, `PORTFOLIO_CONTENT_SELECTIONS` | `"version__profile__owner"` |
 | `PORTFOLIO_TEMPLATES` | shared by everyone — do not use the mixin |
+
+Child rows get their profile from the URL's profile id **looked up through the
+signed-in user** (`get_profile(request.user, pk)` → 404 if not theirs), never
+from a form field.
 
 **`PORTFOLIO_CONTENT_SELECTIONS.content_id` has no foreign key.** The mixin only
 checks who owns the selection row. Before saving a selection, also check that
