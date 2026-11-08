@@ -104,3 +104,4 @@ def build_dna(profile, *, providers=None, versions=None) -> DnaReport:
         source_sections(profile, providers),
         portfolio_versions(profile) if versions is None else versions,
     )
+

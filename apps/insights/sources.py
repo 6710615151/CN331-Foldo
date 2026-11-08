@@ -119,7 +119,6 @@ def portfolio_versions_for_profile(profile) -> list[VersionRef]:
     except ImportError:
         return []
 
-    fallback = reverse("portfolios:list") if "portfolios:list" in reverse.__doc__ or True else "/"
     try:
         fallback = reverse("portfolios:list")
     except NoReverseMatch:
@@ -152,3 +151,4 @@ def portfolio_versions_for_profile(profile) -> list[VersionRef]:
 def portfolio_versions(profile) -> list[VersionRef]:
     """Alias for portfolio_versions_for_profile."""
     return portfolio_versions_for_profile(profile)
+
