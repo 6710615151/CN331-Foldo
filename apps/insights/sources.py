@@ -29,6 +29,14 @@ EDIT_URL_NAMES = {
     "projects": "profiles:project_edit",
 }
 
+# Where to add a first item to an empty section (falls back to the profile page).
+ADD_URL_NAMES = {
+    "skills": "profiles:skills_experience",
+    "experience": "profiles:skills_experience",
+    "education": "profiles:education_list",
+    "projects": "profiles:project_list",
+}
+
 # Version pages from FOLDO-05; fall back to the dashboard until they exist.
 VERSION_URL_NAME = "portfolios:detail"
 
@@ -47,9 +55,18 @@ class VersionRef:
     name: str
     url: str
     selected: dict[str, frozenset[int]] = field(default_factory=dict)
+    template: str = ""
 
     def uses(self, section: str, item_id: int) -> bool:
         return item_id in self.selected.get(section, frozenset())
+
+
+def section_add_url(profile, section: str) -> str:
+    return _url(ADD_URL_NAMES[section], profile.pk, reverse("profiles:view", args=[profile.pk]))
+
+
+def item_edit_url(profile, section: str, item_id: int) -> str:
+    return _url(EDIT_URL_NAMES[section], item_id, reverse("profiles:view", args=[profile.pk]))
 
 
 def _url(name: str, pk: int, fallback: str) -> str:
@@ -97,6 +114,7 @@ def portfolio_versions(profile) -> list[VersionRef]:
                 name=getattr(version, "version_name", "") or f"Version {version.pk}",
                 url=_url(VERSION_URL_NAME, version.pk, fallback),
                 selected={key: frozenset(ids) for key, ids in selected.items()},
+                template=getattr(version, "template", "") or "",
             )
         )
     return versions

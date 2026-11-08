@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block html_lang %}th{% endblock %}
+{% block title %}ตรวจคุณภาพพอร์ตโฟลิโอ — {{ profile.label }} — FOLDO{% endblock %}
+{% block content %}
+<section class="foldo-section foldo-profile" aria-labelledby="quality-heading">
+  <div class="container foldo-profile__narrow">
+    <a class="foldo-profile__back" href="{% url 'profiles:view' profile.pk %}">&larr; {{ profile.label }}</a>
+    <header class="mt-2 mb-4">
+      <p class="foldo-eyebrow" lang="en">Quality check</p>
+      <h1 id="quality-heading" class="foldo-section__title">ตรวจพอร์ตโฟลิโอก่อนส่ง</h1>
+      <p class="foldo-section__subtitle mb-0">
+        ระบบแค่ตรวจและแนะนำ ไม่แก้ไขหรือเผยแพร่อะไรให้อัตโนมัติ
+      </p>
+    </header>
+
+    <form method="get" class="foldo-card mb-4 d-flex flex-wrap align-items-end gap-3">
+      {% if versions %}
+        <div>
+          <label class="form-label" for="q-version">เวอร์ชัน</label>
+          <select class="form-select" id="q-version" name="version">
+            <option value="">ทั้งโปรไฟล์</option>
+            {% for v in versions %}
+              <option value="{{ v.id }}"{% if version and v.id == version.id %} selected{% endif %}>{{ v.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      {% endif %}
+      <div>
+        <label class="form-label" for="q-theme">เทมเพลต</label>
+        <select class="form-select" id="q-theme" name="theme"{% if version %} disabled aria-describedby="q-theme-note"{% endif %}>
+          {% for t in themes %}
+            <option value="{{ t.key }}"{% if t.key == theme_key %} selected{% endif %}>{{ t.name }}</option>
+          {% endfor %}
+        </select>
+        {% if version %}<div class="form-text" id="q-theme-note">ใช้เทมเพลตของเวอร์ชันนี้</div>{% endif %}
+      </div>
+      <button type="submit" class="btn btn-lime">ตรวจอีกครั้ง</button>
+    </form>
+
+    <div class="foldo-card mb-4 foldo-quality__summary{% if report.is_blocking %} is-blocking{% endif %}" role="status">
+      {% if report.is_blocking %}
+        <strong>ยังไม่พร้อมส่ง</strong> — มีปัญหาที่ต้องแก้ {{ report.errors|length }} ข้อ
+      {% elif report.warnings %}
+        <strong>ส่งได้</strong> แต่มีข้อควรแก้ {{ report.warnings|length }} ข้อ
+      {% else %}
+        <strong>พร้อมส่ง</strong> ไม่พบปัญหาที่ต้องแก้
+      {% endif %}
+      <span class="foldo-section__subtitle d-block small mt-1">
+        ข้อผิดพลาด {{ report.errors|length }} · คำเตือน {{ report.warnings|length }} · คำแนะนำ {{ report.infos|length }}
+      </span>
+    </div>
+
+    {% for severity, findings in report.groups %}
+      <section class="mb-4" aria-labelledby="q-{{ severity }}">
+        <h2 id="q-{{ severity }}" class="h5 foldo-quality__heading foldo-quality__heading--{{ severity }}">
+          {% if severity == "error" %}ต้องแก้ก่อนส่ง{% elif severity == "warning" %}ควรแก้{% else %}คำแนะนำ{% endif %}
+          <span class="visually-hidden">({{ severity }})</span>
+        </h2>
+        <ul class="list-unstyled d-grid gap-2">
+          {% for f in findings %}
+            <li class="foldo-card foldo-quality__item foldo-quality__item--{{ severity }}">
+              <p class="mb-1"><strong>{{ f.title }}</strong></p>
+              <p class="mb-2 foldo-section__subtitle">{{ f.detail }}</p>
+              {% if f.fix_url %}<a class="btn btn-sm btn-outline-foldo" href="{{ f.fix_url }}">{{ f.fix_label }}</a>{% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      </section>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

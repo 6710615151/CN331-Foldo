@@ -36,6 +36,7 @@
               <a class="btn btn-foldo" href="{% url 'profiles:update' summary.profile.pk %}">แก้ไขโปรไฟล์</a>
               <a class="btn btn-outline-foldo" href="{% url 'profiles:view' summary.profile.pk %}">ดูโปรไฟล์</a>
               <a class="btn btn-outline-foldo" href="{% url 'insights:dna' summary.profile.pk %}"><span lang="en">Portfolio DNA</span></a>
+              <a class="btn btn-outline-foldo" href="{% url 'insights:quality' summary.profile.pk %}">ตรวจคุณภาพ</a>
             </div>
           {% else %}
             <p class="foldo-section__subtitle">
