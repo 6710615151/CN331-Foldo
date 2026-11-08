@@ -1,0 +1,161 @@
+/* Skills & experience pages (FOLDO-04) — FOLDO tokens from static/css/styles.css. */
+
+#main-content {
+  background:
+    radial-gradient(ellipse 60% 420px at 8% 0%, rgba(47, 95, 230, 0.32), transparent 100%),
+    radial-gradient(ellipse 45% 360px at 95% 0%, rgba(100, 37, 255, 0.2), transparent 100%);
+  background-repeat: no-repeat;
+}
+
+/* Pill-style back button */
+.foldo-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.9rem 0.35rem 0.7rem;
+  border: 1px solid var(--foldo-border-strong);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--foldo-ink);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s, color 0.15s, transform 0.15s;
+}
+
+.foldo-back:hover,
+.foldo-back:focus-visible {
+  border-color: var(--foldo-lime);
+  background: rgba(184, 243, 74, 0.1);
+  color: var(--foldo-lime);
+  transform: translateX(-2px);
+}
+
+.foldo-back span[aria-hidden] { font-size: 1.1rem; line-height: 1; }
+
+.foldo-se__header { margin: var(--foldo-space-3) 0 var(--foldo-space-4); }
+
+.foldo-se__eyebrow {
+  margin: 0 0 0.25rem;
+  color: var(--foldo-lime);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.foldo-se__title {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 700;
+}
+
+.foldo-se__bands {
+  display: flex;
+  height: 6px;
+  max-width: 7rem;
+  margin: 0.75rem 0 var(--foldo-space-2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.foldo-se__bands span:first-child { flex: 2; background: var(--foldo-lime); }
+.foldo-se__bands span:last-child { flex: 1; background: var(--foldo-orange); }
+
+.foldo-se__subtitle { color: var(--foldo-muted); margin: 0; }
+
+.foldo-se__section-title {
+  font-family: var(--foldo-font-display);
+  font-weight: 600;
+}
+
+/* Cards / list rows */
+.foldo-se__card,
+.foldo-se .list-group-item {
+  background: linear-gradient(160deg, var(--foldo-surface-2), var(--foldo-surface) 55%);
+  border: 1px solid var(--foldo-border);
+  color: var(--foldo-ink);
+}
+
+.foldo-se__card {
+  border-radius: var(--foldo-radius-lg);
+  box-shadow: var(--foldo-shadow-md);
+}
+
+.foldo-se__card--accent { border-top: 4px solid var(--foldo-lime); }
+
+.foldo-se .list-group { border-radius: var(--foldo-radius); box-shadow: var(--foldo-shadow-md); }
+
+.foldo-se .badge.foldo-level {
+  background: rgba(184, 243, 74, 0.14);
+  color: var(--foldo-lime);
+  border: 1px solid rgba(184, 243, 74, 0.35);
+  font-weight: 500;
+}
+
+.foldo-se .form-control,
+.foldo-se .form-select {
+  background-color: var(--foldo-bg-deep);
+  border: 1.5px solid var(--foldo-border-strong);
+  color: var(--foldo-ink);
+  border-radius: 6px;
+  padding: 0.6rem 0.85rem;
+}
+
+.foldo-se .form-control:focus,
+.foldo-se .form-select:focus {
+  background-color: var(--foldo-bg-deep);
+  border-color: var(--foldo-lime);
+  box-shadow: 0 0 0 3px rgba(184, 243, 74, 0.25);
+  color: var(--foldo-ink);
+}
+
+.foldo-se .is-invalid { border-color: var(--foldo-pink); background-image: none; }
+.foldo-se .invalid-feedback { color: #ff8fd0; }
+
+/* Flash messages as a toast popup (CSS only; success auto-hides). */
+#main-content > .container[role="status"] {
+  position: fixed;
+  top: 5.5rem;
+  right: 1rem;
+  z-index: 1080;
+  width: min(24rem, calc(100vw - 2rem));
+  padding: 0;
+  margin: 0;
+  pointer-events: none;
+}
+#main-content > .container[role="status"] .alert {
+  pointer-events: auto;
+  margin-bottom: 0.75rem;
+  border-radius: var(--foldo-radius);
+  box-shadow: var(--foldo-shadow-md);
+  animation: foldo-toast-in 0.35s ease-out both;
+}
+#main-content > .container[role="status"] .alert-success {
+  border-left: 5px solid var(--foldo-lime);
+  animation: foldo-toast-in 0.35s ease-out both, foldo-toast-out 0.4s ease-in 5s forwards;
+}
+#main-content > .container[role="status"] .alert-danger { border-left: 5px solid var(--foldo-pink); }
+
+@keyframes foldo-toast-in {
+  from { opacity: 0; transform: translateY(-1rem) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes foldo-toast-out { to { opacity: 0; transform: translateY(-0.5rem); visibility: hidden; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .foldo-back { transition: none; }
+  #main-content > .container[role="status"] .alert { animation: none; }
+}
+
+/* Confirm-delete popup */
+.foldo-modal .modal-content {
+  background: linear-gradient(160deg, var(--foldo-surface-2), var(--foldo-surface) 55%);
+  border: 1px solid var(--foldo-border);
+  border-top: 4px solid var(--foldo-pink);
+  border-radius: var(--foldo-radius-lg);
+  color: var(--foldo-ink);
+  box-shadow: var(--foldo-shadow-md);
+}
+.foldo-modal .modal-title { font-family: var(--foldo-font-display); }
+.foldo-modal .modal-body { overflow-wrap: anywhere; }
+.foldo-modal .btn-close { filter: invert(1) grayscale(1); }
+@media (prefers-reduced-motion: reduce) { .foldo-modal.fade .modal-dialog { transition: none; } }
