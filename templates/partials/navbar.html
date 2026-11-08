@@ -21,6 +21,11 @@
                lang="en">Dashboard</a>
           </li>
           <li class="nav-item">
+            <a class="nav-link foldo-nav__link{% if request.resolver_match.app_name == 'profiles' %} active{% endif %}"
+               href="{% url 'profiles:list' %}"
+               {% if request.resolver_match.app_name == 'profiles' %}aria-current="page"{% endif %}>โปรไฟล์</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link foldo-nav__link{% if current == 'settings' %} active{% endif %}"
                href="{% url 'accounts:settings' %}"
                {% if current == 'settings' %}aria-current="page"{% endif %}>ตั้งค่าบัญชี</a>

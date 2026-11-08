@@ -136,7 +136,8 @@ Open <http://127.0.0.1:8000/>. Other useful routes:
 | --- | --- |
 | `/` | FOLDO landing page |
 | `/onboarding/` | First-time entry flow (mock steps; login required) |
-| `/dashboard/` | Signed-in app shell (mock summary; login required) |
+| `/dashboard/` | Signed-in app shell: Main Profile status (login required) |
+| `/profiles/` | Main Profile: create, view, edit, delete (login required) |
 | `/health/` | JSON health check (200 ok / 503 degraded) |
 | `/accounts/settings/` | Account settings (login required; edits the signed-in user only) |
 | `/admin/` | Django admin (create a superuser to use it) |
@@ -197,16 +198,20 @@ Implemented and verified:
 
 - Django 5.2 project with env-based settings and secure production defaults.
 - `accounts` app: `CustomUser` as `AUTH_USER_MODEL` from the first migration.
-- `core` app: landing page, JSON health check, custom 404/500 pages, and an
-  app-shell preview (`/onboarding/`, `/dashboard/`) rendered against mock data
-  until `profiles`/`portfolios` exist.
+- `accounts` app: register, log in/out, password reset, account settings.
+- `core` app: landing page, JSON health check, custom 403/404/500 pages,
+  onboarding (`/onboarding/`) and the dashboard (`/dashboard/`), which shows
+  the user's Main Profile status.
+- `profiles` app: Main Profile create/view/edit/delete with photo, contact
+  details, links and a completeness indicator (`/profiles/`).
 - Responsive Bootstrap 5 UI with FOLDO design tokens and a small ES6 module.
 - Automated tests in each app's `tests.py` (landing, health, user model, forms, 404).
 - Optional PostgreSQL and Redis configuration through environment variables.
 - Five documents under `docs/` plus GitHub templates and a CI workflow.
 
-**Deliberately not implemented yet:** authentication, profile CRUD, portfolio
-versioning, template selection, preview and PDF export. No placeholder database
+**Not implemented yet:** profile sections (education, skills, experience,
+projects, project story), portfolio versioning, template selection, preview
+and PDF export. No placeholder database
 models were created — planned models are documented in
 `apps/*/models.py` and will arrive with their Issues.
 

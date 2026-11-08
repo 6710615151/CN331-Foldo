@@ -4,14 +4,17 @@ Data access layer for the ``core`` app (pure reads, no side effects).
 ``core`` owns no models. Its one real read is the health check, which only
 asks whether dependencies respond and deliberately reports coarse booleans so
 the endpoint never leaks environment variables, credentials or host details.
-The rest of this module is fixed mock data for the app shell (see the "MOCK
-DATA" section below) until ``apps.profiles`` / ``apps.portfolios`` exist.
-Domain queries belong in each app's own ``selectors.py``.
+The rest of this module composes the app shell's dashboard and onboarding
+state from other apps' public services (``apps.profiles.services``); domain
+queries themselves belong in each app's own module.
 """
 
 from django.conf import settings
 from django.db import connections
 from django.db.utils import OperationalError
+from django.urls import reverse
+
+from apps.profiles.services import get_default_profile
 
 
 class DatabaseHealthCheck:
@@ -66,27 +69,32 @@ def get_health_report() -> HealthReport:
 
 
 # ---------------------------------------------------------------------------
-# MOCK DATA — app shell preview (FOLDO-02 app shell slice)
+# App shell: onboarding steps and dashboard summary
 # ---------------------------------------------------------------------------
-# apps.profiles (FOLDO-03) and apps.portfolios (FOLDO-04) do not exist yet, so
-# the dashboard and onboarding shell render against fixed mock data instead of
-# a selector backed by real models. Every function below is tagged "MOCK" in
-# its docstring so it is easy to grep for and replace once the owning app
-# lands; nothing here performs a database query.
+# The Main Profile comes from apps.profiles (FOLDO-03). Portfolio versions
+# arrive with FOLDO-05 (Sprint 3), so they are still an empty list here.
 
 
-def get_mock_onboarding_steps() -> list[dict]:
-    """MOCK: the three-step first-time walkthrough shown at ``/onboarding/``.
+def get_onboarding_steps(user) -> list[dict]:
+    """The three-step walkthrough at ``/onboarding/``.
 
-    Replace with real content once FOLDO-03 (main profile) defines what a
-    genuinely empty profile looks like.
+    Step 1 is marked done once the user has a Main Profile. Steps 2 and 3 have
+    no action until portfolio versions exist.
     """
+    profile = get_default_profile(user)
     return [
         {
             "number": 1,
             "title": "สร้างโปรไฟล์หลักของคุณ",
             "title_en": "Build your main profile",
             "description": "กรอกข้อมูลส่วนตัว การศึกษา ทักษะ และผลงานไว้ที่เดียว",
+            "done": profile is not None,
+            "action_url": (
+                reverse("profiles:update", args=[profile.pk])
+                if profile
+                else reverse("profiles:create")
+            ),
+            "action_label": "แก้ไขโปรไฟล์" if profile else "สร้างโปรไฟล์",
         },
         {
             "number": 2,
@@ -103,14 +111,13 @@ def get_mock_onboarding_steps() -> list[dict]:
     ]
 
 
-def get_mock_dashboard_summary() -> dict:
-    """MOCK: the signed-in shell's dashboard summary at ``/dashboard/``.
-
-    Shapes the empty/first-time state (no profile, no portfolios yet) so the
-    shell, navigation and layout can be reviewed before FOLDO-03/04 exist.
-    """
+def get_dashboard_summary(user) -> dict:
+    """The signed-in user's dashboard: their Main Profile status, scoped to them."""
+    profile = get_default_profile(user)
     return {
-        "has_profile": False,
-        "profile_completeness": 0,
+        "has_profile": profile is not None,
+        "profile": profile,
+        "profile_completeness": profile.completion_percent if profile else 0,
+        "missing_fields": profile.missing_fields if profile else [],
         "portfolios": [],
     }

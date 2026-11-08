@@ -6,11 +6,7 @@ from django.shortcuts import render
 from django.views import View
 from django.views.generic import TemplateView
 
-from .selectors import (
-    get_health_report,
-    get_mock_dashboard_summary,
-    get_mock_onboarding_steps,
-)
+from .selectors import get_dashboard_summary, get_health_report, get_onboarding_steps
 
 
 class LandingView(TemplateView):
@@ -22,30 +18,29 @@ class LandingView(TemplateView):
 class OnboardingView(LoginRequiredMixin, TemplateView):
     """First-time entry flow: a three-step walkthrough before the dashboard.
 
-    Signed-in users only. The steps are mock data until FOLDO-03 defines what
-    an empty Main Profile looks like.
+    Signed-in users only. Step 1 reflects whether the user has a Main Profile.
     """
 
     template_name = "core/onboarding.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["steps"] = get_mock_onboarding_steps()
+        context["steps"] = get_onboarding_steps(self.request.user)
         return context
 
 
 class DashboardView(LoginRequiredMixin, TemplateView):
     """Signed-in app shell: navigation, layout and an empty-state summary.
 
-    Signed-in users only. Swap the mock summary for ``apps.profiles`` /
-    ``apps.portfolios`` selectors as those apps arrive.
+    Signed-in users only. Shows the user's own Main Profile status; portfolio
+    versions join once ``apps.portfolios`` exists (FOLDO-05).
     """
 
     template_name = "core/dashboard.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["summary"] = get_mock_dashboard_summary()
+        context["summary"] = get_dashboard_summary(self.request.user)
         return context
 
 
