@@ -6,6 +6,7 @@ from django.db import DatabaseError, transaction
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.views.decorators.clickjacking import xframe_options_sameorigin
 
 from .forms import PortfolioForm
 from .models import Portfolio
@@ -120,3 +121,36 @@ def portfolio_delete(request, pk):
         messages.success(request, f"“{title}” was deleted.")
         return redirect("portfolios:list")
     return render(request, "portfolios/confirm_delete.html", {"portfolio": portfolio})
+
+
+
+
+# --- FOLDO-08: device preview (desktop / mobile), loading and rendering-error states ---
+
+PREVIEW_MODES = {"desktop": "Desktop", "mobile": "Mobile"}
+
+
+@login_required
+def portfolio_device_preview(request, pk):
+    """Owner-only page with a Desktop / Mobile switch. The portfolio loads in an iframe below it."""
+    portfolio = _owned_or_404(request, pk)
+    mode = request.GET.get("mode")
+    if mode not in PREVIEW_MODES:
+        mode = "desktop"
+    return render(request, "portfolios/device_preview.html", {
+        "portfolio": portfolio, "mode": mode, "modes": PREVIEW_MODES,
+    })
+
+
+@xframe_options_sameorigin
+@login_required
+def portfolio_preview_frame(request, pk):
+    """The portfolio itself, shown inside the device preview. A template error shows a message, not a blank frame."""
+    portfolio = _owned_or_404(request, pk)
+    try:
+        response = _render_portfolio(request, portfolio, preview=False)
+    except Exception:
+        logger.exception("Failed rendering preview of portfolio %s for user %s", pk, request.user.pk)
+        response = render(request, "portfolios/preview_error.html", {"portfolio": portfolio}, status=500)
+    response["X-Robots-Tag"] = "noindex"
+    return response
