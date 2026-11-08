@@ -5,10 +5,9 @@
 {% block meta_description %}FOLDO — ทำตาม 3 ขั้นตอนเพื่อสร้างโปรไฟล์หลักและพอร์ตโฟลิโอแรกของคุณ{% endblock %}
 
 {% comment %}
-  First-time entry flow (FOLDO-02 app-shell slice). Reached directly for now;
-  once registration exists it should follow right after sign-up. The three
-  steps come from a mock selector (apps.profiles/apps.portfolios don't exist
-  yet) — see apps/core/selectors.py.
+  First-time entry flow (login required). It should follow right after
+  sign-up (redirect in accounts.register, see #26). Step 1 reads the user's
+  Main Profile; steps 2–3 get actions once portfolio versions exist.
 {% endcomment %}
 
 {% block content %}
@@ -25,11 +24,15 @@
     <ol class="row g-4 list-unstyled foldo-steps">
       {% for step in steps %}
       <li class="col-12 col-md-4">
-        <div class="foldo-step h-100">
-          <span class="foldo-step__number" aria-hidden="true">{{ step.number }}</span>
+        <div class="foldo-step h-100{% if step.done %} foldo-step--done{% endif %}">
+          <span class="foldo-step__number" aria-hidden="true">{% if step.done %}&check;{% else %}{{ step.number }}{% endif %}</span>
           <h2 class="foldo-step__title" lang="en">{{ step.title_en }}</h2>
           <p class="foldo-step__title-th">{{ step.title }}</p>
-          <p class="foldo-step__description mb-0">{{ step.description }}</p>
+          <p class="foldo-step__description">{{ step.description }}</p>
+          {% if step.done %}<p class="foldo-step__status mb-2">เสร็จแล้ว</p>{% endif %}
+          {% if step.action_url %}
+            <a class="btn btn-outline-foldo btn-sm" href="{{ step.action_url }}">{{ step.action_label }}</a>
+          {% endif %}
         </div>
       </li>
       {% endfor %}

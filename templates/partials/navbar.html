@@ -1,8 +1,9 @@
 {% comment %}
-  Logo plus the app-shell entry point. The landing page replaces this header
-  entirely (single hero screen, nothing to scroll to — see its "header"
-  block). "Log in" / "Log out" are added with the authentication Issue.
+  Shared navigation for every page except the landing page, which replaces
+  this header with its own full-bleed hero (see its "header" block).
+  Links wrap under the logo on narrow screens, so no JavaScript toggle is needed.
 {% endcomment %}
+{% with current=request.resolver_match.url_name %}
 <header class="sticky-top">
   <nav class="navbar navbar-expand foldo-navbar" aria-label="เมนูหลัก">
     <div class="container">
@@ -11,21 +12,42 @@
         <span class="foldo-brand__name">Foldo</span>
       </a>
 
-      <ul class="navbar-nav foldo-nav ms-auto flex-row">
-        <li class="nav-item">
-          <a
-            class="nav-link foldo-nav__link{% if request.resolver_match.url_name == 'dashboard' %} active{% endif %}"
-            href="{% url 'core:dashboard' %}"
-            {% if request.resolver_match.url_name == 'dashboard' %}aria-current="page"{% endif %}
-            lang="en">Dashboard</a>
-        </li>
+      <ul class="navbar-nav foldo-nav ms-auto flex-row flex-wrap align-items-center">
         {% if user.is_authenticated %}
-            <form method="post" action="{% url 'accounts:logout' %}">
-                {% csrf_token %}
-              <button type="submit" class="btn foldo-btn-secondary" >Logout</button>
+          <li class="nav-item">
+            <a class="nav-link foldo-nav__link{% if current == 'dashboard' %} active{% endif %}"
+               href="{% url 'core:dashboard' %}"
+               {% if current == 'dashboard' %}aria-current="page"{% endif %}
+               lang="en">Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link foldo-nav__link{% if request.resolver_match.app_name == 'profiles' %} active{% endif %}"
+               href="{% url 'profiles:list' %}"
+               {% if request.resolver_match.app_name == 'profiles' %}aria-current="page"{% endif %}>โปรไฟล์</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link foldo-nav__link{% if current == 'settings' %} active{% endif %}"
+               href="{% url 'accounts:settings' %}"
+               {% if current == 'settings' %}aria-current="page"{% endif %}>ตั้งค่าบัญชี</a>
+          </li>
+          <li class="nav-item">
+            <form method="post" action="{% url 'accounts:logout' %}" class="foldo-nav__form">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-foldo btn-sm">ออกจากระบบ</button>
             </form>
+          </li>
+        {% else %}
+          <li class="nav-item">
+            <a class="nav-link foldo-nav__link{% if current == 'login' %} active{% endif %}"
+               href="{% url 'accounts:login' %}"
+               {% if current == 'login' %}aria-current="page"{% endif %}>เข้าสู่ระบบ</a>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-lime btn-sm" href="{% url 'accounts:register' %}">สมัครสมาชิก</a>
+          </li>
         {% endif %}
       </ul>
     </div>
   </nav>
 </header>
+{% endwith %}

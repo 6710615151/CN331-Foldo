@@ -72,29 +72,57 @@ Rules:
 
 ## Current schema
 
-The only application model is **`accounts.CustomUser`** (subclass of
-`AbstractUser`, no extra fields yet), set as `AUTH_USER_MODEL` from the very
-first migration so fields can be added later without a user-model swap. Always
-refer to it via `settings.AUTH_USER_MODEL` / `get_user_model()`, never
-`auth.User`. Besides it, only Django's built-in tables exist (`auth` groups and
+**`accounts.CustomUser`** (subclass of `AbstractUser`, no extra fields yet) is
+`AUTH_USER_MODEL` from the very first migration, so fields can be added later
+without a user-model swap. Always refer to it via `settings.AUTH_USER_MODEL` /
+`get_user_model()`, never `auth.User`.
+
+**`profiles.MainProfile`** (FOLDO-03) — the ER diagram's `MAIN_PROFILES`:
+
+| Field | Notes |
+| ----- | ----- |
+| `owner` | FK → `AUTH_USER_MODEL`, `on_delete=CASCADE` |
+| `label`, `is_default` | Name the owner sees; one default per owner (partial unique constraint) |
+| `full_name` | Required |
+| `headline`, `bio`, `location` | Optional |
+| `photo` | Optional `ImageField` (jpg/png/webp/gif, ≤ 5 MB) stored under `MEDIA_ROOT/profile_photos/user_<id>/` with a random name |
+| `contact_email`, `phone` | Optional contact details |
+| `website`, `linkedin_url`, `github_url` | Optional links (http/https) |
+| `created_at`, `updated_at` | Timestamps |
+
+"Complete" means `full_name`, `headline` and `contact_email` are filled in
+(`MainProfile.REQUIRED_FOR_PORTFOLIO`). Saving an incomplete profile is
+allowed and shows a warning.
+
+> **Decision (Sprint 2):** a user may keep up to 10 Main Profiles, exactly one
+> of them the **default** (used by the dashboard and as the starting point for
+> new portfolio versions). The original ER diagram had `MAIN_PROFILES.user_id`
+> UNIQUE (one profile); it was relaxed because FOLDO-03 and FOLDO-04 were
+> built on the many-profile model. Child tables reach the user through
+> `profile__owner` (see `docs/CONVENTIONS.md` §1). Tailoring for a specific
+> job is still the job of portfolio versions (FOLDO-05).
+
+Besides these, only Django's built-in tables exist (`auth` groups and
 permissions, `admin`, `contenttypes`, `sessions`). No placeholder tables were
 created — an unused model plus migration is noise and confuses the team.
 
-Planned models are documented in the source and arrive with their Issues:
+Planned models arrive with their Issues:
 
-| App | Model | Issue | Purpose |
-| --- | ----- | ----- | ------- |
-| `profiles` | `Profile` | FOLDO-02 | One-to-one with `AUTH_USER_MODEL`; personal details. |
-| `profiles` | `Education` | FOLDO-03 | Institution, degree, field, dates. |
-| `profiles` | `Skill` | FOLDO-03 | Name, category, proficiency. |
-| `profiles` | `Project` | FOLDO-03 | Title, description, link, dates. |
-| `profiles` | `Experience` | FOLDO-03 | Organisation, role, description, dates. |
-| `portfolios` | `PortfolioVersion` | FOLDO-04 | Title, target role/company, template. |
-| `portfolios` | `PortfolioSectionItem` | FOLDO-05 | Ordered references to profile content. |
-| `portfolios` | `TemplateChoice` | FOLDO-06 | Template key → renderer. |
+| App | Model (ER table) | Issue | Purpose |
+| --- | ---------------- | ----- | ------- |
+| `profiles` | `Education` (`PROFILE_EDUCATIONS`) | FOLDO-04 | Institution, degree, field of study, dates. |
+| `profiles` | `Skill` (`PROFILE_SKILLS`) | FOLDO-04 | Skill name, proficiency. |
+| `profiles` | `Experience` (`PROFILE_EXPERIENCES`) | FOLDO-04 | Company, job title, description, dates. |
+| `profiles` | `Project` (`PROFILE_PROJECTS`) | FOLDO-04 | Project name, description, URL, dates. |
+| `profiles` | `ProjectStory` (`PROJECT_STORIES`) | FOLDO-15 | Optional problem / role / process / solution / outcome (0..1 per project). |
+| `profiles` | `ProjectEvidence` (`PROJECT_EVIDENCE`) | FOLDO-15 | Evidence links and images per project. |
+| `portfolios` | `PortfolioVersion` | FOLDO-05 | Version name, status, template. |
+| `portfolios` | `PortfolioContentSelection` | FOLDO-06 | References to profile content per version. |
+| `portfolios` | `PortfolioTemplate` | FOLDO-07 | Template key → renderer. |
 
-Relationships (planned): `User 1─1 Profile 1─* {Education, Skill, Project,
-Experience}`, and `Profile 1─* PortfolioVersion 1─* PortfolioSectionItem`.
+Relationships (planned): `User 1─* MainProfile 1─* {Education, Skill, Project,
+Experience}` (or `1─1` if the open decision above goes that way),
+`Project 1─0..1 ProjectStory`, and `MainProfile 1─* PortfolioVersion`.
 
 Design principle: portfolio versions **reference** profile content rather than
 copying it, so editing the main profile updates every portfolio.

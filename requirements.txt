@@ -24,3 +24,6 @@ redis>=5.0,<7.0
 # Loads environment variables from a local .env file during development so
 # that settings.py can stay free of hardcoded secrets and DB credentials.
 python-dotenv>=1.0,<2.0
+
+# The photo field on MainProfile is a Django ImageField, and Django needs Pillow to validate uploaded images.
+Pillow>=10.0

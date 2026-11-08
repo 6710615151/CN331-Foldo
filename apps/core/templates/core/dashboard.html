@@ -5,10 +5,9 @@
 {% block meta_description %}FOLDO — ภาพรวมโปรไฟล์หลักและพอร์ตโฟลิโอทั้งหมดของคุณ{% endblock %}
 
 {% comment %}
-  Signed-in app shell (FOLDO-02 app-shell slice). Not gated behind login yet
-  — authentication lands with the rest of FOLDO-02. The summary below comes
-  from a mock selector (apps.profiles/apps.portfolios don't exist yet) — see
-  apps/core/selectors.py. Replace each empty state once its owning app lands.
+  Signed-in app shell (login required). The Main Profile card reads the user's
+  own profile (apps/core/selectors.py → apps.profiles.services). Portfolio
+  versions stay an empty state until apps.portfolios exists (FOLDO-05).
 {% endcomment %}
 
 {% block content %}
@@ -24,14 +23,29 @@
         <div class="foldo-card h-100">
           <h2 class="h5" lang="en">Main profile</h2>
           {% if summary.has_profile %}
-            <p class="foldo-section__subtitle mb-0">กรอกข้อมูลครบแล้ว {{ summary.profile_completeness }}%</p>
+            <p class="mb-1">{{ summary.profile.full_name }}</p>
+            <p class="foldo-section__subtitle mb-2">กรอกข้อมูลครบแล้ว {{ summary.profile_completeness }}%</p>
+            <div class="progress mb-3" role="progressbar" aria-label="ความครบของโปรไฟล์"
+                 aria-valuenow="{{ summary.profile_completeness }}" aria-valuemin="0" aria-valuemax="100">
+              <div class="progress-bar" style="width: {{ summary.profile_completeness }}%"></div>
+            </div>
+            {% if summary.missing_fields %}
+              <p class="small foldo-section__subtitle">ยังขาด: {{ summary.missing_fields|join:", " }}</p>
+            {% endif %}
+            <div class="d-flex flex-wrap gap-2">
+              <a class="btn btn-foldo" href="{% url 'profiles:update' summary.profile.pk %}">แก้ไขโปรไฟล์</a>
+              <a class="btn btn-outline-foldo" href="{% url 'profiles:view' summary.profile.pk %}">ดูโปรไฟล์</a>
+            </div>
           {% else %}
             <p class="foldo-section__subtitle">
               คุณยังไม่ได้สร้างโปรไฟล์หลัก เริ่มต้นได้ที่นี่
             </p>
-            <a class="btn btn-foldo" href="{% url 'core:onboarding' %}">
-              <span lang="en">Start onboarding</span>
-            </a>
+            <div class="d-flex flex-wrap gap-2">
+              <a class="btn btn-foldo" href="{% url 'profiles:create' %}">สร้างโปรไฟล์หลัก</a>
+              <a class="btn btn-outline-foldo" href="{% url 'core:onboarding' %}">
+                <span lang="en">How FOLDO works</span>
+              </a>
+            </div>
           {% endif %}
         </div>
       </div>

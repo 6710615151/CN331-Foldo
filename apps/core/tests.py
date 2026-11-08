@@ -7,6 +7,7 @@ from unittest import mock
 from django.conf import settings
 from django.test import TestCase, override_settings
 from django.urls import reverse
+from django.shortcuts import resolve_url
 
 # ------------------- FOLDO-10 initial repeatable tests ------------------- 
 from django.contrib.auth import get_user_model
@@ -16,6 +17,7 @@ from django.test import RequestFactory
 from django.views.generic import DetailView
 
 from .mixins import OwnerRequiredMixin
+from apps.profiles.models import MainProfile
 # -------------------------------------------------------------------------
 
 # ------------------- FOLDO-10: imports for the shared-validator tests -------------------
@@ -75,18 +77,22 @@ class LandingViewTests(TestCase):
         self.assertEqual(len(re.findall(r"^<section", main, flags=re.MULTILINE)), 1)
         self.assertIn('id="hero-heading"', main)
 
-    def test_get_started_sits_under_the_hero_text_and_links_to_dashboard(self):
-        """One CTA after the supporting line; links to the dashboard."""
+    def _get_started_link(self):
         html = self.client.get(reverse("core:landing")).content.decode()
         main = html[html.index("<main"):html.index("</main>")]
-        self.assertEqual(main.count('class="btn'), 2)
-        lead = main.index("เก็บทุกผลงานไว้ที่เดียว")
         cta = main.index("Get Started")
-        self.assertLess(lead, cta)
-        link = main[main.rindex("<a", 0, cta):main.index("</a>", cta)]
-        self.assertIn(reverse("core:dashboard"), link)
+        self.assertLess(main.index("เก็บทุกผลงานไว้ที่เดียว"), cta)
+        return main[main.rindex("<a", 0, cta):main.index("</a>", cta)]
+
+    def test_get_started_sends_new_visitors_to_sign_up(self):
+        link = self._get_started_link()
+        self.assertIn(reverse("accounts:register"), link)
         self.assertNotIn(" disabled", link)
-        self.assertNotIn("เร็วๆ นี้", link)
+
+    def test_get_started_sends_signed_in_users_to_dashboard(self):
+        user = get_user_model().objects.create_user(username="dev3", password="pw-Foldo-12345")
+        self.client.force_login(user)
+        self.assertIn(reverse("core:dashboard"), self._get_started_link())
 
     def test_landing_page_has_no_placeholder_links(self):
         """Every link must lead somewhere real — no bare "#" stand-ins."""
@@ -118,8 +124,26 @@ class LandingViewTests(TestCase):
         self.assertNotIn("foldo-asset", html[html.index("<main"):html.index("</main>")].replace("foldo-asset-img", ""))
 
 
-class OnboardingViewTests(TestCase):
-    """The first-time entry flow must render its three mock steps."""
+class SignedInTestCase(TestCase):
+    """Signs a user in before each test, for pages behind login."""
+
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            username="dev3", password="pw-Foldo-12345"
+        )
+        self.client.force_login(self.user)
+
+
+class OnboardingViewTests(SignedInTestCase):
+    """The first-time entry flow renders three steps; step 1 tracks the Main Profile."""
+
+    def test_onboarding_redirects_visitors_to_login(self):
+        self.client.logout()
+        url = reverse("core:onboarding")
+        response = self.client.get(url)
+        self.assertRedirects(
+            response, f"{reverse('accounts:login')}?next={url}", fetch_redirect_response=False
+        )
 
     def test_onboarding_page_returns_200(self):
         response = self.client.get(reverse("core:onboarding"))
@@ -130,11 +154,24 @@ class OnboardingViewTests(TestCase):
         self.assertTemplateUsed(response, "core/onboarding.html")
         self.assertTemplateUsed(response, "base.html")
 
-    def test_onboarding_page_shows_all_mock_steps(self):
+    def test_onboarding_page_shows_all_steps(self):
         response = self.client.get(reverse("core:onboarding"))
         for step in response.context["steps"]:
             self.assertContains(response, step["title_en"])
         self.assertEqual(len(response.context["steps"]), 3)
+
+    def test_step_one_links_to_create_when_user_has_no_profile(self):
+        step = self.client.get(reverse("core:onboarding")).context["steps"][0]
+        self.assertFalse(step["done"])
+        self.assertEqual(step["action_url"], reverse("profiles:create"))
+
+    def test_step_one_is_done_once_user_has_a_profile(self):
+        profile = MainProfile.objects.create(owner=self.user, full_name="Dev Three")
+        response = self.client.get(reverse("core:onboarding"))
+        step = response.context["steps"][0]
+        self.assertTrue(step["done"])
+        self.assertEqual(step["action_url"], reverse("profiles:update", args=[profile.pk]))
+        self.assertContains(response, "foldo-step--done")
 
     def test_onboarding_cta_leads_to_dashboard(self):
         response = self.client.get(reverse("core:onboarding"))
@@ -150,8 +187,16 @@ class OnboardingViewTests(TestCase):
         self.assertIn("<footer", html)
 
 
-class DashboardViewTests(TestCase):
+class DashboardViewTests(SignedInTestCase):
     """The signed-in app shell must render a sensible empty state."""
+
+    def test_dashboard_redirects_visitors_to_login(self):
+        self.client.logout()
+        url = reverse("core:dashboard")
+        response = self.client.get(url)
+        self.assertRedirects(
+            response, f"{reverse('accounts:login')}?next={url}", fetch_redirect_response=False
+        )
 
     def test_dashboard_page_returns_200(self):
         response = self.client.get(reverse("core:dashboard"))
@@ -162,10 +207,30 @@ class DashboardViewTests(TestCase):
         self.assertTemplateUsed(response, "core/dashboard.html")
         self.assertTemplateUsed(response, "base.html")
 
-    def test_dashboard_shows_empty_profile_state_with_onboarding_link(self):
+    def test_dashboard_shows_empty_profile_state_with_create_link(self):
         response = self.client.get(reverse("core:dashboard"))
         self.assertFalse(response.context["summary"]["has_profile"])
+        self.assertContains(response, reverse("profiles:create"))
         self.assertContains(response, reverse("core:onboarding"))
+
+    def test_dashboard_shows_own_profile_completeness(self):
+        profile = MainProfile.objects.create(
+            owner=self.user, full_name="Dev Three", headline="Backend developer"
+        )
+        response = self.client.get(reverse("core:dashboard"))
+        summary = response.context["summary"]
+        self.assertTrue(summary["has_profile"])
+        self.assertEqual(summary["profile_completeness"], 66)
+        self.assertEqual(summary["missing_fields"], ["Contact email"])
+        self.assertContains(response, "Dev Three")
+        self.assertContains(response, reverse("profiles:update", args=[profile.pk]))
+
+    def test_dashboard_never_shows_another_users_profile(self):
+        other = get_user_model().objects.create_user(username="other", password="pw-Foldo-12345")
+        MainProfile.objects.create(owner=other, full_name="Someone Else")
+        response = self.client.get(reverse("core:dashboard"))
+        self.assertFalse(response.context["summary"]["has_profile"])
+        self.assertNotContains(response, "Someone Else")
 
     def test_dashboard_shows_empty_portfolio_state(self):
         response = self.client.get(reverse("core:dashboard"))
@@ -180,6 +245,40 @@ class DashboardViewTests(TestCase):
         nav = html[html.index("<header"):html.index("</header>")]
         self.assertIn(reverse("core:dashboard"), nav)
         self.assertIn('aria-current="page"', nav)
+
+
+class NavbarTests(TestCase):
+    """The shared navbar shows the right links for visitors and members."""
+
+    def _nav(self):
+        html = self.client.get("/no-such-page/").content.decode()  # 404 keeps the shell
+        return html[html.index("<header"):html.index("</header>")]
+
+    def test_visitor_sees_log_in_and_sign_up_only(self):
+        nav = self._nav()
+        self.assertIn(reverse("accounts:login"), nav)
+        self.assertIn(reverse("accounts:register"), nav)
+        self.assertNotIn(reverse("core:dashboard"), nav)
+        self.assertNotIn(reverse("accounts:logout"), nav)
+
+    def test_member_sees_dashboard_settings_and_log_out(self):
+        user = get_user_model().objects.create_user(username="dev3", password="pw-Foldo-12345")
+        self.client.force_login(user)
+        nav = self._nav()
+        self.assertIn(reverse("core:dashboard"), nav)
+        self.assertIn(reverse("profiles:list"), nav)
+        self.assertIn(reverse("accounts:settings"), nav)
+        self.assertIn(reverse("accounts:logout"), nav)
+        self.assertNotIn(reverse("accounts:register"), nav)
+
+    def test_log_out_is_a_post_form_inside_a_list_item(self):
+        user = get_user_model().objects.create_user(username="dev3", password="pw-Foldo-12345")
+        self.client.force_login(user)
+        nav = self._nav()
+        form = nav.index('action="' + reverse("accounts:logout"))
+        self.assertNotIn("</li>", nav[nav.rindex("<li", 0, form):form])
+        self.assertIn('method="post"', nav[nav.rindex("<form", 0, form):form])
+        self.assertIn("csrfmiddlewaretoken", nav)
 
 
 class HealthCheckViewTests(TestCase):
@@ -264,7 +363,8 @@ class OwnerRequiredMixinTests(TestCase):
     def test_not_signed_in_is_redirected_to_login(self):
         response = self._open(AnonymousUser(), self.alice.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertIn(settings.LOGIN_URL, response.url)
+        self.assertIn(resolve_url(settings.LOGIN_URL), response.url)
+        
 
 
 
@@ -353,6 +453,7 @@ def _always_forbidden(request):
 
 urlpatterns = [
     path("", include("apps.core.urls")),
+    path("accounts/", include("apps.accounts.urls")),
     path("forbidden/", _always_forbidden),
 ]
 

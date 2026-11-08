@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}{% if is_new %}สร้างโปรไฟล์{% else %}แก้ไข {{ profile.label }}{% endif %} — FOLDO{% endblock %}
+{% block content %}
+<section class="foldo-section foldo-profile" aria-labelledby="profile-form-heading">
+  <div class="container foldo-profile__narrow">
+    <header class="mb-4">
+      <p class="foldo-eyebrow" lang="en">Main profile</p>
+      <h1 id="profile-form-heading" class="foldo-section__title">
+        {% if is_new %}สร้างโปรไฟล์หลัก{% else %}แก้ไขโปรไฟล์{% endif %}
+      </h1>
+      <p class="foldo-section__subtitle mb-0">
+        ต้องมีชื่อโปรไฟล์และชื่อ-นามสกุลจึงจะบันทึกได้ ที่เหลือกรอกตอนนี้หรือทีหลังก็ได้
+        ช่องที่มี <span class="text-danger">*</span> ต้องกรอก
+      </p>
+    </header>
+
+    <form method="post" enctype="multipart/form-data" novalidate data-loading>
+      {% csrf_token %}
+      {% include "partials/form_errors.html" %}
+
+      <section class="foldo-card mb-4" aria-labelledby="sec-profile">
+        <h2 id="sec-profile" class="h5">โปรไฟล์</h2>
+        {% include "partials/form_field.html" with field=form.label %}
+      </section>
+
+      <section class="foldo-card mb-4" aria-labelledby="sec-basic">
+        <h2 id="sec-basic" class="h5">ข้อมูลพื้นฐาน</h2>
+        {% include "partials/form_field.html" with field=form.full_name %}
+        {% include "partials/form_field.html" with field=form.headline %}
+        {% include "partials/form_field.html" with field=form.bio %}
+        {% include "partials/form_field.html" with field=form.location %}
+      </section>
+
+      <section class="foldo-card mb-4" aria-labelledby="sec-photo">
+        <h2 id="sec-photo" class="h5">รูปโปรไฟล์</h2>
+        {% if profile.photo %}
+          <img src="{{ profile.photo.url }}" alt="รูปโปรไฟล์ปัจจุบัน" width="96" height="96"
+               class="rounded-circle object-fit-cover mb-3">
+        {% endif %}
+        {% include "partials/form_field.html" with field=form.photo %}
+      </section>
+
+      <section class="foldo-card mb-4" aria-labelledby="sec-contact">
+        <h2 id="sec-contact" class="h5">ช่องทางติดต่อ</h2>
+        <div class="row">
+          <div class="col-md-6">{% include "partials/form_field.html" with field=form.contact_email %}</div>
+          <div class="col-md-6">{% include "partials/form_field.html" with field=form.phone %}</div>
+        </div>
+      </section>
+
+      <section class="foldo-card mb-4" aria-labelledby="sec-links">
+        <h2 id="sec-links" class="h5">ลิงก์</h2>
+        {% include "partials/form_field.html" with field=form.website %}
+        {% include "partials/form_field.html" with field=form.linkedin_url %}
+        {% include "partials/form_field.html" with field=form.github_url %}
+      </section>
+
+      <div class="d-flex flex-wrap gap-2">
+        <button type="submit" class="btn btn-lime" data-loading-text="กำลังบันทึก…">บันทึกโปรไฟล์</button>
+        {% if is_new %}
+          <a class="btn btn-outline-foldo" href="{% url 'profiles:list' %}">ยกเลิก</a>
+        {% else %}
+          <a class="btn btn-outline-foldo" href="{% url 'profiles:view' profile.pk %}">ยกเลิก</a>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

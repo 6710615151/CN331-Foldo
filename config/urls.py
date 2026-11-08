@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
@@ -11,6 +12,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("apps.core.urls")),
     path("accounts/", include("apps.accounts.urls")),
+    path("profiles/", include("apps.profiles.urls")),
 ]
 
 # Development-only: endpoint used by django-browser-reload to trigger a refresh
@@ -18,6 +20,9 @@ urlpatterns = [
 # skipped when the optional package is not installed (e.g. in CI).
 if settings.DEBUG and settings.DEV_TOOLS_INSTALLED:
     urlpatterns += [path("__reload__/", include("django_browser_reload.urls"))]
+    
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # Custom error handlers render friendly, non-technical pages in production
 # (DEBUG must be False for these to be used).
