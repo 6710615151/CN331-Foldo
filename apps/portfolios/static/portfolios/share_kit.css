@@ -1,0 +1,119 @@
+/* Share Kit page (FOLDO-17) — FOLDO tokens from static/css/styles.css. */
+
+#main-content {
+  background:
+    radial-gradient(ellipse 60% 420px at 8% 0%, rgba(47, 95, 230, 0.32), transparent 100%),
+    radial-gradient(ellipse 45% 360px at 95% 0%, rgba(100, 37, 255, 0.2), transparent 100%);
+  background-repeat: no-repeat;
+}
+
+.foldo-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.9rem 0.35rem 0.7rem;
+  border: 1px solid var(--foldo-border-strong);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--foldo-ink);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s, color 0.15s, transform 0.15s;
+}
+.foldo-back:hover,
+.foldo-back:focus-visible {
+  border-color: var(--foldo-lime);
+  background: rgba(184, 243, 74, 0.1);
+  color: var(--foldo-lime);
+  transform: translateX(-2px);
+}
+.foldo-back span[aria-hidden] { font-size: 1.1rem; line-height: 1; }
+
+.foldo-sk__header { margin: var(--foldo-space-3) 0 var(--foldo-space-4); }
+.foldo-sk__eyebrow {
+  margin: 0 0 0.25rem;
+  color: var(--foldo-lime);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+.foldo-sk__title { font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 700; }
+.foldo-sk__bands {
+  display: flex;
+  height: 6px;
+  max-width: 7rem;
+  margin: 0.75rem 0 var(--foldo-space-2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.foldo-sk__bands span:first-child { flex: 2; background: var(--foldo-lime); }
+.foldo-sk__bands span:last-child { flex: 1; background: var(--foldo-orange); }
+
+.foldo-sk__status {
+  display: inline-flex;
+  align-items: center;
+  margin-top: var(--foldo-space-2);
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border: 1px solid var(--foldo-border-strong);
+  color: var(--foldo-muted);
+}
+.foldo-sk__status--on {
+  color: var(--foldo-lime);
+  border-color: rgba(184, 243, 74, 0.4);
+  background: rgba(184, 243, 74, 0.08);
+}
+
+.foldo-sk__card {
+  background: linear-gradient(160deg, var(--foldo-surface-2), var(--foldo-surface) 55%);
+  border: 1px solid var(--foldo-border);
+  border-top: 4px solid var(--foldo-lime);
+  border-radius: var(--foldo-radius-lg);
+  box-shadow: var(--foldo-shadow-md);
+  margin-bottom: var(--foldo-space-3);
+}
+.foldo-sk__card-title {
+  font-family: var(--foldo-font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+.foldo-sk__hint { margin: 0.75rem 0; color: var(--foldo-muted); font-size: 0.9rem; min-height: 1.2em; }
+
+.foldo-sk .form-control {
+  background-color: var(--foldo-bg-deep);
+  border: 1.5px solid var(--foldo-border-strong);
+  color: var(--foldo-ink);
+}
+.foldo-sk .form-control:focus {
+  background-color: var(--foldo-bg-deep);
+  border-color: var(--foldo-lime);
+  box-shadow: 0 0 0 3px rgba(184, 243, 74, 0.25);
+  color: var(--foldo-ink);
+}
+
+/* White tile keeps the QR scannable on the dark theme */
+.foldo-sk__qr {
+  width: min(16rem, 100%);
+  padding: 0.75rem;
+  margin: 0 auto 0.5rem;
+  border-radius: var(--foldo-radius);
+  background: #fff;
+  box-shadow: var(--foldo-shadow-md);
+}
+.foldo-sk__qr svg { display: block; width: 100%; height: auto; }
+
+.foldo-sk__empty {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  background: linear-gradient(160deg, var(--foldo-surface-2), var(--foldo-surface) 55%);
+  border: 1px dashed var(--foldo-border-strong);
+  border-radius: var(--foldo-radius-lg);
+}
+
+@media (prefers-reduced-motion: reduce) { .foldo-back { transition: none; } }
