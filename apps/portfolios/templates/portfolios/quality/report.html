@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% comment %}
+  FOLDO-16: Quality Check of one portfolio version. Read-only: nothing on this
+  page edits, saves or publishes. "Check again" is a plain GET link.
+{% endcomment %}
+{% block html_lang %}th{% endblock %}
+{% block title %}ตรวจคุณภาพ: {{ portfolio.title }} – FOLDO{% endblock %}
+{% block content %}
+<div class="container py-4" style="max-width: 820px;">
+  <a class="small" href="{% url 'portfolios:list' %}">&larr; พอร์ตโฟลิโอทั้งหมด</a>
+
+  <header class="d-flex justify-content-between align-items-start flex-wrap gap-2 mt-2 mb-3">
+    <div>
+      <p class="foldo-eyebrow mb-1" lang="en">Quality check</p>
+      <h1 class="h3 mb-1">{{ portfolio.title }}</h1>
+      <p class="small text-body-secondary mb-0">
+        ระบบแค่ตรวจและแนะนำ ไม่แก้ไข บันทึก หรือเผยแพร่อะไรให้อัตโนมัติ
+      </p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+      <a class="btn btn-sm btn-primary" href="{% url 'portfolios:quality' portfolio.pk %}">ตรวจอีกครั้ง</a>
+      <a class="btn btn-sm btn-outline-secondary" href="{% url 'portfolios:preview' portfolio.pk %}">ดูตัวอย่าง</a>
+    </div>
+  </header>
+
+  <div class="card card-body mb-4 foldo-quality__summary{% if report.is_blocking %} is-blocking{% endif %}" role="status">
+    <p class="mb-1">
+      {% if report.is_blocking %}
+        <strong>ยังไม่พร้อมส่ง</strong> — มีปัญหาที่ต้องแก้ {{ report.errors|length }} ข้อ
+      {% elif report.warnings %}
+        <strong>ส่งได้</strong> แต่มีข้อควรแก้ {{ report.warnings|length }} ข้อ
+      {% else %}
+        <strong>พร้อมส่ง</strong> ไม่พบปัญหาที่ต้องแก้
+      {% endif %}
+    </p>
+    <p class="small text-body-secondary mb-0">
+      ต้องแก้ {{ report.errors|length }} · ควรแก้ {{ report.warnings|length }} · คำแนะนำ {{ report.infos|length }}
+      · ตรวจเมื่อ {{ report.checked_at|date:"H:i" }}
+    </p>
+  </div>
+
+  {% for severity, label, findings in report.groups %}
+    <section class="mb-4" aria-labelledby="q-{{ severity }}">
+      <h2 id="q-{{ severity }}" class="h5 foldo-quality__heading foldo-quality__heading--{{ severity }}">
+        {{ label }} <span class="badge rounded-pill text-bg-secondary">{{ findings|length }}</span>
+      </h2>
+      <ul class="list-unstyled d-grid gap-2 mb-0">
+        {% for f in findings %}
+          <li class="card card-body foldo-quality__item foldo-quality__item--{{ severity }}">
+            <p class="mb-1"><strong>{{ f.title }}</strong></p>
+            <p class="small text-body-secondary mb-2">{{ f.detail }}</p>
+            {% if f.fix_url %}
+              <div><a class="btn btn-sm btn-outline-primary" href="{{ f.fix_url }}">{{ f.fix_label }}</a></div>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% empty %}
+    <p class="text-body-secondary">ไม่มีข้อแนะนำเพิ่มเติม</p>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -15,6 +15,8 @@ urlpatterns = [
     path("p/<slug:slug>/", views.portfolio_public, name="public"),
     # FOLDO-06: per-version content selection (Dev 2)
     path("", include("apps.portfolios.content_selection.urls")),
+    # FOLDO-16: Quality Check (Dev 3)
+    path("", include("apps.portfolios.quality.urls")),
     # FOLDO-17: share kit, copy link and QR code (Dev 4 task, done by Dev 2)
     path("", include("apps.portfolios.share_kit.urls")),
 ]
