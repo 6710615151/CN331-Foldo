@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}{{ heading }} · {{ profile.label }} — FOLDO{% endblock %}
+{% block content %}
+<section class="foldo-section foldo-profile" aria-labelledby="education-form-heading">
+  <div class="container foldo-profile__narrow">
+    <a class="foldo-profile__back" href="{{ cancel_url }}">&larr; การศึกษา</a>
+    <header class="mt-2 mb-4">
+      <p class="foldo-eyebrow" lang="en">{{ heading }}</p>
+      <h1 id="education-form-heading" class="foldo-section__title">
+        {% if form.instance.pk %}แก้ไขการศึกษา{% else %}เพิ่มการศึกษา{% endif %}
+      </h1>
+      <p class="foldo-section__subtitle mb-0">
+        ต้องกรอกชื่อสถาบันและวันที่เริ่ม ที่เหลือไม่บังคับ
+        ช่องที่มี <span class="text-danger">*</span> ต้องกรอก
+      </p>
+    </header>
+
+    <form method="post" novalidate data-loading>
+      {% csrf_token %}
+      {% include "partials/form_errors.html" %}
+
+      <section class="foldo-card mb-4" aria-labelledby="sec-school">
+        <h2 id="sec-school" class="h5">สถาบัน</h2>
+        {% include "partials/form_field.html" with field=form.institution %}
+        <div class="row">
+          <div class="col-md-6">{% include "partials/form_field.html" with field=form.degree %}</div>
+          <div class="col-md-6">{% include "partials/form_field.html" with field=form.field_of_study %}</div>
+        </div>
+      </section>
+
+      <section class="foldo-card mb-4" aria-labelledby="sec-dates">
+        <h2 id="sec-dates" class="h5">ช่วงเวลา</h2>
+        <div class="row">
+          <div class="col-md-6">{% include "partials/form_field.html" with field=form.start_date %}</div>
+          <div class="col-md-6">{% include "partials/form_field.html" with field=form.end_date %}</div>
+        </div>
+      </section>
+
+      <section class="foldo-card mb-4" aria-labelledby="sec-details">
+        <h2 id="sec-details" class="h5">รายละเอียดเพิ่มเติม</h2>
+        {% include "partials/form_field.html" with field=form.grade %}
+        {% include "partials/form_field.html" with field=form.description %}
+      </section>
+
+      <div class="d-flex flex-wrap gap-2">
+        <button type="submit" class="btn btn-lime" data-loading-text="กำลังบันทึก…">{{ submit_label }}</button>
+        <a class="btn btn-outline-foldo" href="{{ cancel_url }}">ยกเลิก</a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

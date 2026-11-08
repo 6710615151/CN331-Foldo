@@ -122,17 +122,11 @@ class AdapterTests(TestCase):
                       outcome="O")
         self.assertEqual(project_item(project).story, (("Problem", "P"), ("Process", "Q"), ("Outcome", "O")))
 
-    def test_education_entry_with_years_level_and_grade(self):
-        """apps.education rows: level + subject + years instead of degree + dates."""
-        entry = SimpleNamespace(
-            pk=50, institution="Thammasat University", subject="Computer Engineering", grade="3.75",
-            start_year=2022, end_year=None, get_level_display=lambda: "Undergraduate degree",
-        )
-        item = education_item(entry)
-        self.assertEqual(item.title, "Undergraduate degree, Computer Engineering")
-        self.assertEqual(item.subtitle, "Thammasat University")
-        self.assertEqual(item.period, "2022 – Present")
-        self.assertEqual(item.note, "Grade: 3.75")
+    def test_education_grade_becomes_a_note(self):
+        item = education_item(row(50, institution="TU", degree="B.Eng.", grade="3.75",
+                                  start_date=date(2022, 8, 1), end_date=None))
+        self.assertEqual((item.title, item.subtitle, item.period, item.note),
+                         ("B.Eng.", "TU", "Aug 2022 – Present", "Grade: 3.75"))
 
     def test_education_with_only_an_institution(self):
         item = education_item(row(51, institution="Some School"))

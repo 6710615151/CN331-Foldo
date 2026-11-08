@@ -9,7 +9,6 @@
         <h1 id="profiles-heading" class="foldo-section__title mb-0">โปรไฟล์ของฉัน</h1>
       </div>
       <div class="d-flex align-items-center flex-wrap gap-2">
-        <a class="btn btn-outline-light" href="{% url 'education:settings' %}">การศึกษา</a>
         {% if can_create %}
           <a class="btn btn-lime" href="{% url 'profiles:create' %}">สร้างโปรไฟล์ใหม่</a>
         {% else %}

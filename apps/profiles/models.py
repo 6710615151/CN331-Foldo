@@ -9,8 +9,14 @@ from django.db import models, transaction
 from django.db.models.functions import Lower
 from django.urls import reverse
 
-from apps.core.validators import MAX_URL, safe_url_validator, validate_date_order 
-from apps.core.validators import MAX_LONG_TEXT, MAX_SHORT_NAME, MAX_SHORT_TEXT
+from apps.core.validators import (
+    MAX_LONG_TEXT,
+    MAX_SHORT_NAME,
+    MAX_SHORT_TEXT,
+    MAX_URL,
+    safe_url_validator,
+    validate_date_order,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -166,6 +172,45 @@ class MainProfile(models.Model):
             except OSError:
                 logger.warning("Could not delete profile photo %s", photo_name, exc_info=True)
         return result
+
+
+class Education(models.Model):
+    """One school / university entry on a main profile (FOLDO-04, ``PROFILE_EDUCATIONS``).
+
+    Only ``institution`` and ``start_date`` are required. An empty ``end_date``
+    means the user is still studying there ("Present").
+    """
+
+    profile = models.ForeignKey(MainProfile, on_delete=models.CASCADE, related_name="educations")
+    institution = models.CharField(max_length=MAX_SHORT_TEXT)
+    degree = models.CharField(max_length=MAX_SHORT_TEXT, blank=True)
+    field_of_study = models.CharField(max_length=MAX_SHORT_TEXT, blank=True)
+    start_date = models.DateField()
+    end_date = models.DateField(null=True, blank=True)
+    grade = models.CharField(max_length=50, blank=True)
+    description = models.TextField(max_length=MAX_LONG_TEXT, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "education"
+        verbose_name_plural = "education"
+        # Current studies first, then the most recently finished.
+        ordering = [models.F("end_date").desc(nulls_first=True), "-start_date", "-pk"]
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(end_date__isnull=True) | models.Q(end_date__gte=models.F("start_date")),
+                name="education_end_not_before_start",
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.degree} at {self.institution}" if self.degree else self.institution
+
+    @property
+    def is_current(self):
+        return self.end_date is None
 
 
 class Skill(models.Model):
