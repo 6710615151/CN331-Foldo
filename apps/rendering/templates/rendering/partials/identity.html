@@ -1,0 +1,13 @@
+{% comment %} Name, headline, location and photo/initials. Params: profile, size ("lg" optional). {% endcomment %}
+<div class="pf-identity">
+  {% if profile.photo_url %}
+    <img class="pf-photo{% if size %} pf-photo--{{ size }}{% endif %}" src="{{ profile.photo_url }}" alt="รูปของ {{ profile.display_name }}">
+  {% else %}
+    <span class="pf-photo pf-photo--initials{% if size %} pf-photo--{{ size }}{% endif %}" aria-hidden="true">{{ profile.initials }}</span>
+  {% endif %}
+  <div class="pf-identity__text">
+    <h1 class="pf-name">{{ profile.display_name|default:"Portfolio" }}</h1>
+    {% if profile.headline %}<p class="pf-headline">{{ profile.headline }}</p>{% endif %}
+    {% if profile.location %}<p class="pf-location">{{ profile.location }}</p>{% endif %}
+  </div>
+</div>

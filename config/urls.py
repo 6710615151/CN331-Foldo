@@ -15,6 +15,7 @@ urlpatterns = [
     path("profiles/", include("apps.profiles.urls")),
     path("portfolios/", include("apps.portfolios.urls")),
     path("education/", include("apps.education.urls")),
+    path("templates/", include("apps.rendering.urls")),
 ]
 
 # Development-only: endpoint used by django-browser-reload to trigger a refresh

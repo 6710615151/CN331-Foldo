@@ -218,6 +218,26 @@ project stories).
 - `tests.py` — access control, persistence, validation, completeness,
   default handling and photo upload.
 
+### `apps.rendering` — portfolio templates (FOLDO-07)
+
+Turns profile data into a finished portfolio page. It owns **no models**:
+
+- `themes.py` — the template registry (`classic`, `modern`, `creative`).
+  Templates are code (a Django template + CSS), so a portfolio version stores
+  only the theme `key`; validate it with `get_theme()` / `theme_choices()`.
+- `selectors.py` — `build_portfolio_content(profile, selected=None,
+  include_story=True)` returns a `PortfolioContent` (profile display +
+  sections). It reads sections through the reverse relations agreed in
+  `docs/CONVENTIONS.md` §7, skips empty sections and drops non-http(s) links.
+  `selected` is the per-section id list from FOLDO-06.
+- `services.py` — `render_portfolio_html(theme, content)` → full HTML page.
+  Preview (FOLDO-08), the public page (FOLDO-09) and PDF export (FOLDO-11)
+  call this instead of rendering their own markup.
+- Portfolio pages are standalone documents (`portfolio_base.html`, no app
+  navbar, print CSS) so the same markup works on screen, publicly and in PDF.
+- Routes: `/templates/` (gallery) and `/templates/<theme>/profiles/<pk>/`
+  (owner-only preview with a theme switcher).
+
 ### Planned apps (not created yet)
 
 Domain apps are created together with the Issue that first needs them, never
@@ -257,6 +277,8 @@ config/urls.py
                                              "<pk>/"         (view,   name="profiles:view")
                                              "<pk>/edit/"    (edit,   name="profiles:update")
                                              "<pk>/delete/"  (delete, name="profiles:delete")
+└── "templates/"  → apps.rendering.urls   → ""                       (gallery, name="rendering:gallery")
+                                             "<theme>/profiles/<pk>/" (preview, name="rendering:preview")
 ```
 
 All app URLconfs use `app_name` namespaces, so templates reverse URLs safely
