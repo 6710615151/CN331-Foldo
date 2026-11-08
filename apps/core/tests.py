@@ -9,7 +9,7 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.shortcuts import resolve_url
 
-# ------------------- FOLDO-10 initial repeatable tests ------------------- 
+# ------------------- FOLDO-10 initial repeatable tests -------------------
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.http import Http404
@@ -51,6 +51,7 @@ from .validators import validate_date_order
 # -------------------FOLDO-15: imports for the project-story display tests-------------------
 from types import SimpleNamespace
 # ------------------------------------------------------------------------
+
 
 class LandingViewTests(TestCase):
     """The public landing / dashboard shell must render correctly."""
@@ -365,8 +366,6 @@ class OwnerRequiredMixinTests(TestCase):
         response = self._open(AnonymousUser(), self.alice.pk)
         self.assertEqual(response.status_code, 302)
         self.assertIn(resolve_url(settings.LOGIN_URL), response.url)
-        
-
 
 
 # ---------------------------------------------------------------------------
@@ -377,7 +376,7 @@ class OwnerRequiredMixinTests(TestCase):
 class SafeUrlValidatorTests(SimpleTestCase):
     def test_accepts_http_and_https_links(self):
         for url in ("http://example.com", "https://github.com/foldo/project"):
-            safe_url_validator(url) 
+            safe_url_validator(url)
 
     def test_rejects_links_that_are_not_http_or_https(self):
         for url in ("javascript:alert(1)", "data:text/html,hello", "ftp://example.com/cv.pdf"):
@@ -468,7 +467,6 @@ class PermissionDeniedPageTests(TestCase):
         self.assertContains(response, "คุณไม่มีสิทธิ์เข้าถึงหน้านี้", status_code=403)
 
 
-
 # ---------------------------------------------------------------------------
 # FOLDO-10: empty state (templates/partials/empty_state.html)
 # ---------------------------------------------------------------------------
@@ -493,7 +491,6 @@ class EmptyStateTests(SimpleTestCase):
     def test_message_is_escaped(self):
         html = self._render(message="<b>hi</b>")
         self.assertIn("&lt;b&gt;hi&lt;/b&gt;", html)
-
 
 
 # ---------------------------------------------------------------------------
@@ -535,7 +532,6 @@ class DateOrderTests(SimpleTestCase):
         form = _DateRangeForm(data={"start_date": "2026-05-01", "end_date": "2026-04-30"})
         self.assertFalse(form.is_valid())
         self.assertIn("end_date", form.errors)
-
 
 
 # ---------------------------------------------------------------------------

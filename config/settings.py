@@ -83,6 +83,12 @@ SECRET_KEY = env_str(
 
 DEBUG = env_bool("DJANGO_DEBUG", default=True)
 
+if not DEBUG and SECRET_KEY.startswith("dev-only-insecure-key"):
+    # Fail at startup rather than run production with a key that is in Git.
+    from django.core.exceptions import ImproperlyConfigured
+
+    raise ImproperlyConfigured("Set DJANGO_SECRET_KEY when DJANGO_DEBUG is false.")
+
 ALLOWED_HOSTS = env_list(
     "DJANGO_ALLOWED_HOSTS",
     default=["localhost", "127.0.0.1", "[::1]"],
@@ -90,6 +96,13 @@ ALLOWED_HOSTS = env_list(
 
 # Needed when Django runs behind a TLS-terminating reverse proxy.
 CSRF_TRUSTED_ORIGINS = env_list("DJANGO_CSRF_TRUSTED_ORIGINS", default=[])
+
+# Render sets RENDER_EXTERNAL_HOSTNAME (e.g. cn331-foldo.onrender.com) on every
+# web service, so the public host never has to be hard-coded.
+RENDER_EXTERNAL_HOSTNAME = env_str("RENDER_EXTERNAL_HOSTNAME")
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+    CSRF_TRUSTED_ORIGINS.append(f"https://{RENDER_EXTERNAL_HOSTNAME}")
 
 
 # ---------------------------------------------------------------------------
@@ -143,6 +156,8 @@ if DEBUG and DEV_TOOLS_INSTALLED:
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    # Serves collected static files efficiently in production (no nginx needed).
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -190,8 +205,20 @@ ASGI_APPLICATION = "config.asgi.application"
 # SQLite is the zero-setup default for local development. Setting DB_ENGINE to
 # "postgresql" switches to PostgreSQL using the documented DB_* variables.
 DB_ENGINE = env_str("DB_ENGINE", "sqlite").lower()
+# Hosted Postgres (Render, Railway, ...) hands out one DATABASE_URL instead.
+DATABASE_URL = env_str("DATABASE_URL")
 
-if DB_ENGINE in {"postgres", "postgresql"}:
+if DATABASE_URL:
+    import dj_database_url
+
+    DATABASES = {
+        "default": dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=env_int("DB_CONN_MAX_AGE", 60),
+            conn_health_checks=True,
+        )
+    }
+elif DB_ENGINE in {"postgres", "postgresql"}:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
@@ -271,8 +298,24 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+# Production: compressed, cache-busting file names served by WhiteNoise.
+# Development and tests keep Django's default storage (no collectstatic needed).
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {
+        "BACKEND": (
+            "django.contrib.staticfiles.storage.StaticFilesStorage"
+            if DEBUG
+            else "whitenoise.storage.CompressedManifestStaticFilesStorage"
+        )
+    },
+}
+
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_ROOT = Path(env_str("DJANGO_MEDIA_ROOT") or BASE_DIR / "media")
+# Django never serves uploads when DEBUG is off. On a single small server with no
+# object storage (e.g. Render free tier) set this to true so profile photos load.
+SERVE_MEDIA = env_bool("DJANGO_SERVE_MEDIA", default=False)
 
 
 # ---------------------------------------------------------------------------
@@ -328,6 +371,8 @@ if not DEBUG:
     SECURE_REFERRER_POLICY = "same-origin"
     # Trust the X-Forwarded-Proto header set by a TLS-terminating reverse proxy.
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    # The platform's health checker calls /health/ over plain HTTP inside the network.
+    SECURE_REDIRECT_EXEMPT = [r"^health/$"]
 
 
 # ---------------------------------------------------------------------------

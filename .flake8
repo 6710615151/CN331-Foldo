@@ -1,0 +1,8 @@
+[flake8]
+# Matches the CI "Lint & security" job. 120 columns fits Thai copy and URLs.
+max-line-length = 120
+exclude = .git,__pycache__,.venv,venv,env,*/migrations/*,staticfiles,media
+per-file-ignores =
+    # Long literal URLs / assertion messages in tests are fine.
+    */tests.py:E501
+    */test_*.py:E501

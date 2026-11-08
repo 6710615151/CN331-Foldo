@@ -108,7 +108,6 @@ class AccountSettingsViewTests(TestCase):
         self.assertTrue(response["Location"].startswith(resolve_url(settings.LOGIN_URL)))
         self._assert_alice_unchanged()
 
-
     def test_get_shows_own_account(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)

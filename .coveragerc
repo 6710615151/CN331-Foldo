@@ -1,0 +1,15 @@
+[run]
+source = apps, config
+omit =
+    */migrations/*
+    */tests.py
+    */test_*.py
+    config/asgi.py
+    config/wsgi.py
+    manage.py
+
+[report]
+show_missing = False
+skip_covered = True
+# CI fails below this (course Definition of Done: coverage >= 80%).
+fail_under = 80

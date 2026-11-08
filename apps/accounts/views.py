@@ -42,6 +42,7 @@ class AccountSettingsView(LoginRequiredMixin, UpdateView):
         messages.error(self.request, "ยังไม่ได้บันทึก — แก้ช่องที่ไฮไลต์ ข้อมูลอื่นที่กรอกไว้ยังอยู่ครบ")
         return super().form_invalid(form)
 
+
 class PasswordChangeView(auth_views.PasswordChangeView):
     """Change password from Account settings. Django keeps the session signed in."""
 

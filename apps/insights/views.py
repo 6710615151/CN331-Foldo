@@ -23,4 +23,3 @@ class PortfolioDnaView(OwnProfileMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context["dna"] = build_dna(self.object)
         return context
-

@@ -11,6 +11,7 @@ from django.urls import reverse
 from ..models import MainProfile, Project
 from .forms import ProjectForm
 
+
 class ProjectTestCase(TestCase):
     """Two users, each with one profile, ready for project tests."""
 
@@ -101,7 +102,6 @@ class ProjectStoryPartialTests(ProjectTestCase):
     def test_real_project_without_story_shows_nothing(self):
         self.assertNotIn("<section", self._render(self.make_project()))
 
-    
 
 class ProjectFormTests(ProjectTestCase):
     def test_name_alone_is_enough(self):
@@ -144,7 +144,6 @@ class ProjectFormTests(ProjectTestCase):
     def test_fields_use_the_shared_bootstrap_look(self):
         html = str(ProjectForm()["project_name"])
         self.assertIn("form-control", html)
-
 
 
 class ProjectPagesTests(ProjectTestCase):

@@ -20,4 +20,3 @@ urlpatterns = [
     path("", include("apps.profiles.skills_experience.urls")),
     path("", include("apps.profiles.projects.urls")),
 ]
-

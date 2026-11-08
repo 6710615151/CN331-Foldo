@@ -17,6 +17,7 @@ MAX_SHORT_TEXT = 200   # project name, job title, institution
 MAX_URL = 500          # any link
 MAX_LONG_TEXT = 5000   # bio, description, project story
 
+
 def validate_date_order(start_date, end_date):
     """Raise ValidationError when end_date is before start_date.
 
