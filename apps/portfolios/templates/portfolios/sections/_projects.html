@@ -1,0 +1,36 @@
+{% if projects %}
+  <section class="card pf-card border-0 mb-4" aria-labelledby="projects-heading">
+    <div class="card-body p-4">
+      <h2 id="projects-heading" class="h5 pf-heading">Projects</h2>
+      {% for project in projects %}
+        <article{% if not forloop.last %} class="mb-4 pb-4 border-bottom"{% endif %}>
+          <div class="d-flex justify-content-between flex-wrap gap-1">
+            <h3 class="h6 mb-0">{{ project.project_name }}</h3>
+            {% if project.start_date %}
+              <span class="text-body-secondary small">
+                {{ project.start_date|date:"M Y" }} &ndash; {% if project.end_date %}{{ project.end_date|date:"M Y" }}{% else %}Present{% endif %}
+              </span>
+            {% elif project.end_date %}
+              <span class="text-body-secondary small">{{ project.end_date|date:"M Y" }}</span>
+            {% endif %}
+          </div>
+
+          {% if project.description %}<p class="mb-1 mt-1">{{ project.description|linebreaksbr }}</p>{% endif %}
+          {% if project.project_url %}
+            <p class="small mb-1"><a href="{{ project.project_url }}" target="_blank" rel="noopener noreferrer">{{ project.project_url }}</a></p>
+          {% endif %}
+
+          {% if project.has_story %}
+            <dl class="small mb-0 mt-3">
+              {% if project.problem %}<dt class="fw-semibold">Problem</dt><dd>{{ project.problem|linebreaksbr }}</dd>{% endif %}
+              {% if project.role %}<dt class="fw-semibold">Role</dt><dd>{{ project.role|linebreaksbr }}</dd>{% endif %}
+              {% if project.process %}<dt class="fw-semibold">Process</dt><dd>{{ project.process|linebreaksbr }}</dd>{% endif %}
+              {% if project.solution %}<dt class="fw-semibold">Solution</dt><dd>{{ project.solution|linebreaksbr }}</dd>{% endif %}
+              {% if project.outcome %}<dt class="fw-semibold">Outcome</dt><dd class="mb-0">{{ project.outcome|linebreaksbr }}</dd>{% endif %}
+            </dl>
+          {% endif %}
+        </article>
+      {% endfor %}
+    </div>
+  </section>
+{% endif %}

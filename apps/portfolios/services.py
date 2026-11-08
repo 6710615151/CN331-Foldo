@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from apps.education.services import get_education_display
 from apps.profiles.services import build_display, get_default_profile, get_profiles
+from apps.profiles.projects.selectors import get_projects
 
 from .models import Portfolio
 
@@ -53,6 +54,7 @@ def build_portfolio_context(portfolio: Portfolio) -> dict:
         "education": get_education_display(owner),
         "skills": list(profile.skills.all()) if profile else [],
         "experiences": list(profile.experiences.all()) if profile else [],
+        "projects": list(get_projects(profile)) if profile else [],
     }
 
 
