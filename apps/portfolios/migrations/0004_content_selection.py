@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('portfolios', '0002_alter_portfolio_template_key'),
+        ('portfolios', '0003_rendering_themes'),
     ]
 
     operations = [

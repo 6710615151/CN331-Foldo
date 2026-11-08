@@ -5,6 +5,8 @@ from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 
+from apps.rendering.themes import DEFAULT_THEME_KEY, theme_choices
+
 
 class Portfolio(models.Model):
     """
@@ -14,14 +16,10 @@ class Portfolio(models.Model):
     updates every portfolio that uses it.
     """
 
-    # To add a layout: add a choice here and a file portfolios/layouts/<key>.html
-    TEMPLATE_CHOICES = [
-        ("classic", "Classic (light)"),
-        ("midnight", "Midnight (dark)"),
-        ("ocean", "Ocean (blue)"),
-        ("mono", "Mono (black & white)"),
-    ]
-    DEFAULT_TEMPLATE = "classic"
+    # The templates come from apps/rendering/themes.py (FOLDO-07). To add one, add a
+    # PortfolioTheme there plus rendering/themes/<key>.html, then run makemigrations.
+    TEMPLATE_CHOICES = theme_choices()
+    DEFAULT_TEMPLATE = DEFAULT_THEME_KEY
 
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,

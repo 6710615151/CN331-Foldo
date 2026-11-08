@@ -21,7 +21,11 @@
     {% endif %}
 
     {% for field in form %}
-      {% include "partials/form_field.html" with field=field %}
+      {% if field.name == "template_key" %}
+        {% include "rendering/partials/theme_picker.html" with field=field themes=form.themes %}
+      {% else %}
+        {% include "partials/form_field.html" with field=field %}
+      {% endif %}
     {% endfor %}
 
     <div class="d-flex gap-2">

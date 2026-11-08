@@ -43,6 +43,6 @@ class ThemePreviewView(OwnerRequiredMixin, DetailView):
             ],
         }
         html = render_portfolio_html(
-            theme, build_portfolio_content(profile), request=request, toolbar=toolbar
+            theme, build_portfolio_content(profile), request=request, toolbar=toolbar, noindex=True
         )
         return HttpResponse(html)

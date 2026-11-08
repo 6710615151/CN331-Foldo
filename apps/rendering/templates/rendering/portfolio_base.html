@@ -4,12 +4,19 @@
   purpose: the same page is the template preview, the public portfolio
   (FOLDO-09) and the PDF source (FOLDO-11), so it carries no app navigation.
   Every theme extends this file and fills the "portfolio" block.
+
+  Context: theme, content, profile, and optionally
+    toolbar  — owner-only bar; never on the public page or inside the device frame:
+               {back_url, back_label, status, links: [(label, url)],
+                current, switch: [(key, name, url)]}  (every key optional)
+    noindex  — True for anything that is not the published page.
 {% endcomment %}
 <html lang="th">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ profile.display_name|default:"Portfolio" }} — Portfolio</title>
+  {% if noindex %}<meta name="robots" content="noindex">{% endif %}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600;700&display=swap" rel="stylesheet">
@@ -17,13 +24,23 @@
 </head>
 <body class="pf pf--{{ theme.key }}">
   {% if toolbar %}
-    <nav class="pf-toolbar" aria-label="ตัวอย่างเทมเพลต">
-      <a class="pf-toolbar__back" href="{{ toolbar.back_url }}">&larr; เทมเพลตทั้งหมด</a>
-      <ul class="pf-toolbar__themes">
-        {% for key, name, url in toolbar.switch %}
-          <li><a href="{{ url }}"{% if key == toolbar.current %} aria-current="page"{% endif %}>{{ name }}</a></li>
-        {% endfor %}
-      </ul>
+    <nav class="pf-toolbar" aria-label="{{ toolbar.aria_label|default:'ตัวอย่างพอร์ตโฟลิโอ' }}">
+      <div class="pf-toolbar__group">
+        {% if toolbar.back_url %}<a class="pf-toolbar__back" href="{{ toolbar.back_url }}">&larr; {{ toolbar.back_label|default:"เทมเพลตทั้งหมด" }}</a>{% endif %}
+        {% if toolbar.status %}<span class="pf-toolbar__status" role="status">{{ toolbar.status }}</span>{% endif %}
+      </div>
+      {% if toolbar.switch %}
+        <ul class="pf-toolbar__themes">
+          {% for key, name, url in toolbar.switch %}
+            <li><a href="{{ url }}"{% if key == toolbar.current %} aria-current="page"{% endif %}>{{ name }}</a></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+      {% if toolbar.links %}
+        <ul class="pf-toolbar__links">
+          {% for label, url in toolbar.links %}<li><a href="{{ url }}">{{ label }}</a></li>{% endfor %}
+        </ul>
+      {% endif %}
     </nav>
   {% endif %}
 

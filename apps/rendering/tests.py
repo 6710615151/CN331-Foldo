@@ -116,6 +116,28 @@ class AdapterTests(TestCase):
     def test_story_can_be_left_out(self):
         self.assertEqual(project_item(PROJECTS[0], include_story=False).story, ())
 
+    def test_story_fields_stored_on_the_project_itself(self):
+        """FOLDO-15 keeps problem/role/... on Project; there is no separate story row."""
+        project = row(41, project_name="Inline", problem="P", role="", process="Q", solution="",
+                      outcome="O")
+        self.assertEqual(project_item(project).story, (("Problem", "P"), ("Process", "Q"), ("Outcome", "O")))
+
+    def test_education_entry_with_years_level_and_grade(self):
+        """apps.education rows: level + subject + years instead of degree + dates."""
+        entry = SimpleNamespace(
+            pk=50, institution="Thammasat University", subject="Computer Engineering", grade="3.75",
+            start_year=2022, end_year=None, get_level_display=lambda: "Undergraduate degree",
+        )
+        item = education_item(entry)
+        self.assertEqual(item.title, "Undergraduate degree, Computer Engineering")
+        self.assertEqual(item.subtitle, "Thammasat University")
+        self.assertEqual(item.period, "2022 – Present")
+        self.assertEqual(item.note, "Grade: 3.75")
+
+    def test_education_with_only_an_institution(self):
+        item = education_item(row(51, institution="Some School"))
+        self.assertEqual((item.title, item.subtitle, item.period, item.note), ("Some School", "", "", ""))
+
     def test_unsafe_links_are_dropped(self):
         project = row(40, project_name="X", project_url="javascript:alert(1)",
                       evidence=Rows(SimpleNamespace(caption="bad", file_url="data:text/html,hi")))
