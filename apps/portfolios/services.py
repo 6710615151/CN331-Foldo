@@ -1,7 +1,7 @@
 """
 Public interface of the portfolios module, and the only place that talks to other apps.
 
-Dependencies point one way:  portfolios -> rendering / profiles / education.
+Dependencies point one way:  portfolios -> rendering / profiles.
 None of those apps import portfolios.
 
 Rendering a version (FOLDO-07):
@@ -18,9 +18,8 @@ from __future__ import annotations
 
 from django.urls import reverse
 
-from apps.education.services import LEVEL_ORDER, get_entries
 from apps.profiles.services import build_display, get_default_profile, get_profiles
-from apps.rendering.selectors import PortfolioContent, build_portfolio_content, default_providers
+from apps.rendering.selectors import PortfolioContent, build_portfolio_content
 from apps.rendering.services import render_portfolio_html
 from apps.rendering.themes import PortfolioTheme, resolve_theme
 
@@ -78,13 +77,6 @@ def selected_ids(portfolio: Portfolio):
     return get_selected_ids(portfolio)
 
 
-def _education_rows(owner):
-    """Education is stored per user (apps.education), highest level first, blank levels skipped."""
-    order = {level: index for index, level in enumerate(LEVEL_ORDER)}
-    rows = [entry for entry in get_entries(owner) if not entry.is_blank]
-    return sorted(rows, key=lambda entry: order.get(entry.level, len(order)))
-
-
 def build_version_content(portfolio: Portfolio, *, selected=_LOOKUP) -> PortfolioContent:
     """Everything a template needs for this version: its profile, filtered by its selection.
 
@@ -97,9 +89,7 @@ def build_version_content(portfolio: Portfolio, *, selected=_LOOKUP) -> Portfoli
 
     if selected is _LOOKUP:
         selected = selected_ids(portfolio)
-    owner = portfolio.owner
-    providers = {**default_providers(), "education": lambda _profile: _education_rows(owner)}
-    return build_portfolio_content(profile, selected=selected, providers=providers)
+    return build_portfolio_content(profile, selected=selected)
 
 
 def _preview_toolbar(portfolio: Portfolio, theme: PortfolioTheme) -> dict:
