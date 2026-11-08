@@ -237,6 +237,35 @@ Turns profile data into a finished portfolio page. It owns **no models**:
   navbar, print CSS) so the same markup works on screen, publicly and in PDF.
 - Routes: `/templates/` (gallery) and `/templates/<theme>/profiles/<pk>/`
   (owner-only preview with a theme switcher).
+- Project Story fields are read from `project.story` if it exists, otherwise
+  from the `Project` row itself (where FOLDO-15 stores them). Education rows
+  may be `profiles.Education` (degree, dates) or `education.EducationEntry`
+  (level, subject, years); both render, with the grade as a note.
+
+#### How a portfolio version is rendered
+
+`apps.portfolios.services` is the one bridge (portfolios → rendering, never
+the other way):
+
+```text
+render_version_html(portfolio, preview=..., toolbar=...)
+  ├── theme_for(portfolio)          template_key → PortfolioTheme (unknown key → default)
+  └── build_version_content(portfolio)
+        ├── resolve_profile(portfolio)     chosen profile, else the owner's default
+        ├── selected_ids(portfolio)        FOLDO-06: {section: {ids}} or None = everything
+        └── build_portfolio_content(profile, selected=..., providers=...)
+```
+
+| Output | Call | Owner bar | `noindex` |
+| --- | --- | --- | --- |
+| `/portfolios/<pk>/preview/` | `preview=True` | yes | yes |
+| `/portfolios/<pk>/preview/frame/` (device preview) | `preview=True, toolbar=False` | no | yes |
+| `/portfolios/p/<slug>/` (published only) | `preview=False` | no | no |
+
+Rendering only reads: no output changes `is_published`, the selection or any
+profile row. `Portfolio.template_key` choices come from `theme_choices()`;
+migration `portfolios.0003_rendering_themes` moved the retired colour layouts
+(`midnight` → `modern`, `ocean` → `creative`, `mono` → `classic`).
 
 ### Planned apps (not created yet)
 
