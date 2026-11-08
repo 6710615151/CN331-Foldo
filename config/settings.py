@@ -112,7 +112,6 @@ LOCAL_APPS = [
     "apps.core",
     "apps.profiles",
     "apps.portfolios",
-    "apps.education",
     "apps.rendering",
 ]
 

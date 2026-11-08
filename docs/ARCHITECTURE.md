@@ -238,9 +238,8 @@ Turns profile data into a finished portfolio page. It owns **no models**:
 - Routes: `/templates/` (gallery) and `/templates/<theme>/profiles/<pk>/`
   (owner-only preview with a theme switcher).
 - Project Story fields are read from `project.story` if it exists, otherwise
-  from the `Project` row itself (where FOLDO-15 stores them). Education rows
-  may be `profiles.Education` (degree, dates) or `education.EducationEntry`
-  (level, subject, years); both render, with the grade as a note.
+  from the `Project` row itself (where FOLDO-15 stores them). Education comes
+  from `profile.educations` (`profiles.Education`); its grade renders as a note.
 
 #### How a portfolio version is rendered
 

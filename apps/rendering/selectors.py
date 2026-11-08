@@ -15,8 +15,7 @@ from ``project.story`` when such a record exists, otherwise from the project
 itself (that is where FOLDO-15 stores them).
 
 A relation whose model does not exist yet simply yields an empty section, and a
-caller can hand in its own ``providers`` (e.g. portfolios reads education from
-``apps.education``, which belongs to the user rather than to a profile).
+caller (or a test) can hand in its own ``providers``.
 """
 
 from __future__ import annotations
@@ -91,20 +90,9 @@ def _month(value) -> str:
 def _period(obj) -> str:
     start = _month(getattr(obj, "start_date", None))
     if not start:
-        return _year_period(obj)
+        return ""
     end = getattr(obj, "end_date", None)
     return f"{start} – {_month(end) if end else 'Present'}"
-
-
-def _year_period(obj) -> str:
-    """For rows that only store years (``start_year`` / ``end_year``)."""
-    start = getattr(obj, "start_year", None)
-    end = getattr(obj, "end_year", None)
-    if start and end:
-        return f"{start} – {end}" if start != end else str(start)
-    if start:
-        return f"{start} – Present"
-    return str(end) if end else ""
 
 
 def _display(obj, name: str) -> str:
@@ -136,10 +124,8 @@ def experience_item(experience) -> SectionItem:
 
 
 def education_item(education) -> SectionItem:
-    """Works for ``profiles.Education`` (degree, field_of_study, dates) and
-    ``education.EducationEntry`` (level, subject, years)."""
-    degree = _text(education, "degree") or _display(education, "level")
-    field = _text(education, "field_of_study") or _text(education, "subject")
+    degree = _text(education, "degree")
+    field = _text(education, "field_of_study")
     institution = _text(education, "institution")
     grade = _text(education, "grade")
     return SectionItem(

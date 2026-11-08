@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}ลบ {{ education.institution }} — FOLDO{% endblock %}
+{% block content %}
+<section class="foldo-section foldo-profile" aria-labelledby="delete-heading">
+  <div class="container foldo-profile__narrow">
+    <h1 id="delete-heading" class="foldo-section__title">ลบข้อมูลการศึกษานี้?</h1>
+    <p class="visually-hidden" lang="en">Delete this education entry?</p>
+    <div class="foldo-card mb-3">
+      <p class="mb-1"><strong>{{ education.institution }}</strong></p>
+      <p class="mb-0 foldo-section__subtitle">
+        {% if education.degree %}{{ education.degree }} &middot; {% endif %}{{ education.start_date|date:"M Y" }} &ndash;
+        {% if education.is_current %}ปัจจุบัน{% else %}{{ education.end_date|date:"M Y" }}{% endif %}
+      </p>
+    </div>
+    <p>ข้อมูลนี้จะถูกลบออกจากโปรไฟล์ “{{ profile.label }}” ถาวร กู้คืนไม่ได้</p>
+    <form method="post" class="d-flex gap-2" data-loading>
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger" data-loading-text="กำลังลบ…">ยืนยันลบ</button>
+      <a class="btn btn-outline-foldo" href="{{ cancel_url }}">ยกเลิก</a>
+    </form>
+  </div>
+</section>
+{% endblock %}

@@ -1,12 +1,13 @@
 from django import forms
 
+from apps.core.forms import BootstrapFormMixin
 from apps.rendering.themes import THEMES
 
 from .models import Portfolio
 from .services import profile_choices
 
 
-class PortfolioForm(forms.ModelForm):
+class PortfolioForm(BootstrapFormMixin, forms.ModelForm):
     # Shown as cards by rendering/partials/theme_picker.html (FOLDO-07).
     themes = THEMES
 
