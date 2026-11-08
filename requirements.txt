@@ -31,8 +31,9 @@ Pillow>=10.0
 # PDF export
 weasyprint>=62,<68
 
-
 # QR codes for the Share Kit (FOLDO-17). Pure Python with no dependencies of its own,
 # writes SVG and PNG directly.
 segno>=1.6,<2.0
 
+# Docker 
+gunicorn>=23.0
