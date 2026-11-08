@@ -50,6 +50,12 @@ def get_theme(key: str) -> PortfolioTheme | None:
     return _BY_KEY.get(key)
 
 
+def resolve_theme(key: str | None) -> PortfolioTheme:
+    """The theme for a stored key; an unknown or retired key falls back to the
+    default, so a saved portfolio always renders."""
+    return _BY_KEY.get(key or "", _BY_KEY[DEFAULT_THEME_KEY])
+
+
 def theme_choices() -> list[tuple[str, str]]:
     """For a ``CharField(choices=...)`` on PortfolioVersion."""
     return [(theme.key, theme.name) for theme in THEMES]

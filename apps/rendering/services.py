@@ -18,10 +18,22 @@ def render_portfolio_html(
     *,
     request=None,
     toolbar: dict | None = None,
+    noindex: bool = False,
 ) -> str:
-    """Return the full HTML page. ``toolbar`` (preview only) adds a back/switch bar."""
+    """Return the full HTML page.
+
+    ``toolbar`` (owner previews only) adds the bar described in
+    ``rendering/portfolio_base.html``; ``noindex`` asks search engines to skip
+    the page (everything except the published portfolio).
+    """
     return render_to_string(
         theme.template_name,
-        {"theme": theme, "content": content, "profile": content.profile, "toolbar": toolbar},
+        {
+            "theme": theme,
+            "content": content,
+            "profile": content.profile,
+            "toolbar": toolbar,
+            "noindex": noindex,
+        },
         request=request,
     )

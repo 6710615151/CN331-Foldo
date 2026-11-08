@@ -8,9 +8,15 @@ Sections are read through these reverse relations on ``MainProfile`` (the
 agreed contract for FOLDO-04/15 — see docs/CONVENTIONS.md):
 
     profile.skills, profile.experiences, profile.educations, profile.projects
-    project.story (0..1), project.evidence
+    project.evidence
 
-A relation whose model does not exist yet simply yields an empty section.
+The Project Story fields (problem, role, process, solution, outcome) are read
+from ``project.story`` when such a record exists, otherwise from the project
+itself (that is where FOLDO-15 stores them).
+
+A relation whose model does not exist yet simply yields an empty section, and a
+caller can hand in its own ``providers`` (e.g. portfolios reads education from
+``apps.education``, which belongs to the user rather than to a profile).
 """
 
 from __future__ import annotations
@@ -39,6 +45,7 @@ class SectionItem:
     description: str = ""
     url: str = ""
     level: str = ""
+    note: str = ""
     story: tuple[tuple[str, str], ...] = ()
     evidence: tuple[tuple[str, str], ...] = ()
 
@@ -84,9 +91,26 @@ def _month(value) -> str:
 def _period(obj) -> str:
     start = _month(getattr(obj, "start_date", None))
     if not start:
-        return ""
+        return _year_period(obj)
     end = getattr(obj, "end_date", None)
     return f"{start} – {_month(end) if end else 'Present'}"
+
+
+def _year_period(obj) -> str:
+    """For rows that only store years (``start_year`` / ``end_year``)."""
+    start = getattr(obj, "start_year", None)
+    end = getattr(obj, "end_year", None)
+    if start and end:
+        return f"{start} – {end}" if start != end else str(start)
+    if start:
+        return f"{start} – Present"
+    return str(end) if end else ""
+
+
+def _display(obj, name: str) -> str:
+    """``get_<name>_display()`` for a choices field, else the raw value."""
+    method = getattr(obj, f"get_{name}_display", None)
+    return str(method()).strip() if callable(method) else _text(obj, name)
 
 
 def _related(obj, name: str) -> Iterable:
@@ -98,9 +122,7 @@ def _related(obj, name: str) -> Iterable:
 
 
 def skill_item(skill) -> SectionItem:
-    display = getattr(skill, "get_proficiency_display", None)
-    level = display() if callable(display) else _text(skill, "proficiency")
-    return SectionItem(id=skill.pk, title=_text(skill, "name"), level=level)
+    return SectionItem(id=skill.pk, title=_text(skill, "name"), level=_display(skill, "proficiency"))
 
 
 def experience_item(experience) -> SectionItem:
@@ -114,25 +136,29 @@ def experience_item(experience) -> SectionItem:
 
 
 def education_item(education) -> SectionItem:
-    degree = _text(education, "degree")
-    field = _text(education, "field_of_study")
+    """Works for ``profiles.Education`` (degree, field_of_study, dates) and
+    ``education.EducationEntry`` (level, subject, years)."""
+    degree = _text(education, "degree") or _display(education, "level")
+    field = _text(education, "field_of_study") or _text(education, "subject")
+    institution = _text(education, "institution")
+    grade = _text(education, "grade")
     return SectionItem(
         id=education.pk,
-        title=", ".join(part for part in (degree, field) if part) or _text(education, "institution"),
-        subtitle=_text(education, "institution") if (degree or field) else "",
+        title=", ".join(part for part in (degree, field) if part) or institution,
+        subtitle=institution if (degree or field) else "",
         period=_period(education),
         description=_text(education, "description"),
+        note=f"Grade: {grade}" if grade else "",
     )
 
 
 def project_item(project, *, include_story: bool = True) -> SectionItem:
     story = ()
     if include_story:
-        record = getattr(project, "story", None)
-        if record is not None:
-            story = tuple(
-                (label, _text(record, name)) for name, label in STORY_FIELDS if _text(record, name)
-            )
+        record = getattr(project, "story", None) or project
+        story = tuple(
+            (label, _text(record, name)) for name, label in STORY_FIELDS if _text(record, name)
+        )
     evidence = tuple(
         (_text(e, "caption") or _text(e, "evidence_type") or "Evidence", _safe_url(_text(e, "file_url")))
         for e in _related(project, "evidence")
