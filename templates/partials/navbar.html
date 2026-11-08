@@ -3,7 +3,7 @@
   this header with its own full-bleed hero (see its "header" block).
   Links wrap under the logo on narrow screens, so no JavaScript toggle is needed.
 {% endcomment %}
-{% with current=request.resolver_match.url_name %}
+{% with current=request.resolver_match.url_name app=request.resolver_match.app_name %}
 <header class="sticky-top">
   <nav class="navbar navbar-expand foldo-navbar" aria-label="เมนูหลัก">
     <div class="container">
@@ -14,21 +14,27 @@
 
       <ul class="navbar-nav foldo-nav ms-auto flex-row flex-wrap align-items-center">
         {% if user.is_authenticated %}
+          
           <li class="nav-item">
             <a class="nav-link foldo-nav__link{% if current == 'dashboard' %} active{% endif %}"
                href="{% url 'core:dashboard' %}"
                {% if current == 'dashboard' %}aria-current="page"{% endif %}
                lang="en">Dashboard</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link foldo-nav__link{% if request.resolver_match.app_name == 'profiles' %} active{% endif %}"
+                    <li class="nav-item">
+            <a class="nav-link foldo-nav__link{% if app == 'profiles' or app == 'education' %} active{% endif %}"
                href="{% url 'profiles:list' %}"
-               {% if request.resolver_match.app_name == 'profiles' %}aria-current="page"{% endif %}>โปรไฟล์</a>
+               {% if app == 'profiles' or app == 'education' %}aria-current="page"{% endif %}>โปรไฟล์</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link foldo-nav__link{% if current == 'settings' %} active{% endif %}"
+            <a class="nav-link foldo-nav__link{% if app == 'portfolios' %} active{% endif %}"
+               href="{% url 'portfolios:list' %}"
+               {% if app == 'portfolios' %}aria-current="page"{% endif %}>พอร์ตโฟลิโอ</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link foldo-nav__link{% if current == 'settings' and app == 'accounts' %} active{% endif %}"
                href="{% url 'accounts:settings' %}"
-               {% if current == 'settings' %}aria-current="page"{% endif %}>ตั้งค่าบัญชี</a>
+               {% if current == 'settings' and app == 'accounts' %}aria-current="page"{% endif %}>ตั้งค่าบัญชี</a>
           </li>
           <li class="nav-item">
             <form method="post" action="{% url 'accounts:logout' %}" class="foldo-nav__form">
