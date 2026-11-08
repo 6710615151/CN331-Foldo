@@ -18,6 +18,7 @@ from django.views.generic import DetailView
 
 from .mixins import OwnerRequiredMixin
 from apps.profiles.models import MainProfile
+
 # -------------------------------------------------------------------------
 
 # ------------------- FOLDO-10: imports for the shared-validator tests -------------------
@@ -25,6 +26,7 @@ from django.core.exceptions import ValidationError
 from django.test import SimpleTestCase
 
 from .validators import safe_url_validator
+
 # ------------------------------------------------------------------------
 
 
@@ -34,22 +36,26 @@ from django.template import Context, Template
 
 from .forms import BootstrapFormMixin
 from .validators import MAX_SHORT_NAME
+
 # ------------------------------------------------------------------------
 
 # -------------------FOLDO-10: imports for the 403 page test-------------------
 from django.core.exceptions import PermissionDenied
 from django.urls import include, path
+
 # ------------------------------------------------------------------------
 
 # -------------------FOLDO-10: imports for the date-order tests-------------------
 from datetime import date
 
 from .validators import validate_date_order
+
 # ------------------------------------------------------------------------
 
 
 # -------------------FOLDO-15: imports for the project-story display tests-------------------
 from types import SimpleNamespace
+
 # ------------------------------------------------------------------------
 
 
@@ -74,16 +80,16 @@ class LandingViewTests(TestCase):
 
     def test_landing_page_is_a_single_hero_screen(self):
         html = self.client.get(reverse("core:landing")).content.decode()
-        main = html[html.index("<main"):html.index("</main>")]
+        main = html[html.index("<main") : html.index("</main>")]
         self.assertEqual(len(re.findall(r"^<section", main, flags=re.MULTILINE)), 1)
         self.assertIn('id="hero-heading"', main)
 
     def _get_started_link(self):
         html = self.client.get(reverse("core:landing")).content.decode()
-        main = html[html.index("<main"):html.index("</main>")]
+        main = html[html.index("<main") : html.index("</main>")]
         cta = main.index("foldo-hero__cta")
         self.assertLess(main.index("เก็บโปรไฟล์ไว้ที่เดียว"), cta)
-        return main[main.rindex("<a", 0, cta):main.index("</a>", cta)]
+        return main[main.rindex("<a", 0, cta) : main.index("</a>", cta)]
 
     def test_get_started_sends_new_visitors_to_sign_up(self):
         link = self._get_started_link()
@@ -113,25 +119,25 @@ class LandingViewTests(TestCase):
     def test_hero_illustration_sits_behind_the_text(self):
         """The decorative hero image comes first in the markup (behind the copy)."""
         html = self.client.get(reverse("core:landing")).content.decode()
-        main = html[html.index("<main"):html.index("</main>")]
+        main = html[html.index("<main") : html.index("</main>")]
         self.assertIn("images/hero-illustration.png", main)
         self.assertLess(main.index("foldo-hero__art"), main.index('id="hero-heading"'))
-        art = main[main.rindex("<img", 0, main.index("foldo-hero__art")):]
-        self.assertIn('alt=""', art[:art.index(">")])
+        art = main[main.rindex("<img", 0, main.index("foldo-hero__art")) :]
+        self.assertIn('alt=""', art[: art.index(">")])
 
     def test_hero_logo_uses_the_brand_mark(self):
         html = self.client.get(reverse("core:landing")).content.decode()
         self.assertIn("images/logo-mark.png", html)
-        self.assertNotIn("foldo-asset", html[html.index("<main"):html.index("</main>")].replace("foldo-asset-img", ""))
+        self.assertNotIn(
+            "foldo-asset", html[html.index("<main") : html.index("</main>")].replace("foldo-asset-img", "")
+        )
 
 
 class SignedInTestCase(TestCase):
     """Signs a user in before each test, for pages behind login."""
 
     def setUp(self):
-        self.user = get_user_model().objects.create_user(
-            username="dev3", password="pw-Foldo-12345"
-        )
+        self.user = get_user_model().objects.create_user(username="dev3", password="pw-Foldo-12345")
         self.client.force_login(self.user)
 
 
@@ -142,9 +148,7 @@ class OnboardingViewTests(SignedInTestCase):
         self.client.logout()
         url = reverse("core:onboarding")
         response = self.client.get(url)
-        self.assertRedirects(
-            response, f"{reverse('accounts:login')}?next={url}", fetch_redirect_response=False
-        )
+        self.assertRedirects(response, f"{reverse('accounts:login')}?next={url}", fetch_redirect_response=False)
 
     def test_onboarding_page_returns_200(self):
         response = self.client.get(reverse("core:onboarding"))
@@ -195,9 +199,7 @@ class DashboardViewTests(SignedInTestCase):
         self.client.logout()
         url = reverse("core:dashboard")
         response = self.client.get(url)
-        self.assertRedirects(
-            response, f"{reverse('accounts:login')}?next={url}", fetch_redirect_response=False
-        )
+        self.assertRedirects(response, f"{reverse('accounts:login')}?next={url}", fetch_redirect_response=False)
 
     def test_dashboard_page_returns_200(self):
         response = self.client.get(reverse("core:dashboard"))
@@ -215,9 +217,7 @@ class DashboardViewTests(SignedInTestCase):
         self.assertContains(response, reverse("core:onboarding"))
 
     def test_dashboard_shows_own_profile_completeness(self):
-        profile = MainProfile.objects.create(
-            owner=self.user, full_name="Dev Three", headline="Backend developer"
-        )
+        profile = MainProfile.objects.create(owner=self.user, full_name="Dev Three", headline="Backend developer")
         response = self.client.get(reverse("core:dashboard"))
         summary = response.context["summary"]
         self.assertTrue(summary["has_profile"])
@@ -244,7 +244,7 @@ class DashboardViewTests(SignedInTestCase):
 
     def test_dashboard_link_is_in_the_shared_navigation(self):
         html = self.client.get(reverse("core:dashboard")).content.decode()
-        nav = html[html.index("<header"):html.index("</header>")]
+        nav = html[html.index("<header") : html.index("</header>")]
         self.assertIn(reverse("core:dashboard"), nav)
         self.assertIn('aria-current="page"', nav)
 
@@ -254,7 +254,7 @@ class NavbarTests(TestCase):
 
     def _nav(self):
         html = self.client.get("/no-such-page/").content.decode()  # 404 keeps the shell
-        return html[html.index("<header"):html.index("</header>")]
+        return html[html.index("<header") : html.index("</header>")]
 
     def test_visitor_sees_log_in_and_sign_up_only(self):
         nav = self._nav()
@@ -278,8 +278,8 @@ class NavbarTests(TestCase):
         self.client.force_login(user)
         nav = self._nav()
         form = nav.index('action="' + reverse("accounts:logout"))
-        self.assertNotIn("</li>", nav[nav.rindex("<li", 0, form):form])
-        self.assertIn('method="post"', nav[nav.rindex("<form", 0, form):form])
+        self.assertNotIn("</li>", nav[nav.rindex("<li", 0, form) : form])
+        self.assertIn('method="post"', nav[nav.rindex("<form", 0, form) : form])
         self.assertIn("csrfmiddlewaretoken", nav)
 
 
@@ -300,9 +300,7 @@ class HealthCheckViewTests(TestCase):
         self.assertEqual(payload["version"], settings.FOLDO_VERSION)
 
     def test_health_check_returns_503_when_a_check_fails(self):
-        with mock.patch(
-            "apps.core.selectors.DatabaseHealthCheck.is_healthy", return_value=False
-        ):
+        with mock.patch("apps.core.selectors.DatabaseHealthCheck.is_healthy", return_value=False):
             response = self.client.get(reverse("core:health"))
         self.assertEqual(response.status_code, 503)
         payload = json.loads(response.content)
@@ -326,6 +324,7 @@ class ErrorHandlerTests(TestCase):
         response = self.client.get("/this-page-does-not-exist/")
         self.assertEqual(response.status_code, 404)
         self.assertContains(response, "404", status_code=404)
+
 
 # ---------------------------------------------------------------------------
 # FOLDO-10: data ownership (apps/core/mixins.py)
@@ -384,6 +383,7 @@ class SafeUrlValidatorTests(SimpleTestCase):
                 with self.assertRaises(ValidationError):
                     safe_url_validator(url)
 
+
 # ---------------------------------------------------------------------------
 # FOLDO-10: shared form display (apps/core/forms.py + templates/partials/form_*.html)
 # ---------------------------------------------------------------------------
@@ -394,7 +394,9 @@ class _SampleForm(BootstrapFormMixin, forms.Form):
 
     name = forms.CharField(label="Name", max_length=MAX_SHORT_NAME)
     website = forms.URLField(
-        label="Website", required=False, assume_scheme="https",
+        label="Website",
+        required=False,
+        assume_scheme="https",
         validators=[safe_url_validator],
     )
     agree = forms.BooleanField(label="Agree", required=False)
@@ -441,6 +443,7 @@ class FormDisplayTests(SimpleTestCase):
         html = self._render({"name": "<script>alert(1)</script>" * 10})
         self.assertNotIn("<script>alert(1)</script>", html)
         self.assertIn("&lt;script&gt;", html)
+
 
 # ---------------------------------------------------------------------------
 # FOLDO-10: 403 "access denied" page (templates/403.html)
@@ -552,10 +555,15 @@ class ProjectStoryDisplayTests(SimpleTestCase):
         return template.render(Context({"project": project}))
 
     def test_full_story_shows_all_five_parts_in_order(self):
-        html = self._render(_project(
-            problem="Slow sign-up", role="Backend dev", process="Interviews",
-            solution="One-page form", outcome="2x more sign-ups",
-        ))
+        html = self._render(
+            _project(
+                problem="Slow sign-up",
+                role="Backend dev",
+                process="Interviews",
+                solution="One-page form",
+                outcome="2x more sign-ups",
+            )
+        )
         positions = [html.index(label) for label in ("ปัญหา", "บทบาท", "วิธีทำ", "ทางออก", "ผลลัพธ์")]
         self.assertEqual(positions, sorted(positions))
 

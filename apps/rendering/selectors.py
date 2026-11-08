@@ -142,9 +142,7 @@ def project_item(project, *, include_story: bool = True) -> SectionItem:
     story = ()
     if include_story:
         record = getattr(project, "story", None) or project
-        story = tuple(
-            (label, _text(record, name)) for name, label in STORY_FIELDS if _text(record, name)
-        )
+        story = tuple((label, _text(record, name)) for name, label in STORY_FIELDS if _text(record, name))
     evidence = tuple(
         (_text(e, "caption") or _text(e, "evidence_type") or "Evidence", _safe_url(_text(e, "file_url")))
         for e in _related(project, "evidence")

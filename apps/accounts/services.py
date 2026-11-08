@@ -14,10 +14,7 @@ EDITABLE_FIELDS = ("first_name", "last_name", "email")
 def update_account(*, user, data: dict):
     """Apply validated settings to ``user`` and save only the changed fields."""
     current = get_user_model().objects.select_for_update().get(pk=user.pk)
-    changed = [
-        field for field in EDITABLE_FIELDS
-        if field in data and getattr(current, field) != data[field]
-    ]
+    changed = [field for field in EDITABLE_FIELDS if field in data and getattr(current, field) != data[field]]
     for field in changed:
         setattr(current, field, data[field])
     if changed:

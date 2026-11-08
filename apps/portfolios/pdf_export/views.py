@@ -4,6 +4,7 @@ failure and retry around the PDF that ``portfolios:pdf`` generates.
 
 Read only: exporting never publishes or changes anything.
 """
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
 from django.shortcuts import render
@@ -33,9 +34,13 @@ class ExportView(LoginRequiredMixin, View):
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, pk):
-        return render(request, TEMPLATE, {
-            "portfolio": self.portfolio,
-            "page_sizes": PAGE_SIZES,
-            "default_page_size": DEFAULT_PAGE_SIZE,
-            "timeout_seconds": CLIENT_TIMEOUT_SECONDS,
-        })
+        return render(
+            request,
+            TEMPLATE,
+            {
+                "portfolio": self.portfolio,
+                "page_sizes": PAGE_SIZES,
+                "default_page_size": DEFAULT_PAGE_SIZE,
+                "timeout_seconds": CLIENT_TIMEOUT_SECONDS,
+            },
+        )

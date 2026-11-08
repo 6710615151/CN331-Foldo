@@ -1,4 +1,5 @@
 """Quality Check page for one portfolio version (FOLDO-16)."""
+
 from django.views.generic import DetailView
 
 from apps.core.mixins import OwnerRequiredMixin

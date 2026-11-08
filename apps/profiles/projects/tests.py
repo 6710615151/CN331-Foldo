@@ -50,8 +50,10 @@ class ProjectModelTests(ProjectTestCase):
 
     def test_end_date_before_start_date_is_rejected(self):
         project = Project(
-            profile=self.alice_profile, project_name="FOLDO",
-            start_date=date(2026, 5, 1), end_date=date(2026, 4, 30),
+            profile=self.alice_profile,
+            project_name="FOLDO",
+            start_date=date(2026, 5, 1),
+            end_date=date(2026, 4, 30),
         )
         with self.assertRaises(ValidationError) as caught:
             project.full_clean()

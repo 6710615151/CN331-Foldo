@@ -142,11 +142,9 @@ def _profile_for_route(user, url_name, kwargs):
         return None
     if url_name in ("view", "update", "delete", "make_default"):
         return get_profile(user, pk)
-    for prefix, model in (("education", Education), ("skill", Skill),
-                          ("experience", Experience), ("project", Project)):
+    for prefix, model in (("education", Education), ("skill", Skill), ("experience", Experience), ("project", Project)):
         if url_name.startswith(prefix):
-            profile_id = (model.objects.filter(pk=pk, profile__owner=user)
-                          .values_list("profile_id", flat=True).first())
+            profile_id = model.objects.filter(pk=pk, profile__owner=user).values_list("profile_id", flat=True).first()
             return get_profile(user, profile_id) if profile_id else None
     return None
 

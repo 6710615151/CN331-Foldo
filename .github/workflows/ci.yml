@@ -75,7 +75,5 @@ jobs:
       - name: Bandit (security scan, medium severity and above)
         run: bandit -r apps config -ll -x "*/migrations/*,*/tests.py,*/test_*.py"
 
-      - name: Black (formatting report, not yet enforced)
-        # Enforce once the one-off formatting PR has landed: delete this line.
-        continue-on-error: true
-        run: black --check --diff --line-length 120 apps config
+      - name: Black (formatting)
+        run: black --check --diff apps config

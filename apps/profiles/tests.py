@@ -147,9 +147,7 @@ class CreateAndEditTests(ProfileTestCase):
         self.assertContains(response, "Data engineer")
 
     def test_missing_full_name_is_rejected_and_input_is_kept(self):
-        response = self.client.post(
-            reverse("profiles:create"), profile_form_data(full_name="", headline="Keep me")
-        )
+        response = self.client.post(reverse("profiles:create"), profile_form_data(full_name="", headline="Keep me"))
         self.assertEqual(response.status_code, 200)
         self.assertFalse(MainProfile.objects.exists())
         self.assertIn("full_name", response.context["form"].errors)
@@ -183,9 +181,7 @@ class CreateAndEditTests(ProfileTestCase):
     def test_invalid_email_phone_and_link_are_rejected(self):
         response = self.client.post(
             reverse("profiles:create"),
-            profile_form_data(
-                contact_email="not-an-email", phone="call me", website="javascript:alert(1)"
-            ),
+            profile_form_data(contact_email="not-an-email", phone="call me", website="javascript:alert(1)"),
         )
         errors = response.context["form"].errors
         for field in ("contact_email", "phone", "website"):
@@ -194,9 +190,7 @@ class CreateAndEditTests(ProfileTestCase):
         self.assertFalse(MainProfile.objects.exists())
 
     def test_ftp_links_are_rejected(self):
-        response = self.client.post(
-            reverse("profiles:create"), profile_form_data(github_url="ftp://example.com/code")
-        )
+        response = self.client.post(reverse("profiles:create"), profile_form_data(github_url="ftp://example.com/code"))
         self.assertIn("github_url", response.context["form"].errors)
         self.assertFalse(MainProfile.objects.exists())
 

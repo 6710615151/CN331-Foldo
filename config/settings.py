@@ -171,9 +171,7 @@ MIDDLEWARE = [
 # it runs after any response-encoding middleware, and gated on DEBUG so it is
 # never active in production. Skipped when the optional package is absent.
 if DEBUG and DEV_TOOLS_INSTALLED:
-    MIDDLEWARE.append(
-        "django_browser_reload.middleware.BrowserReloadMiddleware"
-    )
+    MIDDLEWARE.append("django_browser_reload.middleware.BrowserReloadMiddleware")
 
 ROOT_URLCONF = "config.urls"
 
@@ -266,9 +264,7 @@ else:
 # Authentication & sessions
 # ---------------------------------------------------------------------------
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
@@ -401,9 +397,7 @@ LOGOUT_REDIRECT_URL = "accounts:login"
 EMAIL_HOST = env_str("EMAIL_HOST")
 EMAIL_BACKEND = env_str(
     "EMAIL_BACKEND",
-    "django.core.mail.backends.smtp.EmailBackend"
-    if EMAIL_HOST
-    else "django.core.mail.backends.console.EmailBackend",
+    "django.core.mail.backends.smtp.EmailBackend" if EMAIL_HOST else "django.core.mail.backends.console.EmailBackend",
 )
 EMAIL_PORT = env_int("EMAIL_PORT", 587)
 EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", True)

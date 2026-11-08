@@ -8,6 +8,7 @@ turned into a file with WeasyPrint. All rendering-app themes are built to print 
 WeasyPrint needs system libraries (Pango). It is imported lazily so a machine without
 them can still run the whole site; only the export button reports "not available".
 """
+
 from __future__ import annotations
 
 import logging
@@ -65,7 +66,7 @@ def _local_file(path: str) -> Path | None:
 
     if path.startswith(static_prefix):
         try:
-            found = finders.find(path[len(static_prefix):])
+            found = finders.find(path[len(static_prefix) :])
         except Exception:  # e.g. a path that tries to escape the static folders
             return None
         if isinstance(found, (list, tuple)):
@@ -74,7 +75,7 @@ def _local_file(path: str) -> Path | None:
 
     if path.startswith(media_prefix):
         root = Path(settings.MEDIA_ROOT).resolve()
-        candidate = (root / path[len(media_prefix):]).resolve()
+        candidate = (root / path[len(media_prefix) :]).resolve()
         if candidate.is_file() and candidate.is_relative_to(root):
             return candidate
     return None
