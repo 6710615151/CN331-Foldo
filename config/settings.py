@@ -99,6 +99,9 @@ DJANGO_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "cloudinary_storage",          # Add this
+    "django.contrib.staticfiles",
+    "cloudinary",                  # Add this
 ]
 
 # One Django app per bounded context (modular monolith). Dependencies point
@@ -147,9 +150,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "cloudinary_storage",          # Add this
-    "django.contrib.staticfiles",
-    "cloudinary",                  # Add this
 ]
 
 # In development, inject a script that reloads the browser whenever code,
