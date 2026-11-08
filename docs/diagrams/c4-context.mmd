@@ -1,0 +1,20 @@
+%% C4 Level 1 — System context
+flowchart TB
+    student["<b>Student</b><br/>[Person]<br/>Keeps one profile and makes a<br/>portfolio for each application"]
+    reader["<b>Recruiter / committee</b><br/>[Person]<br/>Opens a published portfolio<br/>link, QR code or PDF"]
+    admin["<b>Instructor / admin</b><br/>[Person]<br/>Reviews data in Django admin"]
+    foldo["<b>FOLDO</b><br/>[Software System]<br/>Profile → tailored portfolios →<br/>quality check → share & PDF"]
+    mail["<b>SMTP provider</b><br/>[External System]<br/>Delivers password-reset email"]
+
+    student -- "Builds profile, portfolios<br/>[HTTPS]" --> foldo
+    reader -- "Views published portfolio<br/>[HTTPS, no account]" --> foldo
+    admin -- "Manages data<br/>[HTTPS /admin]" --> foldo
+    foldo -- "Sends reset links<br/>[SMTP]" --> mail
+    mail -- "Email" --> student
+
+    classDef person fill:#145bff,stroke:#8fb0ff,color:#fff
+    classDef system fill:#06143d,stroke:#c4f500,stroke-width:3px,color:#fff
+    classDef external fill:#2b3550,stroke:#8197cc,color:#fff
+    class student,reader,admin person
+    class foldo system
+    class mail external

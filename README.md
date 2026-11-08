@@ -66,6 +66,20 @@ via `REDIS_URL`).
 
 ---
 
+## Architecture
+
+Modular monolith (Django 5.2) on Render: Gunicorn + WhiteNoise in one Docker
+service, PostgreSQL, WeasyPrint for PDF. Business logic lives in each app's
+`services.py` (writes, `@transaction.atomic`) and `selectors.py` (reads).
+
+| C4 context | C4 containers |
+|---|---|
+| ![C4 context](docs/diagrams/c4-context.png) | ![C4 containers](docs/diagrams/c4-container.png) |
+
+Components, the ERD and the full write-up: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+---
+
 ## Repository structure
 
 ```text

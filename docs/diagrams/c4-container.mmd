@@ -1,0 +1,30 @@
+%% C4 Level 2 — Containers (production on Render)
+flowchart LR
+    user["<b>Browser</b><br/>Student · recruiter"]
+    subgraph render["Render (cloud)"]
+      direction LR
+      edge["<b>Render edge</b><br/>[TLS, load balancer]<br/>HTTPS, health check /health/"]
+      subgraph web["Web service — Docker image"]
+        direction TB
+        gunicorn["<b>Gunicorn</b><br/>[WSGI server]<br/>2 workers"]
+        django["<b>Django 5.2 app</b><br/>[Python, modular monolith]<br/>Server-rendered HTML,<br/>services + selectors"]
+        whitenoise["<b>WhiteNoise</b><br/>[static files]<br/>hashed, compressed"]
+        weasy["<b>WeasyPrint</b><br/>[PDF engine]<br/>Pango + Thai fonts"]
+        gunicorn --> django
+        django --- whitenoise
+        django --- weasy
+      end
+      db[("<b>PostgreSQL</b><br/>[Render database]<br/>users, profiles, portfolios")]
+    end
+    mail["<b>SMTP provider</b><br/>[External]"]
+
+    user -- "HTTPS" --> edge --> gunicorn
+    django -- "Django ORM<br/>[DATABASE_URL]" --> db
+    django -- "SMTP" --> mail
+
+    classDef ext fill:#2b3550,stroke:#8197cc,color:#fff
+    classDef box fill:#0d2460,stroke:#3d78ff,color:#fff
+    classDef store fill:#06143d,stroke:#c4f500,color:#fff
+    class user,mail ext
+    class edge,gunicorn,django,whitenoise,weasy box
+    class db store
