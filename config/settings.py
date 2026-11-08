@@ -363,3 +363,16 @@ EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", True)
 EMAIL_HOST_USER = env_str("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = env_str("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = env_str("DEFAULT_FROM_EMAIL", "FOLDO <no-reply@foldo.local>")
+
+
+import dj_database_url
+import os
+
+# This defaults to your local SQLite for development, but uses the 
+# Render PostgreSQL URL when it detects the DATABASE_URL environment variable.
+DATABASES = {
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL', f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
+        conn_max_age=600
+    )
+}
