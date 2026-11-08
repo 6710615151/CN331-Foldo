@@ -112,6 +112,7 @@ LOCAL_APPS = [
     "apps.core",
     "apps.profiles",
     "apps.rendering",
+    "apps.insights",
 ]
 
 # Custom user model from the very first migration (see apps/accounts/models.py).

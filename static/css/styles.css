@@ -655,6 +655,53 @@ main:has(> .foldo-hero) {
 .foldo-theme--creative .foldo-theme__swatch span:nth-child(2) { background: var(--foldo-lime); }
 .foldo-theme--creative .foldo-theme__swatch span:last-child { background: var(--foldo-orange); }
 
+/* --- Portfolio DNA (FOLDO-14) ------------------------------------------- */
+.foldo-dna__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.foldo-dna__stats dt {
+  color: var(--foldo-muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.foldo-dna__stats dd {
+  margin: 0;
+  font-family: var(--foldo-font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--foldo-lime);
+}
+
+.foldo-dna__table {
+  --bs-table-bg: transparent;
+}
+
+.foldo-dna__table .badge {
+  margin: 0 0.25rem 0.25rem 0;
+}
+
+/* --- Quality check (FOLDO-16) ------------------------------------------ */
+.foldo-quality__summary {
+  border-left: 4px solid var(--foldo-lime);
+}
+
+.foldo-quality__summary.is-blocking {
+  border-left-color: #ff4d6d;
+}
+
+.foldo-quality__item--error { border-left: 4px solid #ff4d6d; }
+.foldo-quality__item--warning { border-left: 4px solid var(--foldo-orange); }
+.foldo-quality__item--info { border-left: 4px solid var(--foldo-blue-text); }
+
+.foldo-quality__heading--error { color: #ff8099; }
+.foldo-quality__heading--warning { color: var(--foldo-orange); }
+.foldo-quality__heading--info { color: var(--foldo-blue-text); }
+
 /* --- Error pages (404 / 500) ------------------------------------------- */
 .foldo-state {
   max-width: 34rem;

@@ -146,3 +146,15 @@ your section shows up in portfolios without extra wiring:
 
 Missing fields are fine (they just don't print); an empty `end_date` reads as
 "Present". Links are only rendered when they start with `http://`/`https://`.
+
+Portfolio versions (FOLDO-05/06) are read by Portfolio DNA and the Quality
+Check through:
+
+| Model | FK + `related_name` | Fields read |
+| --- | --- | --- |
+| PortfolioVersion | `profile` → `"portfolio_versions"` | `version_name`, `template` (a key from `apps.rendering.themes`) |
+| PortfolioContentSelection | `version` → `"selections"` | `content_type` (`"skills"`, `"experience"`, `"education"`, `"projects"`), `content_id` |
+
+Name the version detail URL `portfolios:detail` (one `pk` argument) and the
+edit URLs `profiles:education_edit` / `profiles:project_edit`, so DNA links
+open the right page.
