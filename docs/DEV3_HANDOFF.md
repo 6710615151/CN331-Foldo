@@ -4,6 +4,65 @@ Written by Claude (saifadecha07's assistant) because the session ran out of
 budget. Picks up for whoever continues (Gemini or a human). Read this whole
 file before touching `apps/insights/`.
 
+## Procedure — follow this exactly, in order
+
+This repo's process is `docs/GIT_WORKFLOW.md` and `docs/CONVENTIONS.md`.
+Read both before writing code. Do not skip steps or reorder them.
+
+1. **Orient.** `git fetch origin && git status` on the real checkout (not
+   this doc's assumptions — things may have moved since this was written).
+   `git log --oneline -30 origin/main` and compare against "Branch / PR
+   chain" below. If a `content_selection` submodule for FOLDO-06 has landed,
+   the "`selected_ids` is always `None`" assumption in this doc is stale —
+   re-derive it from the real code before proceeding.
+2. **Read before writing**, in this order:
+   - `docs/CONVENTIONS.md` (ownership, validation, form, test rules — every
+     view in this repo follows these)
+   - `apps/portfolios/services.py` (the real rendering/versions contract)
+   - `apps/education/services.py` (education is its own app — see below)
+   - `apps/profiles/projects/selectors.py`, `services.py`, `urls.py` (not
+     read in this session — needed before touching the projects section)
+   - `apps/rendering/selectors.py` (`SECTION_SPECS`, still correct)
+   - The "What's actually broken" and "What this means for
+     `apps/insights/sources.py`" sections below.
+3. **Branch correctly.** Per `docs/GIT_WORKFLOW.md`: one branch = one Issue,
+   named `<type>/FOLDO-<issue>-<short-description>`, cut from current
+   `origin/main` (not from the stale `feat/FOLDO-07-templates-rendering`
+   chain — #31 is already merged into `main`, so branching from it again
+   just recreates conflicts). Example: `fix/FOLDO-14-dna-real-contract`.
+4. **Fix the data layer**, not the logic: rewrite the fetch functions in
+   `apps/insights/sources.py` (and the equivalent wiring in
+   `apps/insights/quality.py`) per the sketch in this doc. Leave
+   `apps/insights/dna.py` (`compute_dna`) and the `Finding`/severity
+   machinery in `quality.py` alone — they're correct, only their inputs were
+   wrong.
+5. **Add the missing integration tests** (see "Tests to fix after
+   rewiring") — real `Portfolio` / `EducationEntry` rows, not just the
+   existing `SimpleNamespace` unit tests.
+6. **Run the full check sequence before committing, every time** — this
+   is non-negotiable per `docs/DEFINITION_OF_DONE.md`:
+   ```bash
+   python manage.py check
+   python manage.py test
+   python manage.py makemigrations --check --dry-run
+   ```
+   Do not commit if any of these fail.
+7. **Commit with Conventional Commits** (`<type>(<scope>): <subject>`,
+   imperative, lower-case, no trailing period — see `docs/GIT_WORKFLOW.md`).
+   No `Co-Authored-By` trailer (see "Credentials / commit note" at the
+   bottom).
+8. **Push and open a PR against `origin/main`** (not stacked on #41/#42 —
+   those are superseded). Reference the issue (`Closes #14` /
+   `Closes #16`). Fill in the repo's PR template: what changed, why, how it
+   was tested, and check off the Definition of Done items that apply.
+9. **Do not force-push over #41 / #42 or delete them without asking a
+   human first** — they're on shared branches another teammate may already
+   be looking at. Open fresh PRs instead and let a human close the old ones.
+10. **Update `docs/CONVENTIONS.md`**, step 8 in "Recommended next steps"
+    below — the sections describing `profile.portfolio_versions` /
+    `PortfolioContentSelection.content_type/content_id` are wrong and will
+    mislead the next person who reads them.
+
 ## TL;DR
 
 - Sprint 1–3 Dev 3 work is **merged into `main` and done**.
