@@ -106,7 +106,7 @@
   background: #fff;
   box-shadow: var(--foldo-shadow-md);
 }
-.foldo-sk__qr svg { display: block; width: 100%; height: auto; }
+.foldo-sk__qr svg { display: block; width: 100%; height: auto; shape-rendering: crispEdges; }
 
 .foldo-sk__empty {
   text-align: center;

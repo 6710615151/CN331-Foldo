@@ -33,9 +33,16 @@ def _qr(url: str):
 
 
 def qr_svg_inline(url: str, *, title: str) -> str:
-    """A ``<svg>`` element for embedding in the page (no extra request, scales to any size)."""
+    """
+    A ``<svg>`` element for embedding in the page (no extra request).
+
+    ``omitsize`` drops the fixed width/height so the SVG carries only a ``viewBox`` and
+    scales to whatever box CSS gives it. With a fixed size and no viewBox, a smaller
+    box would crop the code and make it unscannable.
+    """
     return _qr(url).svg_inline(
-        scale=8, border=2, dark=QR_DARK, light=QR_LIGHT, title=title, desc=f"QR code for {url}",
+        scale=1, border=2, dark=QR_DARK, light=QR_LIGHT, title=title, desc=f"QR code for {url}",
+        omitsize=True,
     )
 
 

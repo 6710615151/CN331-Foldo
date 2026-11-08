@@ -84,6 +84,13 @@ class PublishedTests(ShareKitTestCase):
         expected = services.qr_svg_inline(self.expected_url(self.live), title=f"QR code for {self.live.title}")
         self.assertIn(expected, html)
 
+    def test_inline_qr_scales_instead_of_being_cropped(self):
+        """Regression: a fixed width/height with no viewBox cut the code off in a smaller box."""
+        svg = services.qr_svg_inline(self.expected_url(self.live), title="t")
+        self.assertIn("viewBox=", svg)
+        self.assertNotRegex(svg, r'<svg[^>]*\swidth=')
+        self.assertNotRegex(svg, r'<svg[^>]*\sheight=')
+
     def test_png_download_is_a_png_for_the_public_url(self):
         response = self.qr(self.live)
         self.assertEqual(response["Content-Type"], "image/png")
