@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Choose content · {{ portfolio.title }}{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'portfolios/content_selection.css' %}">{% endblock %}
+
+{% block content %}
+<div class="foldo-cs container py-5" style="max-width: 760px;">
+  <a class="foldo-back" href="{% url 'portfolios:list' %}"><span aria-hidden="true">&larr;</span> My portfolios</a>
+
+  <header class="foldo-cs__header">
+    <p class="foldo-cs__eyebrow" lang="en">{{ portfolio.title }}</p>
+    <h1 class="foldo-cs__title">Choose <span class="foldo-text-lime">content</span></h1>
+    <div class="foldo-cs__bands" aria-hidden="true"><span></span><span></span></div>
+    <p class="foldo-cs__subtitle">
+      Only ticked items appear in this version. Unticking never deletes anything from your profile
+      and never changes your other versions.
+    </p>
+    {% if customised %}
+      <span class="foldo-cs__status foldo-cs__status--on">Custom selection</span>
+    {% else %}
+      <span class="foldo-cs__status">Showing everything (not customised yet)</span>
+    {% endif %}
+  </header>
+
+  {% if not has_content %}
+    <div class="foldo-cs__empty">
+      <p class="mb-3">Nothing to choose from yet. Add education, skills or experience to your profile first.</p>
+      <a class="btn btn-primary" href="{% url 'profiles:list' %}">Go to my profiles</a>
+    </div>
+  {% else %}
+  <form method="post" data-loading>
+    {% csrf_token %}
+    {% for section in sections %}
+      <fieldset class="foldo-cs__card card card-body{% if not section.items %} foldo-cs__card--empty{% endif %}" data-cs-section>
+        <div class="foldo-cs__card-head">
+          <div>
+            <legend class="foldo-cs__card-title">{{ section.title }}</legend>
+            {% if section.items %}<span class="foldo-cs__count" data-cs-count aria-live="polite">{{ section.items|length }}</span>{% endif %}
+          </div>
+          {% if section.items %}
+            <div class="foldo-cs__bulk" data-cs-bulk hidden>
+              <button type="button" data-cs-set="all">All</button>
+              <button type="button" data-cs-set="none">None</button>
+            </div>
+          {% endif %}
+        </div>
+
+        {% for item in section.items %}
+          <label class="foldo-cs__item" for="{{ section.key }}-{{ item.id }}">
+            <input type="checkbox" name="{{ section.key }}" value="{{ item.id }}"
+                   id="{{ section.key }}-{{ item.id }}" {% if item.checked %}checked{% endif %}>
+            <span>
+              <span class="foldo-cs__label">{{ item.label }}</span>
+              {% if item.detail %}<span class="foldo-cs__detail">{{ item.detail }}</span>{% endif %}
+            </span>
+          </label>
+        {% empty %}
+          <p class="foldo-cs__none">Nothing in this section yet.</p>
+        {% endfor %}
+      </fieldset>
+    {% endfor %}
+
+    <div class="foldo-cs__actions">
+      <button type="submit" class="btn btn-primary" data-loading-text="Saving…">Save selection</button>
+      <a class="btn btn-outline-secondary" href="{% url 'portfolios:preview' portfolio.pk %}">Preview</a>
+      {% if customised %}
+        <button type="submit" name="reset" value="1" class="btn btn-outline-danger ms-auto">Show everything again</button>
+      {% endif %}
+    </div>
+  </form>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% static 'portfolios/content_selection.js' %}" defer></script>{% endblock %}
