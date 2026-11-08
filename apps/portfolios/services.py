@@ -52,6 +52,7 @@ def build_portfolio_context(portfolio: Portfolio) -> dict:
         "display": build_display(owner, profile),
         "education": get_education_display(owner),
         "skills": list(profile.skills.all()) if profile else [],
+        "experiences": list(profile.experiences.all()) if profile else [],
     }
 
 

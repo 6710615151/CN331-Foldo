@@ -84,6 +84,7 @@
       </section>
     {% endif %}
 
+    {% include "portfolios/sections/_experience.html" with experiences=experiences %}
     {# Owned by other modules. They render nothing until those modules are implemented. #}
     {% include "education/_portfolio_section.html" with education=education %}
     {% include "portfolios/sections/_skills.html" with skills=skills %}
