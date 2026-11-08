@@ -101,6 +101,7 @@ def _preview_toolbar(portfolio: Portfolio, theme: PortfolioTheme) -> dict:
         ("แก้ไขเวอร์ชันและเทมเพลต", reverse("portfolios:update", args=[portfolio.pk])),
         ("Desktop / Mobile", reverse("portfolios:device_preview", args=[portfolio.pk])),
         ("ดาวน์โหลด PDF", reverse("portfolios:pdf", args=[portfolio.pk])),
+        ("ตรวจคุณภาพ", reverse("portfolios:quality", args=[portfolio.pk])),
     ]
     if portfolio.is_published:
         links.append(("หน้าสาธารณะ", portfolio.public_path))

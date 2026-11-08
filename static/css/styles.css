@@ -698,6 +698,19 @@ main:has(> .foldo-hero) {
   outline-offset: 2px;
 }
 
+/* --- Portfolio Quality Check (FOLDO-16) ------------------------------- */
+.foldo-quality__item {
+  border-left: 4px solid var(--bs-border-color);
+}
+
+.foldo-quality__item--error { border-left-color: var(--bs-danger); }
+.foldo-quality__item--warning { border-left-color: var(--bs-warning); }
+.foldo-quality__item--info { border-left-color: var(--bs-info); }
+
+.foldo-quality__summary.is-blocking {
+  border-color: var(--bs-danger);
+}
+
 /* --- Error pages (404 / 500) ------------------------------------------- */
 .foldo-state {
   max-width: 34rem;
@@ -786,3 +799,6 @@ main:has(> .foldo-hero) {
     scroll-behavior: auto !important;
   }
 }
+
+main a[href^="mailto:"],
+main a[href^="http"] { overflow-wrap: anywhere; }
