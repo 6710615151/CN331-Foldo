@@ -112,9 +112,18 @@ def source_sections(profile, providers=None) -> list[tuple[str, str, list[Source
 
 
 def portfolio_versions_for_profile(profile) -> list[VersionRef]:
-    """All Portfolio rows that resolve to this profile."""
+    """All Portfolio rows that resolve to this profile.
+
+    Batched on purpose: a fixed number of queries however many portfolios the
+    owner has (no N+1). The profile comes with select_related, the chosen items
+    with prefetch_related, and "is it customised?", the owner's default profile
+    and the profile's available items are each read once.
+    """
     try:
-        from apps.portfolios.services import get_portfolios, resolve_profile, selected_ids
+        from apps.portfolios.content_selection.sources import SECTION_KEYS
+        from apps.portfolios.models import PortfolioContentSetup
+        from apps.portfolios.services import get_portfolios
+        from apps.profiles.services import get_default_profile
     except ImportError:
         return []
 
@@ -123,16 +132,34 @@ def portfolio_versions_for_profile(profile) -> list[VersionRef]:
     except NoReverseMatch:
         fallback = reverse("core:dashboard")
 
+    owner = profile.owner
+    portfolios = list(get_portfolios(owner).select_related("profile").prefetch_related("content_selections"))
+    if not portfolios:
+        return []
+    customised = set(
+        PortfolioContentSetup.objects.filter(portfolio__in=portfolios).values_list("portfolio_id", flat=True)
+    )
+    default = get_default_profile(owner)
+    available = None  # this profile's item ids per section, read once if any version needs them
+
     versions = []
-    for portfolio in get_portfolios(profile.owner):
-        resolved = resolve_profile(portfolio)
+    for portfolio in portfolios:
+        chosen = portfolio.profile
+        # Same rule as portfolios.services.resolve_profile: a profile that isn't the owner's is never shown.
+        resolved = chosen if chosen is not None and chosen.owner_id == portfolio.owner_id else default
         if resolved is None or resolved.pk != profile.pk:
             continue
-        raw_selected = selected_ids(portfolio)
-        if raw_selected is None:
-            frozen_selected = None
+        if portfolio.pk in customised:
+            if available is None:
+                available = _available_ids(profile)
+            picked = {key: set() for key in SECTION_KEYS}
+            for row in portfolio.content_selections.all():
+                if row.section in picked:
+                    picked[row.section].add(row.item_id)
+            # Same rule as content_selection.selectors.get_selected_ids: deleted items drop out.
+            frozen_selected = {key: frozenset(picked[key] & available.get(key, set())) for key in SECTION_KEYS}
         else:
-            frozen_selected = {sec: frozenset(ids) for sec, ids in raw_selected.items()}
+            frozen_selected = None
         versions.append(
             VersionRef(
                 id=portfolio.pk,
@@ -143,6 +170,16 @@ def portfolio_versions_for_profile(profile) -> list[VersionRef]:
             )
         )
     return versions
+
+
+def _available_ids(profile) -> dict[str, set[int]]:
+    """Ids of every item on the profile, per content section (one query per section)."""
+    return {
+        "education": set(profile.educations.values_list("pk", flat=True)),
+        "skills": set(profile.skills.values_list("pk", flat=True)),
+        "experience": set(profile.experiences.values_list("pk", flat=True)),
+        "projects": set(profile.projects.values_list("pk", flat=True)),
+    }
 
 
 def portfolio_versions(profile) -> list[VersionRef]:
