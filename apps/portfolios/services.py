@@ -95,15 +95,10 @@ def theme_for(portfolio: Portfolio) -> PortfolioTheme:
 def selected_ids(portfolio: Portfolio):
     """``{section: {ids}}`` chosen for this version, or ``None`` = show everything.
 
-    The selection itself is owned by FOLDO-06 (``content_selection``). Until that
-    module is merged every version shows all of its profile's content.
+    The selection itself is owned by FOLDO-06 (``content_selection``).
     """
-    try:
-        from .content_selection.selectors import get_selected_ids  # local: avoids an import cycle
-    except ModuleNotFoundError as error:
-        if error.name != f"{__package__}.content_selection":
-            raise
-        return None
+    from .content_selection.selectors import get_selected_ids  # local: avoids an import cycle
+
     return get_selected_ids(portfolio)
 
 

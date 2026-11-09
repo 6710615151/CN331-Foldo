@@ -66,7 +66,5 @@ class ProjectForm(BootstrapFormMixin, forms.ModelForm):
         }
 
     def clean_project_name(self):
-        name = " ".join(self.cleaned_data["project_name"].split())
-        if not name:
-            raise forms.ValidationError("ต้องกรอกชื่อโปรเจกต์")
-        return name
+        # required=True + strip=True already reject blank input before this runs.
+        return " ".join(self.cleaned_data["project_name"].split())

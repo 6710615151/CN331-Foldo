@@ -119,18 +119,12 @@ def portfolio_versions_for_profile(profile) -> list[VersionRef]:
     with prefetch_related, and "is it customised?", the owner's default profile
     and the profile's available items are each read once.
     """
-    try:
-        from apps.portfolios.content_selection.sources import SECTION_KEYS
-        from apps.portfolios.models import PortfolioContentSetup
-        from apps.portfolios.services import get_portfolios
-        from apps.profiles.services import get_default_profile
-    except ImportError:
-        return []
+    from apps.portfolios.content_selection.sources import SECTION_KEYS
+    from apps.portfolios.models import PortfolioContentSetup
+    from apps.portfolios.services import get_portfolios
+    from apps.profiles.services import get_default_profile
 
-    try:
-        fallback = reverse("portfolios:list")
-    except NoReverseMatch:
-        fallback = reverse("core:dashboard")
+    fallback = reverse("portfolios:list")
 
     owner = profile.owner
     portfolios = list(get_portfolios(owner).select_related("profile").prefetch_related("content_selections"))

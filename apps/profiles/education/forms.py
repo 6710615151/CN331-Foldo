@@ -62,10 +62,8 @@ class EducationForm(BootstrapFormMixin, forms.ModelForm):
         self.profile = profile
 
     def clean_institution(self):
-        value = _squash(self.cleaned_data["institution"])
-        if not value:
-            raise forms.ValidationError("ต้องกรอกชื่อโรงเรียนหรือมหาวิทยาลัย")
-        return value
+        # required=True + strip=True already reject blank input before this runs.
+        return _squash(self.cleaned_data["institution"])
 
     def clean_degree(self):
         return _squash(self.cleaned_data["degree"])
