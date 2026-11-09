@@ -181,3 +181,54 @@ class PortfolioDnaViewTests(TestCase):
     def test_dashboard_links_to_dna(self):
         response = self.client.get(reverse("core:dashboard"))
         self.assertContains(response, self.url)
+
+
+class DnaQueryCountTests(TestCase):
+    """Portfolio DNA must not run queries per portfolio (N+1)."""
+
+    @classmethod
+    def setUpTestData(cls):
+        import datetime
+
+        cls.user = get_user_model().objects.create_user(username="nplus1", password=PASSWORD)
+        cls.profile = MainProfile.objects.create(owner=cls.user, full_name="N")
+        cls.skill = Skill.objects.create(profile=cls.profile, name="Python")
+        Education.objects.create(profile=cls.profile, institution="KU", start_date=datetime.date(2020, 1, 1))
+
+    def _add_portfolios(self, count):
+        from apps.portfolios.models import PortfolioContentSelection, PortfolioContentSetup
+
+        for i in range(count):
+            # Alternate: chosen profile / default profile, customised / not.
+            portfolio = Portfolio.objects.create(
+                owner=self.user, title=f"V{i}", profile=self.profile if i % 2 else None
+            )
+            if i % 2:
+                PortfolioContentSetup.objects.create(portfolio=portfolio)
+                PortfolioContentSelection.objects.create(portfolio=portfolio, section="skills", item_id=self.skill.pk)
+
+    def _queries(self):
+        from django.db import connection
+        from django.test.utils import CaptureQueriesContext
+
+        with CaptureQueriesContext(connection) as captured:
+            versions = portfolio_versions(self.profile)
+        return len(captured), versions
+
+    def test_query_count_does_not_grow_with_the_number_of_portfolios(self):
+        # Both cases include a customised portfolio, so only the count differs.
+        self._add_portfolios(2)
+        few, _ = self._queries()
+        self._add_portfolios(8)
+        many, versions = self._queries()
+        self.assertEqual(len(versions), 10)
+        self.assertEqual(few, many)
+        self.assertLessEqual(many, 8)
+
+    def test_batched_read_keeps_the_same_selections(self):
+        self._add_portfolios(2)
+        _, versions = self._queries()
+        by_name = {v.name: v for v in versions}
+        self.assertIsNone(by_name["V0"].selected)  # never customised: shows everything
+        self.assertEqual(by_name["V1"].selected["skills"], frozenset({self.skill.pk}))
+        self.assertEqual(by_name["V1"].selected["education"], frozenset())

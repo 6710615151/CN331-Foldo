@@ -214,3 +214,33 @@ class UpdateAccountServiceTests(TestCase):
         with CaptureQueriesContext(connection) as queries:
             services.update_account(user=user, data={"first_name": "", "last_name": "", "email": "dave@example.com"})
         self.assertFalse([q for q in queries if q["sql"].startswith("UPDATE")])
+
+
+class PasswordResetEmailTests(TestCase):
+    """The reset email is really sent, and the form never reveals who has an account."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = get_user_model().objects.create_user(
+            username="mailme", email="mailme@example.com", password="pw-Foldo-12345"
+        )
+
+    def test_known_email_gets_one_thai_email_with_a_working_link(self):
+        from django.core import mail
+
+        response = self.client.post(reverse("accounts:password_reset"), {"email": "mailme@example.com"})
+        self.assertRedirects(response, reverse("accounts:password_reset_done"))
+        self.assertEqual(len(mail.outbox), 1)
+        message = mail.outbox[0]
+        self.assertEqual(message.to, ["mailme@example.com"])
+        self.assertIn("รีเซ็ตรหัสผ่าน", message.subject)
+        link = next(line.strip() for line in message.body.splitlines() if "/accounts/reset/" in line)
+        page = self.client.get(link, follow=True)
+        self.assertContains(page, "ตั้งรหัสผ่านใหม่")
+
+    def test_unknown_email_looks_the_same_and_sends_nothing(self):
+        from django.core import mail
+
+        response = self.client.post(reverse("accounts:password_reset"), {"email": "nobody@example.com"})
+        self.assertRedirects(response, reverse("accounts:password_reset_done"))
+        self.assertEqual(len(mail.outbox), 0)
