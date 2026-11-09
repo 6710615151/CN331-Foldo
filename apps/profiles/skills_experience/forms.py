@@ -19,9 +19,8 @@ class SkillForm(BootstrapFormMixin, forms.ModelForm):
         self.profile = profile
 
     def clean_name(self):
+        # required=True + strip=True already reject blank input before this runs.
         name = " ".join(self.cleaned_data["name"].split())
-        if not name:
-            raise forms.ValidationError("ต้องกรอกชื่อทักษะ")
         clash = Skill.objects.filter(profile=self.profile, name__iexact=name).exclude(pk=self.instance.pk)
         if clash.exists():
             raise forms.ValidationError("มีทักษะนี้ในโปรไฟล์อยู่แล้ว แก้ระดับความชำนาญจากรายการเดิมได้")
@@ -54,16 +53,14 @@ class ExperienceForm(BootstrapFormMixin, forms.ModelForm):
         self.profile = profile
 
     def clean_company(self):
-        return self._required_text("company", "ต้องกรอกชื่อบริษัทหรือองค์กร")
+        return self._squash("company")
 
     def clean_job_title(self):
-        return self._required_text("job_title", "ต้องกรอกตำแหน่ง")
+        return self._squash("job_title")
 
-    def _required_text(self, field, message):
-        value = " ".join(self.cleaned_data[field].split())
-        if not value:
-            raise forms.ValidationError(message)
-        return value
+    def _squash(self, field):
+        # required=True + strip=True already reject blank input before this runs.
+        return " ".join(self.cleaned_data[field].split())
 
     def clean_description(self):
         return self.cleaned_data["description"].strip()
