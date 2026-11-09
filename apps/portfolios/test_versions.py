@@ -1,4 +1,5 @@
 """FOLDO-05: create, rename and delete portfolio versions; persistence, ownership and status."""
+
 from datetime import date
 from unittest import mock
 
@@ -42,8 +43,9 @@ class CreateVersionTests(VersionTestCase):
         self.create(title="Backend jobs", template_key="modern")
         self.create(title="Design jobs", template_key="creative")
         versions = Portfolio.objects.filter(owner=self.alice).order_by("title")
-        self.assertEqual([(v.title, v.template_key) for v in versions],
-                         [("Backend jobs", "modern"), ("Design jobs", "creative")])
+        self.assertEqual(
+            [(v.title, v.template_key) for v in versions], [("Backend jobs", "modern"), ("Design jobs", "creative")]
+        )
         self.assertNotEqual(versions[0].slug, versions[1].slug)
 
         response = self.client.get(reverse("portfolios:list"))
@@ -85,8 +87,10 @@ class CreateVersionTests(VersionTestCase):
         self.assertFalse(Portfolio.objects.exists())
 
     def test_database_error_keeps_the_input(self):
-        with mock.patch.object(Portfolio, "save", side_effect=DatabaseError("down")), \
-                self.assertLogs("apps.portfolios.views", level="ERROR"):
+        with (
+            mock.patch.object(Portfolio, "save", side_effect=DatabaseError("down")),
+            self.assertLogs("apps.portfolios.views", level="ERROR"),
+        ):
             response = self.create(title="Kept title")
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "ระบบขัดข้องชั่วคราว")
@@ -190,8 +194,10 @@ class DeleteVersionTests(VersionTestCase):
         self.assertNotContains(self.client.get(reverse("portfolios:list")), "Backend jobs")
 
     def test_database_error_keeps_the_version(self):
-        with mock.patch.object(Portfolio, "delete", side_effect=DatabaseError("down")), \
-                self.assertLogs("apps.portfolios.views", level="ERROR"):
+        with (
+            mock.patch.object(Portfolio, "delete", side_effect=DatabaseError("down")),
+            self.assertLogs("apps.portfolios.views", level="ERROR"),
+        ):
             response = self.client.post(self.url, follow=True)
         self.assertContains(response, "ลบพอร์ตโฟลิโอไม่สำเร็จ")
         self.assertTrue(Portfolio.objects.filter(pk=self.backend.pk).exists())
@@ -213,8 +219,10 @@ class OwnershipTests(VersionTestCase):
         self.backend = Portfolio.objects.create(owner=self.alice, title="Backend jobs")
 
     def owner_urls(self):
-        return [reverse(name, args=[self.backend.pk]) for name in
-                ("portfolios:update", "portfolios:delete", "portfolios:preview")]
+        return [
+            reverse(name, args=[self.backend.pk])
+            for name in ("portfolios:update", "portfolios:delete", "portfolios:preview")
+        ]
 
     def test_list_shows_only_my_versions(self):
         Portfolio.objects.create(owner=self.bob, title="Bob's secret version")
@@ -236,8 +244,10 @@ class OwnershipTests(VersionTestCase):
             with self.subTest(url=url):
                 self.assertEqual(self.client.get(url).status_code, 404)
         self.assertEqual(
-            self.client.post(reverse("portfolios:update", args=[self.backend.pk]), form_data(title="Hacked"))
-            .status_code, 404,
+            self.client.post(
+                reverse("portfolios:update", args=[self.backend.pk]), form_data(title="Hacked")
+            ).status_code,
+            404,
         )
         self.assertEqual(self.client.post(reverse("portfolios:delete", args=[self.backend.pk])).status_code, 404)
         self.backend.refresh_from_db()

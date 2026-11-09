@@ -40,19 +40,39 @@ def row(pk, **fields):
 
 SKILLS = [row(1, name="Python", proficiency="advanced"), row(2, name="Figma", proficiency="beginner")]
 EXPERIENCE = [
-    row(10, job_title="Backend Intern", company="Acme", description="Built APIs.",
-        start_date=date(2025, 6, 1), end_date=None),
+    row(
+        10,
+        job_title="Backend Intern",
+        company="Acme",
+        description="Built APIs.",
+        start_date=date(2025, 6, 1),
+        end_date=None,
+    ),
 ]
 EDUCATION = [
-    row(20, institution="Thammasat University", degree="B.Eng.", field_of_study="Computer Engineering",
-        start_date=date(2022, 8, 1), end_date=date(2026, 5, 1)),
+    row(
+        20,
+        institution="Thammasat University",
+        degree="B.Eng.",
+        field_of_study="Computer Engineering",
+        start_date=date(2022, 8, 1),
+        end_date=date(2026, 5, 1),
+    ),
 ]
-STORY = SimpleNamespace(problem="Students re-type CVs.", role="Team lead", process="", solution="One profile.",
-                        outcome="Saved hours.")
+STORY = SimpleNamespace(
+    problem="Students re-type CVs.", role="Team lead", process="", solution="One profile.", outcome="Saved hours."
+)
 PROJECTS = [
-    row(30, project_name="FOLDO", description="Portfolio builder.", project_url="https://example.com/foldo",
-        start_date=date(2026, 1, 1), end_date=None, story=STORY,
-        evidence=Rows(SimpleNamespace(caption="Demo video", evidence_type="video", file_url="https://example.com/v"))),
+    row(
+        30,
+        project_name="FOLDO",
+        description="Portfolio builder.",
+        project_url="https://example.com/foldo",
+        start_date=date(2026, 1, 1),
+        end_date=None,
+        story=STORY,
+        evidence=Rows(SimpleNamespace(caption="Demo video", evidence_type="video", file_url="https://example.com/v")),
+    ),
     row(31, project_name="Old project", description="", project_url="", start_date=None, end_date=None),
 ]
 
@@ -101,9 +121,7 @@ class AdapterTests(TestCase):
 
     def test_project_story_keeps_only_filled_fields_in_order(self):
         item = project_item(PROJECTS[0])
-        self.assertEqual(
-            [label for label, _ in item.story], ["Problem", "My role", "Solution", "Outcome"]
-        )
+        self.assertEqual([label for label, _ in item.story], ["Problem", "My role", "Solution", "Outcome"])
         self.assertEqual(item.evidence, (("Demo video", "https://example.com/v"),))
 
     def test_project_without_story_or_evidence_still_works(self):
@@ -118,23 +136,28 @@ class AdapterTests(TestCase):
 
     def test_story_fields_stored_on_the_project_itself(self):
         """FOLDO-15 keeps problem/role/... on Project; there is no separate story row."""
-        project = row(41, project_name="Inline", problem="P", role="", process="Q", solution="",
-                      outcome="O")
+        project = row(41, project_name="Inline", problem="P", role="", process="Q", solution="", outcome="O")
         self.assertEqual(project_item(project).story, (("Problem", "P"), ("Process", "Q"), ("Outcome", "O")))
 
     def test_education_grade_becomes_a_note(self):
-        item = education_item(row(50, institution="TU", degree="B.Eng.", grade="3.75",
-                                  start_date=date(2022, 8, 1), end_date=None))
-        self.assertEqual((item.title, item.subtitle, item.period, item.note),
-                         ("B.Eng.", "TU", "Aug 2022 – Present", "Grade: 3.75"))
+        item = education_item(
+            row(50, institution="TU", degree="B.Eng.", grade="3.75", start_date=date(2022, 8, 1), end_date=None)
+        )
+        self.assertEqual(
+            (item.title, item.subtitle, item.period, item.note), ("B.Eng.", "TU", "Aug 2022 – Present", "Grade: 3.75")
+        )
 
     def test_education_with_only_an_institution(self):
         item = education_item(row(51, institution="Some School"))
         self.assertEqual((item.title, item.subtitle, item.period, item.note), ("Some School", "", "", ""))
 
     def test_unsafe_links_are_dropped(self):
-        project = row(40, project_name="X", project_url="javascript:alert(1)",
-                      evidence=Rows(SimpleNamespace(caption="bad", file_url="data:text/html,hi")))
+        project = row(
+            40,
+            project_name="X",
+            project_url="javascript:alert(1)",
+            evidence=Rows(SimpleNamespace(caption="bad", file_url="data:text/html,hi")),
+        )
         item = project_item(project)
         self.assertEqual(item.url, "")
         self.assertEqual(item.evidence, ())
@@ -146,9 +169,7 @@ class BuildContentTests(TestCase):
         self.profile = MainProfile.objects.create(owner=self.user, full_name="Alice Example")
 
     def build(self, **kwargs):
-        kwargs.setdefault(
-            "providers", providers(SKILLS, EXPERIENCE, EDUCATION, PROJECTS)
-        )
+        kwargs.setdefault("providers", providers(SKILLS, EXPERIENCE, EDUCATION, PROJECTS))
         return build_portfolio_content(self.profile, **kwargs)
 
     def test_sections_in_display_order(self):
@@ -180,9 +201,16 @@ class RenderAcrossCombinationsTests(TestCase):
     def setUp(self):
         self.user = make_user("alice")
         self.full = MainProfile.objects.create(
-            owner=self.user, label="Full", full_name="Alice Example", headline="Backend developer",
-            bio="Line one\nLine two", location="Bangkok", contact_email="alice@example.com",
-            phone="+66 81 234 5678", website="https://alice.dev", github_url="https://github.com/alice",
+            owner=self.user,
+            label="Full",
+            full_name="Alice Example",
+            headline="Backend developer",
+            bio="Line one\nLine two",
+            location="Bangkok",
+            contact_email="alice@example.com",
+            phone="+66 81 234 5678",
+            website="https://alice.dev",
+            github_url="https://github.com/alice",
         )
         self.bare = MainProfile.objects.create(owner=self.user, label="Bare", full_name="Bare Bones")
 
@@ -203,9 +231,7 @@ class RenderAcrossCombinationsTests(TestCase):
                 self.assertIn(f"pf--{theme.key}", html)
                 for section in content.sections:
                     self.assertIn(f'id="pf-{section.key}"', html)
-                for missing in {"experience", "education", "projects", "skills"} - {
-                    s.key for s in content.sections
-                }:
+                for missing in {"experience", "education", "projects", "skills"} - {s.key for s in content.sections}:
                     self.assertNotIn(f'id="pf-{missing}"', html)
                 self.assertEqual("Team lead" in html, story and label in {"projects with story", "everything"})
 
@@ -274,6 +300,4 @@ class ViewTests(TestCase):
         for url in (reverse("rendering:gallery"), reverse("rendering:preview", args=["classic", self.profile.pk])):
             with self.subTest(url=url):
                 response = self.client.get(url)
-                self.assertRedirects(
-                    response, f"{reverse('accounts:login')}?next={url}", fetch_redirect_response=False
-                )
+                self.assertRedirects(response, f"{reverse('accounts:login')}?next={url}", fetch_redirect_response=False)

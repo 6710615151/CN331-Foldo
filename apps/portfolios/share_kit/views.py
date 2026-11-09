@@ -1,4 +1,5 @@
 """Presentation layer for the Share Kit (FOLDO-17). Owner only; read only."""
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404, HttpResponse
 from django.shortcuts import render

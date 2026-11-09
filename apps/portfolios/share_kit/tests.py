@@ -1,4 +1,5 @@
 """Tests for the Share Kit: copy link and QR code (FOLDO-17)."""
+
 import re
 
 import segno
@@ -88,14 +89,14 @@ class PublishedTests(ShareKitTestCase):
         """Regression: a fixed width/height with no viewBox cut the code off in a smaller box."""
         svg = services.qr_svg_inline(self.expected_url(self.live), title="t")
         self.assertIn("viewBox=", svg)
-        self.assertNotRegex(svg, r'<svg[^>]*\swidth=')
-        self.assertNotRegex(svg, r'<svg[^>]*\sheight=')
+        self.assertNotRegex(svg, r"<svg[^>]*\swidth=")
+        self.assertNotRegex(svg, r"<svg[^>]*\sheight=")
 
     def test_png_download_is_a_png_for_the_public_url(self):
         response = self.qr(self.live)
         self.assertEqual(response["Content-Type"], "image/png")
         self.assertTrue(response.content.startswith(PNG_MAGIC))
-        self.assertIn(f'{self.live.slug}-qr.png', response["Content-Disposition"])
+        self.assertIn(f"{self.live.slug}-qr.png", response["Content-Disposition"])
         self.assertIn("attachment", response["Content-Disposition"])
         self.assertEqual(response.content, services.qr_file(self.expected_url(self.live), "png"))
 

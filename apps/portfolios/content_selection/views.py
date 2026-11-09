@@ -1,4 +1,5 @@
 """Presentation layer for per-version content selection (FOLDO-06)."""
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
@@ -39,12 +40,16 @@ class ContentSelectionView(LoginRequiredMixin, View):
             }
             for key, title in SECTIONS
         ]
-        return render(request, TEMPLATE, {
-            "portfolio": self.portfolio,
-            "sections": sections,
-            "customised": selectors.is_customised(self.portfolio),
-            "has_content": any(section["items"] for section in sections),
-        })
+        return render(
+            request,
+            TEMPLATE,
+            {
+                "portfolio": self.portfolio,
+                "sections": sections,
+                "customised": selectors.is_customised(self.portfolio),
+                "has_content": any(section["items"] for section in sections),
+            },
+        )
 
     def get(self, request, pk):
         return self._render(request)

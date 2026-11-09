@@ -4,6 +4,7 @@ Share link / QR (FOLDO-17) -> PDF export (FOLDO-11) -> Portfolio DNA (FOLDO-14) 
 Part 1 (test_e2e.py) covers sign-up -> profile -> versions -> content selection -> preview -> publish.
 Still to add when FOLDO-09 lands: edits after publishing only reach the public page after a republish.
 """
+
 import contextlib
 import io
 import logging
@@ -22,6 +23,8 @@ from apps.profiles.models import MainProfile, Project
 User = get_user_model()
 
 PASSWORD = "Str0ng-pass!23"
+
+
 def _pdf_libraries_available():
     """True only if WeasyPrint *and* its system libraries (Pango) load. Quiet: WeasyPrint prints a banner on failure."""
     try:
@@ -47,7 +50,9 @@ class EndToEndPart2Tests(TestCase):
         cls.user = User.objects.create_user("jeff", password=PASSWORD)
         cls.profile = MainProfile.objects.create(owner=cls.user, full_name="Jeff Tester", is_default=True)
         cls.story = Project.objects.create(
-            profile=cls.profile, project_name="Resume Rocket", problem="Students retype the same profile",
+            profile=cls.profile,
+            project_name="Resume Rocket",
+            problem="Students retype the same profile",
         )
         cls.side = Project.objects.create(profile=cls.profile, project_name="Side project")
         cls.published = Portfolio.objects.create(owner=cls.user, title="Backend jobs", profile=cls.profile)
@@ -58,9 +63,15 @@ class EndToEndPart2Tests(TestCase):
         self.client.login(username="jeff", password=PASSWORD)
         # Choose content and publish through the real pages, as in part 1.
         self.client.post(reverse("portfolios:content", args=[self.published.pk]), {"projects": [self.story.pk]})
-        self.client.post(reverse("portfolios:update", args=[self.published.pk]), {
-            "title": "Backend jobs", "profile": self.profile.pk, "template_key": "classic", "is_published": "on",
-        })
+        self.client.post(
+            reverse("portfolios:update", args=[self.published.pk]),
+            {
+                "title": "Backend jobs",
+                "profile": self.profile.pk,
+                "template_key": "classic",
+                "is_published": "on",
+            },
+        )
         self.published.refresh_from_db()
         self.public_url = "http://testserver" + reverse("portfolios:public", args=[self.published.slug])
 
@@ -88,9 +99,14 @@ class EndToEndPart2Tests(TestCase):
         self.assertEqual(self.client.get(reverse("portfolios:share_qr_svg", args=[self.draft.pk])).status_code, 404)
 
         # Unpublishing takes the link and the QR away again.
-        self.client.post(reverse("portfolios:update", args=[self.published.pk]), {
-            "title": "Backend jobs", "profile": self.profile.pk, "template_key": "classic",
-        })
+        self.client.post(
+            reverse("portfolios:update", args=[self.published.pk]),
+            {
+                "title": "Backend jobs",
+                "profile": self.profile.pk,
+                "template_key": "classic",
+            },
+        )
         self.assertEqual(self.client.get(reverse("portfolios:share_qr_png", args=[self.published.pk])).status_code, 404)
         self.client.logout()
         self.assertEqual(self.client.get(self.public_url).status_code, 404)
@@ -135,7 +151,8 @@ class EndToEndPart2Tests(TestCase):
         self.profile.save()
         html = pdf_module.render_version_html(self.published, request=None, preview=False, toolbar=False)
         document = HTML(
-            string=html, base_url=pdf_module.BASE_URL,
+            string=html,
+            base_url=pdf_module.BASE_URL,
             url_fetcher=pdf_module._make_fetcher(default_url_fetcher),
         ).render(stylesheets=[CSS(string=pdf_module.PRINT_CSS)])
         self.assertGreater(len(document.pages), 1)

@@ -1,4 +1,5 @@
 """FOLDO-16: Quality Check of a portfolio version, against real models."""
+
 from datetime import date
 from unittest import mock
 
@@ -33,16 +34,26 @@ class QualityTestCase(TestCase):
         cls.alice = User.objects.create_user("alice", password=PASSWORD)
         cls.bob = User.objects.create_user("bob", password=PASSWORD)
         cls.profile = MainProfile.objects.create(
-            owner=cls.alice, full_name="Alice Doe", headline="Backend developer", is_default=True,
-            contact_email="alice@example.com", bio="I build web apps.", location="Bangkok",
+            owner=cls.alice,
+            full_name="Alice Doe",
+            headline="Backend developer",
+            is_default=True,
+            contact_email="alice@example.com",
+            bio="I build web apps.",
+            location="Bangkok",
         )
         cls.skill = Skill.objects.create(profile=cls.profile, name="Python")
         cls.job = Experience.objects.create(
             profile=cls.profile, company="Acme", job_title="Intern", start_date=date(2025, 6, 1)
         )
         cls.project = Project.objects.create(
-            profile=cls.profile, project_name="FOLDO", description="Portfolio builder.",
-            project_url="https://example.com", problem="Re-typing CVs.", role="Lead", outcome="Saved time.",
+            profile=cls.profile,
+            project_name="FOLDO",
+            description="Portfolio builder.",
+            project_url="https://example.com",
+            problem="Re-typing CVs.",
+            role="Lead",
+            outcome="Saved time.",
         )
 
     def setUp(self):
@@ -56,8 +67,9 @@ class QualityTestCase(TestCase):
         except ImportError:
             from apps.education.models import EducationEntry
 
-            return EducationEntry.objects.create(owner=self.alice, level="undergraduate", institution="TU",
-                                                 start_year=2022)
+            return EducationEntry.objects.create(
+                owner=self.alice, level="undergraduate", institution="TU", start_year=2022
+            )
         return Education.objects.create(profile=self.profile, institution="TU", start_date=date(2022, 8, 1))
 
 
@@ -157,8 +169,10 @@ class RulesTests(QualityTestCase):
         self.assertIn("เทมเพลตที่เลือกไว้ไม่มีแล้ว", titles(run_quality_check(self.portfolio), WARNING))
 
     def test_rendering_failure_is_an_error(self):
-        with mock.patch("apps.portfolios.quality.checks.render_version_html", side_effect=RuntimeError("boom")), \
-                self.assertLogs("apps.portfolios.quality.checks", level="ERROR"):
+        with (
+            mock.patch("apps.portfolios.quality.checks.render_version_html", side_effect=RuntimeError("boom")),
+            self.assertLogs("apps.portfolios.quality.checks", level="ERROR"),
+        ):
             report = run_quality_check(self.portfolio)
         self.assertIn("แสดงผลด้วยเทมเพลต Modern ไม่สำเร็จ", titles(report, ERROR))
 
@@ -195,9 +209,11 @@ class PageTests(QualityTestCase):
         with CaptureQueriesContext(connection) as queries:
             self.client.get(self.url())
             run_quality_check(self.portfolio)
-        writes = [q["sql"] for q in queries
-                  if q["sql"].lstrip().upper().startswith(("INSERT", "UPDATE", "DELETE"))
-                  and "django_session" not in q["sql"]]
+        writes = [
+            q["sql"]
+            for q in queries
+            if q["sql"].lstrip().upper().startswith(("INSERT", "UPDATE", "DELETE")) and "django_session" not in q["sql"]
+        ]
         self.assertEqual(writes, [])
         self.assertEqual(Portfolio.objects.values().get(pk=self.portfolio.pk), before)
         self.assertFalse(Portfolio.objects.get(pk=self.portfolio.pk).is_published)

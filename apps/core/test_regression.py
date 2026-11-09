@@ -4,6 +4,7 @@ For each template and for both a published and an unpublished version, every pag
 version has must still work, and the public side must follow the publish state.
 A new template or a change to publishing that breaks one combination fails here.
 """
+
 import contextlib
 import io
 import logging
@@ -19,6 +20,8 @@ from apps.rendering.themes import THEMES
 User = get_user_model()
 
 PASSWORD = "Str0ng-pass!23"
+
+
 def _pdf_libraries_available():
     """True only if WeasyPrint *and* its system libraries (Pango) load. Quiet: WeasyPrint prints a banner on failure."""
     try:
@@ -37,7 +40,10 @@ class TemplatePublishMatrixTests(TestCase):
     def setUpTestData(cls):
         cls.user = User.objects.create_user("jeff", password=PASSWORD)
         cls.profile = MainProfile.objects.create(
-            owner=cls.user, full_name="Jeff Tester", headline="CS student", is_default=True,
+            owner=cls.user,
+            full_name="Jeff Tester",
+            headline="CS student",
+            is_default=True,
         )
         Skill.objects.create(profile=cls.profile, name="Python", proficiency="advanced")
         Project.objects.create(profile=cls.profile, project_name="Resume Rocket", problem="Retyping profiles")
@@ -46,10 +52,15 @@ class TemplatePublishMatrixTests(TestCase):
         cls.versions = []
         for theme in THEMES:
             for published in (True, False):
-                cls.versions.append(Portfolio.objects.create(
-                    owner=cls.user, profile=cls.profile, template_key=theme.key, is_published=published,
-                    title=f"{theme.key} {'published' if published else 'draft'}",
-                ))
+                cls.versions.append(
+                    Portfolio.objects.create(
+                        owner=cls.user,
+                        profile=cls.profile,
+                        template_key=theme.key,
+                        is_published=published,
+                        title=f"{theme.key} {'published' if published else 'draft'}",
+                    )
+                )
 
     def setUp(self):
         logging.disable(logging.CRITICAL)  # WeasyPrint is very chatty

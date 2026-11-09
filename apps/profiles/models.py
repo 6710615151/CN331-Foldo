@@ -113,9 +113,7 @@ class MainProfile(models.Model):
     def missing_fields(self):
         """Human labels of portfolio-required fields that are still empty."""
         return [
-            label
-            for name, label in self.REQUIRED_FOR_PORTFOLIO.items()
-            if not (getattr(self, name, "") or "").strip()
+            label for name, label in self.REQUIRED_FOR_PORTFOLIO.items() if not (getattr(self, name, "") or "").strip()
         ]
 
     @property
@@ -224,9 +222,7 @@ class Skill(models.Model):
 
     profile = models.ForeignKey(MainProfile, on_delete=models.CASCADE, related_name="skills")
     name = models.CharField(max_length=MAX_SHORT_NAME)
-    proficiency = models.CharField(
-        max_length=20, choices=Proficiency.choices, default=Proficiency.INTERMEDIATE
-    )
+    proficiency = models.CharField(max_length=20, choices=Proficiency.choices, default=Proficiency.INTERMEDIATE)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -234,9 +230,7 @@ class Skill(models.Model):
     class Meta:
         ordering = [Lower("name")]
         constraints = [
-            models.UniqueConstraint(
-                Lower("name"), "profile", name="uniq_skill_name_per_profile"
-            ),
+            models.UniqueConstraint(Lower("name"), "profile", name="uniq_skill_name_per_profile"),
         ]
 
     def __str__(self):
@@ -274,6 +268,7 @@ class Experience(models.Model):
 
     def __str__(self):
         return f"{self.job_title} at {self.company}"
+
 
 class Project(models.Model):
     """One project on a main profile (FOLDO-04) with an optional Project Story (FOLDO-15).

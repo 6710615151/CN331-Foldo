@@ -38,9 +38,7 @@ class EmailSelectorTests(TestCase):
     def test_email_is_taken_ignores_case_and_can_exclude_self(self):
         from .selectors import email_is_taken
 
-        user = get_user_model().objects.create_user(
-            username="a", email="a@example.com", password="s3cret-pass"
-        )
+        user = get_user_model().objects.create_user(username="a", email="a@example.com", password="s3cret-pass")
         self.assertTrue(email_is_taken("A@Example.com"))
         self.assertFalse(email_is_taken("a@example.com", exclude_pk=user.pk))
         self.assertFalse(email_is_taken("b@example.com"))
@@ -51,8 +49,12 @@ class CreationFormTests(TestCase):
         from .forms import CustomUserCreationForm
 
         return CustomUserCreationForm(
-            data={"username": "new", "email": email,
-                  "password1": "Long-enough-pass-42", "password2": "Long-enough-pass-42"}
+            data={
+                "username": "new",
+                "email": email,
+                "password1": "Long-enough-pass-42",
+                "password2": "Long-enough-pass-42",
+            }
         )
 
     def test_email_is_normalised(self):
@@ -61,9 +63,7 @@ class CreationFormTests(TestCase):
         self.assertEqual(form.cleaned_data["email"], "new.user@example.com")
 
     def test_duplicate_email_is_rejected(self):
-        get_user_model().objects.create_user(
-            username="taken", email="taken@example.com", password="s3cret-pass"
-        )
+        get_user_model().objects.create_user(username="taken", email="taken@example.com", password="s3cret-pass")
         form = self._form("TAKEN@example.com")
         self.assertFalse(form.is_valid())
         self.assertIn("email", form.errors)
@@ -73,12 +73,18 @@ class AccountSettingsViewTests(TestCase):
     def setUp(self):
         User = get_user_model()
         self.alice = User.objects.create_user(
-            username="alice", email="alice@example.com", password="s3cret-pass",
-            first_name="Alice", last_name="Anderson",
+            username="alice",
+            email="alice@example.com",
+            password="s3cret-pass",
+            first_name="Alice",
+            last_name="Anderson",
         )
         self.bob = User.objects.create_user(
-            username="bob", email="bob@example.com", password="s3cret-pass",
-            first_name="Bobby", last_name="Brown",
+            username="bob",
+            email="bob@example.com",
+            password="s3cret-pass",
+            first_name="Bobby",
+            last_name="Brown",
         )
         self.url = reverse("accounts:settings")
         self.client.force_login(self.alice)
@@ -97,9 +103,7 @@ class AccountSettingsViewTests(TestCase):
         self.client.logout()
         response = self.client.get(self.url)
         expected_url = f"{resolve_url(settings.LOGIN_URL)}?next={self.url}"
-        self.assertRedirects(
-            response, expected_url, fetch_redirect_response=False
-        )
+        self.assertRedirects(response, expected_url, fetch_redirect_response=False)
 
     def test_anonymous_post_redirects_and_changes_nothing(self):
         self.client.logout()
@@ -107,7 +111,6 @@ class AccountSettingsViewTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertTrue(response["Location"].startswith(resolve_url(settings.LOGIN_URL)))
         self._assert_alice_unchanged()
-
 
     def test_get_shows_own_account(self):
         response = self.client.get(self.url)
@@ -189,8 +192,11 @@ class AccountSettingsViewTests(TestCase):
 class UpdateAccountServiceTests(TestCase):
     def test_saves_only_changed_fields(self):
         user = get_user_model().objects.create_user(
-            username="carol", email="carol@example.com", password="s3cret-pass",
-            first_name="Carol", last_name="Clark",
+            username="carol",
+            email="carol@example.com",
+            password="s3cret-pass",
+            first_name="Carol",
+            last_name="Clark",
         )
         data = {"first_name": "Carol", "last_name": "Clarke", "email": "carol@example.com"}
         with CaptureQueriesContext(connection) as queries:
@@ -204,11 +210,7 @@ class UpdateAccountServiceTests(TestCase):
         self.assertEqual(user.last_name, "Clarke")
 
     def test_no_changes_issues_no_update(self):
-        user = get_user_model().objects.create_user(
-            username="dave", email="dave@example.com", password="s3cret-pass"
-        )
+        user = get_user_model().objects.create_user(username="dave", email="dave@example.com", password="s3cret-pass")
         with CaptureQueriesContext(connection) as queries:
-            services.update_account(
-                user=user, data={"first_name": "", "last_name": "", "email": "dave@example.com"}
-            )
+            services.update_account(user=user, data={"first_name": "", "last_name": "", "email": "dave@example.com"})
         self.assertFalse([q for q in queries if q["sql"].startswith("UPDATE")])

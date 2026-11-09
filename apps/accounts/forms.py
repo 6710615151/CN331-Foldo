@@ -26,6 +26,7 @@ from .selectors import email_is_taken
 
 # replace usual User from from django.contrib.auth.models import User to CustomUser
 from django.contrib.auth import get_user_model
+
 User = get_user_model()
 
 
@@ -98,9 +99,7 @@ class ThaiPasswordMixin:
         try:
             password_validation.validate_password(password, user)
         except ValidationError as error:
-            messages = [
-                _PASSWORD_ERRORS.get(item.code, item.messages[0]) for item in error.error_list
-            ]
+            messages = [_PASSWORD_ERRORS.get(item.code, item.messages[0]) for item in error.error_list]
             self.add_error(password_field_name, list(dict.fromkeys(messages)))
 
 

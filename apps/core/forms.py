@@ -10,7 +10,6 @@ The shared shell has no forms; domain forms live in each app's ``forms.py``.
 
 from django import forms  # noqa: E402
 
-
 THAI_ERRORS = {
     "required": "ต้องกรอกช่องนี้",
     "max_length": "ยาวเกิน %(limit_value)d ตัวอักษร (ตอนนี้ %(show_value)d)",
@@ -32,8 +31,11 @@ THAI_INVALID = (
 
 
 def _thai_errors_for(field) -> dict:
-    messages = {code: text for code, text in THAI_ERRORS.items() if code in field.error_messages
-                or code in ("max_length", "min_length", "invalid_extension")}
+    messages = {
+        code: text
+        for code, text in THAI_ERRORS.items()
+        if code in field.error_messages or code in ("max_length", "min_length", "invalid_extension")
+    }
     for kind, text in THAI_INVALID:
         if isinstance(field, kind):
             messages["invalid"] = text

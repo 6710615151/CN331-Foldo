@@ -94,7 +94,6 @@ def _url(name: str, pk: int, fallback: str) -> str:
 def source_sections(profile, providers=None) -> list[tuple[str, str, list[SourceItem]]]:
     """Return [(key, title, [SourceItem])] for every section on the profile."""
     providers = providers or default_providers()
-    fallback = reverse("profiles:view", args=[profile.pk])
     sections = []
     for key, title, _, adapter in SECTION_SPECS:
         items = []
@@ -133,9 +132,7 @@ def portfolio_versions_for_profile(profile) -> list[VersionRef]:
         if raw_selected is None:
             frozen_selected = None
         else:
-            frozen_selected = {
-                sec: frozenset(ids) for sec, ids in raw_selected.items()
-            }
+            frozen_selected = {sec: frozenset(ids) for sec, ids in raw_selected.items()}
         versions.append(
             VersionRef(
                 id=portfolio.pk,
@@ -151,4 +148,3 @@ def portfolio_versions_for_profile(profile) -> list[VersionRef]:
 def portfolio_versions(profile) -> list[VersionRef]:
     """Alias for portfolio_versions_for_profile."""
     return portfolio_versions_for_profile(profile)
-

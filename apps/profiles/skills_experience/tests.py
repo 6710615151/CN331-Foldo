@@ -263,9 +263,7 @@ class EmptyStateAndPersistenceTests(SkillsExperienceTestCase):
         add_skill = reverse("profiles:skill_add", args=[self.alice_profile.pk])
         add_exp = reverse("profiles:experience_add", args=[self.alice_profile.pk])
         self.client.post(add_skill, {"name": "Docker", "proficiency": "intermediate"})
-        self.client.post(
-            add_exp, {"company": "Initech", "job_title": "Analyst", "start_date": "2024-01-01"}
-        )
+        self.client.post(add_exp, {"company": "Initech", "job_title": "Analyst", "start_date": "2024-01-01"})
         overview = reverse("profiles:skills_experience", args=[self.alice_profile.pk])
         self.assertContains(self.client.get(overview), "Docker")  # refresh
 
