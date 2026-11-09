@@ -1,0 +1,51 @@
+{% comment %}
+  The portfolio builder as one visible flow (shown on every page of a version):
+    1 ตั้งค่าและดีไซน์ → 2 เลือกเนื้อหา → 3 ดูตัวอย่าง → 4 ตรวจคุณภาพ → 5 เผยแพร่และแชร์
+  Every step stays clickable (no forced order); "current" is where the user is.
+  Params: portfolio (None on the create page), current (setup|content|preview|quality|share).
+  State shown is cheap and real: content customised or not, published or not.
+{% endcomment %}
+<nav class="foldo-flow" aria-label="ขั้นตอนสร้างพอร์ตโฟลิโอ">
+  <ol class="foldo-flow__list">
+    {% if portfolio %}
+      <li class="foldo-flow__step tone-magenta{% if current == 'setup' %} is-current{% endif %}">
+        <a href="{% url 'portfolios:update' portfolio.pk %}"{% if current == 'setup' %} aria-current="step"{% endif %}>
+          <span class="foldo-flow__num">1</span>
+          <span class="foldo-flow__text"><strong>ตั้งค่าและดีไซน์</strong><small>ชื่อ · โปรไฟล์ · เทมเพลต</small></span>
+        </a>
+      </li>
+      <li class="foldo-flow__step tone-blue{% if current == 'content' %} is-current{% endif %}">
+        <a href="{% url 'portfolios:content' portfolio.pk %}"{% if current == 'content' %} aria-current="step"{% endif %}>
+          <span class="foldo-flow__num">2</span>
+          <span class="foldo-flow__text"><strong>เลือกเนื้อหา</strong><small>{% if portfolio.content_setup %}เลือกเองแล้ว{% else %}แสดงทุกอย่าง{% endif %}</small></span>
+        </a>
+      </li>
+      <li class="foldo-flow__step tone-lime{% if current == 'preview' %} is-current{% endif %}">
+        <a href="{% url 'portfolios:device_preview' portfolio.pk %}"{% if current == 'preview' %} aria-current="step"{% endif %}>
+          <span class="foldo-flow__num">3</span>
+          <span class="foldo-flow__text"><strong>ดูตัวอย่าง</strong><small>ทุกขนาดจอ · PDF</small></span>
+        </a>
+      </li>
+      <li class="foldo-flow__step tone-purple{% if current == 'quality' %} is-current{% endif %}">
+        <a href="{% url 'portfolios:quality' portfolio.pk %}"{% if current == 'quality' %} aria-current="step"{% endif %}>
+          <span class="foldo-flow__num">4</span>
+          <span class="foldo-flow__text"><strong>ตรวจคุณภาพ</strong><small>เช็กก่อนส่ง</small></span>
+        </a>
+      </li>
+      <li class="foldo-flow__step tone-lime{% if current == 'share' %} is-current{% endif %}{% if portfolio.is_published %} is-done{% endif %}">
+        <a href="{% url 'portfolios:share' portfolio.pk %}"{% if current == 'share' %} aria-current="step"{% endif %}>
+          <span class="foldo-flow__num">{% if portfolio.is_published %}&check;{% else %}5{% endif %}</span>
+          <span class="foldo-flow__text"><strong>เผยแพร่และแชร์</strong><small>{% if portfolio.is_published %}เผยแพร่แล้ว{% else %}ยังเป็นฉบับร่าง{% endif %}</small></span>
+        </a>
+      </li>
+    {% else %}
+      <li class="foldo-flow__step tone-magenta is-current">
+        <span aria-current="step"><span class="foldo-flow__num">1</span><span class="foldo-flow__text"><strong>ตั้งค่าและดีไซน์</strong><small>ชื่อ · โปรไฟล์ · เทมเพลต</small></span></span>
+      </li>
+      <li class="foldo-flow__step is-locked"><span><span class="foldo-flow__num">2</span><span class="foldo-flow__text"><strong>เลือกเนื้อหา</strong><small>หลังบันทึก</small></span></span></li>
+      <li class="foldo-flow__step is-locked"><span><span class="foldo-flow__num">3</span><span class="foldo-flow__text"><strong>ดูตัวอย่าง</strong><small>หลังบันทึก</small></span></span></li>
+      <li class="foldo-flow__step is-locked"><span><span class="foldo-flow__num">4</span><span class="foldo-flow__text"><strong>ตรวจคุณภาพ</strong><small>หลังบันทึก</small></span></span></li>
+      <li class="foldo-flow__step is-locked"><span><span class="foldo-flow__num">5</span><span class="foldo-flow__text"><strong>เผยแพร่และแชร์</strong><small>หลังบันทึก</small></span></span></li>
+    {% endif %}
+  </ol>
+</nav>

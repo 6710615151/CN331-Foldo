@@ -1,25 +1,29 @@
-<!doctype html>
+{% load static %}<!doctype html>
 {% comment %}
   FOLDO-08: shown inside the device preview when the portfolio template fails to render.
-  Standalone (no navbar) because it lives in an iframe. Nothing has been changed or lost.
+  Standalone (no app shell) because it lives in an iframe. Nothing has been changed or lost.
 {% endcomment %}
-<html lang="en">
+<html lang="th">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex">
-  <title>Preview unavailable – FOLDO</title>
+  <title>แสดงตัวอย่างไม่ได้ — FOLDO</title>
+  {% include "partials/head_icons.html" %}
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Noto+Sans+Thai:wght@400;600&family=Prompt:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <link rel="stylesheet" href="{% static 'css/icons.css' %}">
 </head>
-<body class="bg-body-tertiary">
-  <main class="container py-5 text-center" style="max-width: 520px;">
-    <div class="alert alert-warning" role="alert">
-      <h1 class="h5">We couldn't show this preview</h1>
-      <p class="mb-0">Something went wrong while building the page. Your saved content is safe and nothing was published.</p>
-    </div>
-    <div class="d-flex flex-wrap justify-content-center gap-2">
-      <a class="btn btn-primary" href="{% url 'portfolios:preview_frame' portfolio.pk %}">Try again</a>
-      <a class="btn btn-outline-secondary" href="{% url 'portfolios:update' portfolio.pk %}" target="_top">Change template</a>
+<body class="foldo-frame-error">
+  <main class="foldo-empty mx-auto my-5" style="max-width: 520px;">
+    <div class="foldo-empty__art">{% include "partials/geo_art.html" with variant="error" %}</div>
+    <h1 class="foldo-empty__title h4">แสดงตัวอย่างนี้ไม่ได้</h1>
+    <p class="foldo-empty__message" lang="en">We couldn't show this preview.</p>
+    <p class="foldo-empty__message">เกิดปัญหาระหว่างสร้างหน้า ข้อมูลที่บันทึกไว้ยังอยู่ครบ และไม่มีอะไรถูกเผยแพร่</p>
+    <div class="d-flex flex-wrap justify-content-center gap-2 mt-3">
+      <a class="btn btn-lime" href="{% url 'portfolios:preview_frame' portfolio.pk %}">ลองอีกครั้ง</a>
+      <a class="btn btn-outline-foldo" href="{% url 'portfolios:update' portfolio.pk %}" target="_top">เปลี่ยนเทมเพลต</a>
     </div>
   </main>
 </body>

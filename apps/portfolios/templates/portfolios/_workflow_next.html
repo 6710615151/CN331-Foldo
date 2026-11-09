@@ -1,0 +1,15 @@
+{% comment %}
+  "What now?" card at the end of a builder step. Params:
+    url, label  — the next step;  hint — one line on why;  tone (optional).
+    secondary_url, secondary_label (optional) — an alternative action.
+{% endcomment %}
+<section class="foldo-next tone-{{ tone|default:'lime' }}" aria-label="ขั้นตอนถัดไป">
+  <div class="min-w-0">
+    <p class="foldo-next__eyebrow">ขั้นตอนถัดไป</p>
+    <p class="foldo-next__hint">{{ hint }}</p>
+  </div>
+  <div class="foldo-next__actions">
+    {% if secondary_url %}<a class="btn btn-outline-foldo" href="{{ secondary_url }}">{{ secondary_label }}</a>{% endif %}
+    <a class="btn btn-lime" href="{{ url }}">{{ label }}<span class="foldo-arrow" aria-hidden="true">&rarr;</span></a>
+  </div>
+</section>

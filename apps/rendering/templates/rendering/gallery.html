@@ -1,39 +1,58 @@
 {% extends "base.html" %}
+{% load foldo_tags %}
 {% block html_lang %}th{% endblock %}
 {% block title %}เทมเพลตพอร์ตโฟลิโอ — FOLDO{% endblock %}
 {% block content %}
-<section class="foldo-section" aria-labelledby="themes-heading">
-  <div class="container">
-    <header class="mb-4">
-      <p class="foldo-eyebrow" lang="en">Portfolio templates</p>
-      <h1 id="themes-heading" class="foldo-section__title">เลือกหน้าตาพอร์ตโฟลิโอ</h1>
-      <p class="foldo-section__subtitle mb-0">
-        ทุกเทมเพลตใช้ข้อมูลจากโปรไฟล์หลักชุดเดียวกัน ลองดูว่าโปรไฟล์ของคุณออกมาเป็นแบบไหน
-      </p>
-    </header>
+<div class="foldo-page">
+  <section class="foldo-tpl-hero" aria-labelledby="themes-heading">
+    <div class="foldo-shapes" aria-hidden="true">
+      <span class="foldo-shape foldo-shape--tri" style="--s:6rem; right:6%; top:-1.25rem; transform:rotate(18deg)"></span>
+      <span class="foldo-shape foldo-shape--diamond" style="--s:3rem; right:24%; bottom:1.5rem"></span>
+      <span class="foldo-shape foldo-shape--ring" style="--s:12rem; --c1:#c4f500; right:-4rem; bottom:-6rem"></span>
+      <span class="foldo-shape foldo-shape--dot" style="--s:1.5rem; right:38%; top:1.5rem; --c1:#ff6a2b; --c2:#a33a0c"></span>
+    </div>
+    <p class="foldo-eyebrow tone-lime" lang="en">Portfolio templates</p>
+    <h1 id="themes-heading" class="foldo-tpl-hero__title">เลือกหน้าตา<br><span>พอร์ตโฟลิโอ</span></h1>
+    <p class="foldo-tpl-hero__lead">ทุกเทมเพลตใช้ข้อมูลจากโปรไฟล์หลักชุดเดียวกัน กด “ดูตัวอย่าง” เพื่อดูโปรไฟล์ของคุณในเทมเพลตนั้น (สลับเทียบเทมเพลตได้จากแถบด้านบน) แล้วเปลี่ยนได้ทุกเมื่อ ไม่กระทบเวอร์ชันอื่น</p>
+    <div class="foldo-chip-row" data-filter-group="themes" role="group" aria-label="กรองตามหมวด" hidden>
+      <button type="button" class="foldo-chip" data-filter="all" aria-pressed="true">ทั้งหมด</button>
+      {% for theme in themes %}<button type="button" class="foldo-chip" data-filter="{{ theme.category|lower }}" aria-pressed="false">{{ theme.category }}</button>{% endfor %}
+    </div>
+  </section>
 
-    {% if not profile %}
-      {% url "profiles:create" as create_url %}
-      {% include "partials/empty_state.html" with message="สร้างโปรไฟล์หลักก่อน แล้วจึงดูตัวอย่างเทมเพลตได้" action_url=create_url action_label="สร้างโปรไฟล์หลัก" %}
-    {% endif %}
+  {% if not profile %}
+    {% url "profiles:create" as create_url %}
+    <div class="mb-4">
+      {% include "partials/empty_state.html" with title="ยังดูตัวอย่างกับข้อมูลจริงไม่ได้" message="สร้างโปรไฟล์หลักก่อน แล้วจึงดูตัวอย่างเทมเพลตได้" action_url=create_url action_label="สร้างโปรไฟล์หลัก" %}
+    </div>
+  {% endif %}
 
-    <div class="row g-4">
-      {% for theme in themes %}
-        <div class="col-12 col-md-4">
-          <article class="foldo-card h-100 d-flex flex-column foldo-theme foldo-theme--{{ theme.key }}">
-            <div class="foldo-theme__swatch" aria-hidden="true"><span></span><span></span><span></span></div>
-            <p class="foldo-eyebrow mb-1">{{ theme.category }}</p>
-            <h2 class="h5">{{ theme.name }}</h2>
-            <p class="foldo-section__subtitle flex-grow-1">{{ theme.description }}</p>
+  <ul class="foldo-tpl-grid">
+    {% for theme in themes %}
+      <li class="foldo-tpl {% cycle 'tone-blue' 'tone-purple' 'tone-pink' %}" data-filter-item="themes" data-filter-tags="{{ theme.category|lower }}">
+        <div class="foldo-tpl__preview">
+          {% include "partials/theme_thumb.html" with key=theme.key %}
+          <span class="foldo-badge foldo-badge--solid foldo-tpl__cat">{{ theme.category }}</span>
+        </div>
+        <div class="foldo-tpl__body">
+          <h2 class="foldo-tpl__name">{{ theme.name }}</h2>
+          <p class="foldo-tpl__desc">{{ theme.description }}</p>
+          {% with used=theme_usage|lookup:theme.key %}
+            {% if used %}<p class="foldo-tpl__used"><span class="foldo-badge tone-lime">{% include "partials/icon.html" with name="check" %}ใช้อยู่ใน {{ used }} เวอร์ชัน</span></p>{% endif %}
+          {% endwith %}
+          <div class="foldo-tpl__actions">
             {% if profile %}
               <a class="btn btn-foldo" href="{% url 'rendering:preview' theme.key profile.pk %}">
-                ดูตัวอย่างกับโปรไฟล์ของฉัน<span class="visually-hidden"> ({{ theme.name }})</span>
+                {% include "partials/icon.html" with name="eye" %}ดูตัวอย่าง<span class="visually-hidden">กับโปรไฟล์ของฉัน ({{ theme.name }})</span>
               </a>
             {% endif %}
-          </article>
+            <a class="btn btn-lime" href="{% url 'portfolios:create' %}?template={{ theme.key }}">
+              ใช้เทมเพลตนี้<span class="visually-hidden"> ({{ theme.name }})</span>
+            </a>
+          </div>
         </div>
-      {% endfor %}
-    </div>
-  </div>
-</section>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
 {% endblock %}

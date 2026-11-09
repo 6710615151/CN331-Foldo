@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <style>
+    .float-a, .float-b, .float-c, .spin-slow { transform-box: fill-box; transform-origin: center; }
+    .float-a { animation: f 7s ease-in-out infinite; }
+    .float-b { animation: f 9s ease-in-out -3s infinite; }
+    .float-c { animation: f 8s ease-in-out -5s infinite reverse; }
+    .spin-slow { animation: s 30s linear infinite; }
+    @keyframes f { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-8px) rotate(3deg); } }
+    @keyframes s { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  </style>
+  <defs>
+    <radialGradient id="ge-glow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ff7ac0" stop-opacity=".35"/><stop offset="1" stop-color="#702eff" stop-opacity="0"/></radialGradient>
+    <radialGradient id="ge-ball" cx="35%" cy="30%" r="70%"><stop offset="0" stop-color="#eaffb0"/><stop offset=".45" stop-color="#c4f500"/><stop offset="1" stop-color="#6c8a00"/></radialGradient>
+  </defs>
+  <circle cx="200" cy="150" r="150" fill="url(#ge-glow)"/>
+  <!-- wireframe cube -->
+  <g class="float-c" fill="none" stroke="#3d78ff" stroke-width="2.5" stroke-linejoin="round" opacity=".9">
+    <path d="M300 60l50 26-50 26-50-26Z"/><path d="M250 86v58l50 26 50-26V86"/><path d="M300 112v58"/>
+  </g>
+  <!-- broken card: two halves drifting apart -->
+  <g class="float-a" transform="rotate(-10 150 150)">
+    <path d="M86 70h76l-14 40 18 30-12 60H86a14 14 0 0 1-14-14V84a14 14 0 0 1 14-14Z" fill="#145bff"/>
+    <rect x="88" y="92" width="44" height="8" rx="4" fill="#fff"/><rect x="88" y="108" width="56" height="6" rx="3" fill="#8fb0ff"/>
+    <circle cx="104" cy="160" r="14" fill="#c4f500"/>
+  </g>
+  <g class="float-b" transform="rotate(8 230 150)">
+    <path d="M186 74h52a14 14 0 0 1 14 14v112a14 14 0 0 1-14 14h-68l12-60-18-30Z" fill="#702eff"/>
+    <rect x="196" y="98" width="42" height="6" rx="3" fill="#fff"/><rect x="196" y="112" width="30" height="6" rx="3" fill="#b99bff"/>
+    <rect x="196" y="164" width="44" height="30" rx="6" fill="#ff3d9a"/>
+  </g>
+  <g class="float-c"><path d="M60 20 34 66 56 76Z" fill="#ff3d9a"/><path d="M60 20 56 76 88 62Z" fill="#ec20b8"/></g>
+  <circle class="float-a" cx="340" cy="240" r="20" fill="url(#ge-ball)"/>
+  <path class="float-b" d="M40 240l24 6-15 17Z" fill="#ff6a2b"/>
+  <path d="M190 30l3 8 8 3-8 3-3 8-3-8-8-3 8-3Z" fill="#c4f500"/>
+</svg>

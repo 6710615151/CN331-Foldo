@@ -1,0 +1,7 @@
+{% load static %}{% comment %}
+  FOLDO 3D-geometric illustration (static SVG in static/images/geo/). Decorative.
+    {% include "partials/geo_art.html" with variant="dashboard" %}
+  Variants: dashboard (portfolio cards + solids), auth (3D logo blocks),
+  error (broken card + wire cube), empty (small dashed card, the default).
+  Param: class (extra classes on the <img>).
+{% endcomment %}{% firstof variant "empty" as art %}{% with file="images/geo/"|add:art|add:".svg" %}<img class="foldo-geo {{ class|default:'' }}" src="{% static file %}" alt="" decoding="async">{% endwith %}

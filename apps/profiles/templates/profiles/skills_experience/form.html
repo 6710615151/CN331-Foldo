@@ -1,20 +1,31 @@
 {% extends "base.html" %}
-{% load static %}
-{% block title %}{{ heading }}{% endblock %}
-{% block extra_css %}<link rel="stylesheet" href="{% static 'profiles/skills_experience.css' %}">{% endblock %}
+{% block title %}{{ heading }} — FOLDO{% endblock %}
 {% block content %}
-<div class="foldo-se container py-5" style="max-width: 640px;">
-  <a class="foldo-back" href="{{ cancel_url }}"><span aria-hidden="true">&larr;</span> Skills &amp; experience</a>
-  <h1 class="foldo-se__title mt-3 mb-1">{{ heading }}</h1>
-  <div class="foldo-se__bands" aria-hidden="true"><span></span><span></span></div>
+<div class="foldo-page foldo-page--narrow">
+  <a class="foldo-back" href="{{ cancel_url }}">{% include "partials/icon.html" with name="arrow-left" %}ทักษะและประสบการณ์</a>
+  <div class="foldo-page-head">
+    <div class="foldo-page-head__text {% if form.company %}tone-magenta{% else %}tone-purple{% endif %}">
+      <p class="foldo-eyebrow" lang="en">{{ heading }}</p>
+      <h1 id="se-form-heading" class="foldo-page-title">
+        {% if form.instance.pk %}แก้ไข{% else %}เพิ่ม{% endif %}<em>{% if form.company %}ประสบการณ์{% else %}ทักษะ{% endif %}</em>
+      </h1>
+      <p class="foldo-page-lead">
+        {% if form.company %}งานประจำ ฝึกงาน หรืองานอาสา ถ้ายังทำอยู่ให้เว้นวันที่สิ้นสุดไว้{% else %}ชื่อทักษะและระดับความชำนาญ ชื่อซ้ำในโปรไฟล์เดียวกันไม่ได้{% endif %}
+      </p>
+    </div>
+  </div>
 
-  <form method="post" novalidate data-loading>
+  <form method="post" novalidate data-loading data-unsaved-guard aria-labelledby="se-form-heading">
     {% csrf_token %}
     {% include "partials/form_errors.html" %}
-    {% for field in form %}{% include "partials/form_field.html" %}{% endfor %}
-    <div class="d-flex gap-2">
-      <button type="submit" class="btn btn-primary" data-loading-text="Saving…">{{ submit_label }}</button>
-      <a class="btn btn-outline-secondary" href="{{ cancel_url }}">Cancel</a>
+    <section class="foldo-form-section {% if form.company %}tone-magenta{% else %}tone-purple{% endif %}">
+      {% for field in form %}{% include "partials/form_field.html" %}{% endfor %}
+    </section>
+    <div class="foldo-form-actions">
+      <button type="submit" class="btn btn-lime" data-loading-text="กำลังบันทึก…">{% include "partials/icon.html" with name="check" %}{% if form.instance.pk %}บันทึก{% elif form.company %}เพิ่มประสบการณ์{% else %}เพิ่มทักษะ{% endif %}</button>
+      {% if can_add_another %}<button type="submit" name="add_another" value="1" class="btn btn-outline-foldo" data-loading-text="กำลังบันทึก…">{% include "partials/icon.html" with name="plus" %}บันทึกแล้วเพิ่มอีก</button>{% endif %}
+      <a class="btn btn-ghost" href="{{ cancel_url }}">ยกเลิก</a>
+      <p class="foldo-form-actions__note" data-unsaved-note>{% if form.instance.pk %}กำลังแก้ไขรายการเดิม{% else %}รายการใหม่{% endif %}</p>
     </div>
   </form>
 </div>

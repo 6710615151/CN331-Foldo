@@ -1,46 +1,60 @@
 {% extends "base.html" %}
+{% load foldo_tags %}
 {% block title %}การศึกษา · {{ profile.label }} — FOLDO{% endblock %}
 {% block content %}
-<section class="foldo-section foldo-profile" aria-labelledby="education-heading">
-  <div class="container foldo-profile__narrow">
-    <a class="foldo-profile__back" href="{% url 'profiles:view' profile.pk %}">&larr; {{ profile.label }}</a>
-    <header class="d-flex justify-content-between align-items-end flex-wrap gap-3 mt-2 mb-4">
-      <div>
-        <p class="foldo-eyebrow" lang="en">Education</p>
-        <h1 id="education-heading" class="foldo-section__title mb-0">การศึกษา</h1>
-      </div>
-      {% if educations %}
-        <a class="btn btn-lime" href="{% url 'profiles:education_add' profile.pk %}">เพิ่มการศึกษา</a>
-      {% endif %}
-    </header>
+<div class="foldo-page foldo-page--medium">
+  <a class="foldo-back" href="{% url 'profiles:view' profile.pk %}">{% include "partials/icon.html" with name="arrow-left" %}{{ profile.label }}</a>
 
-    {% url "profiles:education_add" profile.pk as add_url %}
-    {% for education in educations %}
-      <article class="foldo-card mb-3">
-        <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
-          <div>
-            <h2 class="h5 mb-1">{{ education.institution }}</h2>
-            {% if education.degree or education.field_of_study %}
-              <p class="mb-1">
-                {{ education.degree }}{% if education.degree and education.field_of_study %} &middot; {% endif %}{{ education.field_of_study }}
-              </p>
-            {% endif %}
-            <p class="mb-0 small foldo-section__subtitle">
-              {{ education.start_date|date:"M Y" }} &ndash;
-              {% if education.is_current %}ปัจจุบัน{% else %}{{ education.end_date|date:"M Y" }}{% endif %}
-              {% if education.grade %} &middot; {{ education.grade }}{% endif %}
-            </p>
-          </div>
-          <div class="d-flex gap-2">
-            <a class="btn btn-sm btn-outline-foldo" href="{% url 'profiles:education_edit' education.pk %}">แก้ไข<span class="visually-hidden"> {{ education.institution }}</span></a>
-            <a class="btn btn-sm btn-outline-danger" href="{% url 'profiles:education_delete' education.pk %}">ลบ<span class="visually-hidden"> {{ education.institution }}</span></a>
-          </div>
-        </div>
-        {% if education.description %}<p class="mt-3 mb-0">{{ education.description|linebreaksbr }}</p>{% endif %}
-      </article>
-    {% empty %}
-      {% include "partials/empty_state.html" with message="ยังไม่มีข้อมูลการศึกษา เพิ่มโรงเรียนหรือมหาวิทยาลัยที่อยากให้แสดงในพอร์ตโฟลิโอ" action_url=add_url action_label="เพิ่มการศึกษา" %}
-    {% endfor %}
+  <div class="foldo-page-head">
+    <div class="foldo-page-head__text tone-blue">
+      <p class="foldo-eyebrow" lang="en">Education</p>
+      <h1 id="education-heading" class="foldo-page-title">การ<em>ศึกษา</em></h1>
+      <p class="foldo-page-lead">โรงเรียนและมหาวิทยาลัยที่อยากให้แสดงในพอร์ตโฟลิโอ ที่กำลังศึกษาอยู่จะขึ้นก่อนเสมอ</p>
+    </div>
+    {% if educations %}
+      <div class="foldo-page-head__actions">
+        <a class="btn btn-lime" href="{% url 'profiles:education_add' profile.pk %}">{% include "partials/icon.html" with name="plus" %}เพิ่มการศึกษา</a>
+      </div>
+    {% endif %}
   </div>
-</section>
+
+  {% include "profiles/_section_nav.html" with active="education" %}
+
+  {% url "profiles:education_add" profile.pk as add_url %}
+  {% if educations %}
+    <ol class="foldo-edu" aria-labelledby="education-heading">
+      {% for education in educations %}
+        <li class="foldo-edu__item{% if education.is_current %} is-current{% endif %}">
+          <div class="foldo-edu__years" aria-hidden="true">
+            <span>{{ education.start_date|date:"Y" }}</span>
+            <span class="foldo-edu__to">{% if education.is_current %}ปัจจุบัน{% else %}{{ education.end_date|date:"Y" }}{% endif %}</span>
+          </div>
+          <article class="foldo-edu__card">
+            <span class="foldo-icon-tile foldo-icon-tile--lg foldo-icon-tile--solid {% if education.is_current %}tone-lime{% else %}tone-blue{% endif %}">{% include "partials/icon.html" with name="cap" %}</span>
+            <div class="foldo-edu__main">
+              <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                <h2 class="foldo-edu__school">{{ education.institution }}</h2>
+                {% if education.is_current %}<span class="foldo-badge tone-lime foldo-badge--live"><span class="foldo-badge__dot"></span>กำลังศึกษา</span>{% endif %}
+              </div>
+              {% if education.degree or education.field_of_study %}
+                <p class="foldo-edu__degree">{{ education.degree }}{% if education.degree and education.field_of_study %} · {% endif %}{{ education.field_of_study }}</p>
+              {% endif %}
+              <div class="foldo-chip-row">
+                <span class="foldo-chip">{% include "partials/icon.html" with name="calendar" %}{{ education.start_date|th_month }} – {% if education.is_current %}ปัจจุบัน{% else %}{{ education.end_date|th_month }}{% endif %}</span>
+                {% if education.grade %}<span class="foldo-chip tone-purple">{% include "partials/icon.html" with name="star" %}{{ education.grade }}</span>{% endif %}
+              </div>
+              {% if education.description %}<p class="foldo-edu__desc">{{ education.description|linebreaksbr }}</p>{% endif %}
+            </div>
+            <div class="foldo-edu__actions">
+              <a class="btn btn-sm btn-outline-foldo" href="{% url 'profiles:education_edit' education.pk %}">{% include "partials/icon.html" with name="edit" %}แก้ไข<span class="visually-hidden"> {{ education.institution }}</span></a>
+              <a class="btn btn-sm btn-ghost btn-icon" href="{% url 'profiles:education_delete' education.pk %}" title="ลบ">{% include "partials/icon.html" with name="trash" %}<span class="visually-hidden">ลบ {{ education.institution }}</span></a>
+            </div>
+          </article>
+        </li>
+      {% endfor %}
+    </ol>
+  {% else %}
+    {% include "partials/empty_state.html" with title="ยังไม่มีการศึกษา" message="ยังไม่มีข้อมูลการศึกษา เพิ่มโรงเรียนหรือมหาวิทยาลัยที่อยากให้แสดงในพอร์ตโฟลิโอ" action_url=add_url action_label="เพิ่มการศึกษา" tone="blue" %}
+  {% endif %}
+</div>
 {% endblock %}

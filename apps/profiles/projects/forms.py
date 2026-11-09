@@ -11,12 +11,12 @@ from ..models import Project
 class ProjectForm(BootstrapFormMixin, forms.ModelForm):
     # assume_scheme lets users type "github.com/me/app"; only http/https links are accepted.
     project_url = forms.URLField(
-        label="Project link",
+        label="ลิงก์โปรเจกต์",
         required=False,
         max_length=MAX_URL,
         assume_scheme="https",
         validators=[safe_url_validator],
-        help_text="GitHub, live demo or write-up.",
+        help_text="GitHub, เดโม หรือบทความเล่าโปรเจกต์",
     )
 
     class Meta:
@@ -35,23 +35,23 @@ class ProjectForm(BootstrapFormMixin, forms.ModelForm):
             "outcome",
         ]
         labels = {
-            "project_name": "Project name",
-            "description": "Short description",
-            "start_date": "Start date",
-            "end_date": "End date",
-            "problem": "Problem",
-            "role": "Role",
-            "process": "Process",
-            "solution": "Solution",
-            "outcome": "Outcome",
+            "project_name": "ชื่อโปรเจกต์",
+            "description": "คำอธิบายสั้น ๆ",
+            "start_date": "วันที่เริ่ม",
+            "end_date": "วันที่สิ้นสุด",
+            "problem": "Problem · ปัญหา",
+            "role": "Role · บทบาทของคุณ",
+            "process": "Process · วิธีทำ",
+            "solution": "Solution · ทางออก",
+            "outcome": "Outcome · ผลลัพธ์",
         }
         help_texts = {
-            "end_date": "Leave empty if the project is still going.",
-            "problem": "What problem did the project solve?",
-            "role": "What was your part in it?",
-            "process": "How did you work on it?",
-            "solution": "What did you build or decide?",
-            "outcome": "What changed because of it? Numbers help.",
+            "end_date": "เว้นว่างถ้าโปรเจกต์ยังดำเนินอยู่",
+            "problem": "โปรเจกต์นี้แก้ปัญหาอะไร ให้ใคร",
+            "role": "คุณรับผิดชอบส่วนไหน",
+            "process": "ทำอย่างไร ใช้เครื่องมือหรือวิธีไหน",
+            "solution": "สร้างหรือตัดสินใจอะไรออกมา",
+            "outcome": "เกิดผลอะไรขึ้น ใส่ตัวเลขได้ยิ่งดี",
         }
         widgets = {
             "start_date": forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"),

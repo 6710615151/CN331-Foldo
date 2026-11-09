@@ -1,19 +1,13 @@
-{% extends "base.html" %}
-{% block title %}Delete {{ portfolio.title }} – FOLDO{% endblock %}
-{% block content %}
-<div class="container py-4" style="max-width: 560px;">
-  <h1 class="h3 mb-3">Delete this portfolio?</h1>
-  <div class="card card-body mb-3">
-    <p class="mb-0"><strong>{{ portfolio.title }}</strong></p>
-  </div>
-  <p>
-    This permanently deletes the portfolio{% if portfolio.is_published %} and its public link, which will stop working{% endif %}.
-    Your profiles are not affected.
-  </p>
-  <form method="post" class="d-flex gap-2">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-danger">Yes, delete it</button>
-    <a class="btn btn-outline-secondary" href="{% url 'portfolios:list' %}">Cancel</a>
-  </form>
-</div>
+{% extends "layouts/confirm_delete.html" %}
+{% block title %}ลบ {{ portfolio.title }} — FOLDO{% endblock %}
+{% block confirm_title %}ลบพอร์ตโฟลิโอนี้?{% endblock %}
+{% block confirm_title_en %}Delete this portfolio?{% endblock %}
+{% block confirm_item %}
+  <div class="foldo-confirm__thumb">{% include "partials/theme_thumb.html" with key=portfolio.template_key %}</div>
+  <div class="min-w-0"><strong>{{ portfolio.title }}</strong><span>{% if portfolio.is_published %}เผยแพร่อยู่{% else %}ส่วนตัว{% endif %} · {{ portfolio.get_template_key_display }}</span></div>
 {% endblock %}
+{% block confirm_body %}
+  พอร์ตโฟลิโอเวอร์ชันนี้จะถูกลบถาวร{% if portfolio.is_published %} และลิงก์สาธารณะกับ QR code จะใช้ไม่ได้อีก{% endif %} โปรไฟล์ของคุณไม่ได้รับผลกระทบ
+{% endblock %}
+{% block confirm_button %}ยืนยันลบ{% endblock %}
+{% block cancel_url %}{% url 'portfolios:list' %}{% endblock %}

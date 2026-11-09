@@ -9,12 +9,12 @@
 {% endcomment %}
 {% if project.problem or project.role or project.process or project.solution or project.outcome %}
 <section class="foldo-story" aria-label="Project story">
-  <dl class="mb-0">
-    {% if project.problem %}<dt>Problem</dt><dd>{{ project.problem|linebreaksbr }}</dd>{% endif %}
-    {% if project.role %}<dt>Role</dt><dd>{{ project.role|linebreaksbr }}</dd>{% endif %}
-    {% if project.process %}<dt>Process</dt><dd>{{ project.process|linebreaksbr }}</dd>{% endif %}
-    {% if project.solution %}<dt>Solution</dt><dd>{{ project.solution|linebreaksbr }}</dd>{% endif %}
-    {% if project.outcome %}<dt>Outcome</dt><dd>{{ project.outcome|linebreaksbr }}</dd>{% endif %}
-  </dl>
+  <ol class="foldo-story__list">
+    {% if project.problem %}<li class="tone-pink"><span class="foldo-story__step">Problem<small>ปัญหา</small></span><p>{{ project.problem|linebreaksbr }}</p></li>{% endif %}
+    {% if project.role %}<li class="tone-blue"><span class="foldo-story__step">Role<small>บทบาท</small></span><p>{{ project.role|linebreaksbr }}</p></li>{% endif %}
+    {% if project.process %}<li class="tone-purple"><span class="foldo-story__step">Process<small>วิธีทำ</small></span><p>{{ project.process|linebreaksbr }}</p></li>{% endif %}
+    {% if project.solution %}<li class="tone-magenta"><span class="foldo-story__step">Solution<small>ทางออก</small></span><p>{{ project.solution|linebreaksbr }}</p></li>{% endif %}
+    {% if project.outcome %}<li class="tone-lime"><span class="foldo-story__step">Outcome<small>ผลลัพธ์</small></span><p>{{ project.outcome|linebreaksbr }}</p></li>{% endif %}
+  </ol>
 </section>
 {% endif %}

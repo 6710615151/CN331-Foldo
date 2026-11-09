@@ -1,46 +1,56 @@
 {% extends "base.html" %}
+{% load foldo_tags %}
 {% block title %}{{ project.project_name }} — FOLDO{% endblock %}
 {% block content %}
-<section class="foldo-section foldo-profile" aria-labelledby="project-heading">
-  <div class="container foldo-profile__narrow">
-    <a class="foldo-profile__back" href="{% url 'profiles:projects' profile.pk %}">&larr; โปรเจกต์ทั้งหมด</a>
-    <header class="mt-2 mb-4">
-      <p class="foldo-eyebrow" lang="en">{{ profile.label }}</p>
-      <h1 id="project-heading" class="foldo-section__title">{{ project.project_name }}</h1>
-      {% if project.start_date %}
-        <p class="foldo-section__subtitle mb-0">
-          {{ project.start_date|date:"M Y" }} &ndash; {% if project.end_date %}{{ project.end_date|date:"M Y" }}{% else %}Present{% endif %}
-        </p>
-      {% endif %}
+<div class="foldo-page foldo-page--medium">
+  <a class="foldo-back" href="{% url 'profiles:projects' profile.pk %}">{% include "partials/icon.html" with name="arrow-left" %}โปรเจกต์ทั้งหมด</a>
+
+  <article class="foldo-case tone-pink" aria-labelledby="project-heading">
+    <header class="foldo-case__cover">
+      <div class="foldo-shapes" aria-hidden="true">
+        <span class="foldo-shape foldo-shape--tri" style="--s:6rem; right:8%; top:-1rem; transform:rotate(18deg)"></span>
+        <span class="foldo-shape foldo-shape--diamond" style="--s:2.6rem; --c1:#fff; --c2:#dfe6ff; right:28%; bottom:1.5rem"></span>
+        <span class="foldo-shape foldo-shape--ring" style="--s:11rem; --c1:#c4f500; right:-3rem; bottom:-5rem"></span>
+      </div>
+      <p class="foldo-eyebrow foldo-eyebrow--plain tone-lime">{{ profile.label }} · Project</p>
+      <h1 id="project-heading" class="foldo-case__title">{{ project.project_name }}</h1>
+      <div class="foldo-chip-row">
+        {% if project.start_date %}
+          <span class="foldo-chip foldo-chip--light">{% include "partials/icon.html" with name="calendar" %}{{ project.start_date|th_month }} – {% if project.end_date %}{{ project.end_date|th_month }}{% else %}<span lang="en">Present</span>{% endif %}</span>
+        {% endif %}
+        {% if project.project_url %}
+          <a class="foldo-chip foldo-chip--light" href="{{ project.project_url }}" target="_blank" rel="noopener noreferrer">{% include "partials/icon.html" with name="external" %}{{ project.project_url|domain|truncatechars:40 }}<span class="visually-hidden"> (เปิดในแท็บใหม่)</span></a>
+        {% endif %}
+      </div>
     </header>
 
-    <div class="foldo-card mb-4">
-      {% if project.description %}<p>{{ project.description|linebreaksbr }}</p>{% endif %}
-      {% if project.project_url %}
-        <p class="mb-0"><a href="{{ project.project_url }}" target="_blank" rel="noopener noreferrer">{{ project.project_url }}</a></p>
-      {% endif %}
-      {% if not project.description and not project.project_url %}
-        <p class="mb-0 text-body-secondary">ยังไม่มีรายละเอียด</p>
-      {% endif %}
+    <div class="foldo-case__actions">
+      <a class="btn btn-lime" href="{% url 'profiles:project_edit' project.pk %}">{% include "partials/icon.html" with name="edit" %}แก้ไข</a>
+      <a class="btn btn-outline-danger ms-auto" href="{% url 'profiles:project_delete' project.pk %}">{% include "partials/icon.html" with name="trash" %}ลบ</a>
     </div>
 
-    {% if project.has_story %}
-      <div class="foldo-card mb-4">
-        <h2 class="h5">Project Story</h2>
+    <section class="foldo-card mb-4" aria-labelledby="overview-heading">
+      <h2 id="overview-heading" class="foldo-section-title mb-3">ภาพรวม</h2>
+      {% if project.description %}
+        <p class="foldo-case__desc mb-0">{{ project.description|linebreaksbr }}</p>
+      {% else %}
+        <p class="mb-0 foldo-muted">ยังไม่มีรายละเอียด <a href="{% url 'profiles:project_edit' project.pk %}">เพิ่มคำอธิบาย</a></p>
+      {% endif %}
+    </section>
+
+    <section class="foldo-card" aria-labelledby="story-heading">
+      <div class="foldo-section-head">
+        <h2 id="story-heading" class="foldo-section-title">
+          <span class="foldo-icon-tile foldo-icon-tile--sm tone-pink">{% include "partials/icon.html" with name="book" %}</span>Project Story
+        </h2>
+        {% if project.has_story %}<a class="btn btn-ghost btn-sm" href="{% url 'profiles:project_edit' project.pk %}">{% include "partials/icon.html" with name="edit" %}แก้เรื่องเล่า</a>{% endif %}
+      </div>
+      {% if project.has_story %}
         {% include "partials/project_story.html" with project=project %}
-      </div>
-    {% else %}
-      <div class="foldo-card mb-4">
-        <h2 class="h5">Project Story</h2>
-        <p class="mb-0 text-body-secondary">ยังไม่ได้เล่า Project Story <a href="{% url 'profiles:project_edit' project.pk %}">เพิ่มตอนนี้</a></p>
-      </div>
-    {% endif %}
-
-    <div class="d-flex flex-wrap gap-2 justify-content-end">
-      <a class="btn btn-outline-secondary" href="{% url 'profiles:projects' profile.pk %}">Projects</a>
-      <a class="btn btn-outline-danger" href="{% url 'profiles:project_delete' project.pk %}">ลบ</a>
-      <a class="btn btn-primary" href="{% url 'profiles:project_edit' project.pk %}">แก้ไข</a>
-    </div>
-  </div>
-</section>
+      {% else %}
+        <p class="mb-0 foldo-muted">ยังไม่ได้เล่า Project Story <a href="{% url 'profiles:project_edit' project.pk %}">เพิ่มตอนนี้</a></p>
+      {% endif %}
+    </section>
+  </article>
+</div>
 {% endblock %}

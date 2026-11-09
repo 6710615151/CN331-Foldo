@@ -1,20 +1,11 @@
-{% extends "base.html" %}
-{% load static %}
-{% block title %}{{ heading }}{% endblock %}
-{% block extra_css %}<link rel="stylesheet" href="{% static 'profiles/skills_experience.css' %}">{% endblock %}
-{% block content %}
-<div class="foldo-se container py-5" style="max-width: 640px;">
-  <a class="foldo-back" href="{{ cancel_url }}"><span aria-hidden="true">&larr;</span> Skills &amp; experience</a>
-  <h1 class="foldo-se__title mt-3 mb-1">{{ heading }}</h1>
-  <div class="foldo-se__bands" aria-hidden="true"><span></span><span></span></div>
-  <p>Delete <strong>{{ item_label }}</strong>? This can't be undone.</p>
-
-  <form method="post" data-loading>
-    {% csrf_token %}
-    <div class="d-flex gap-2">
-      <button type="submit" class="btn btn-danger" data-loading-text="Deleting…">Delete</button>
-      <a class="btn btn-outline-secondary" href="{{ cancel_url }}">Cancel</a>
-    </div>
-  </form>
-</div>
+{% extends "layouts/confirm_delete.html" %}
+{% block title %}{{ heading }} — FOLDO{% endblock %}
+{% block confirm_eyebrow %}{{ heading }}{% endblock %}
+{% block confirm_title %}ลบรายการนี้?{% endblock %}
+{% block confirm_title_en %}{{ heading }}?{% endblock %}
+{% block confirm_item %}
+  <span class="foldo-icon-tile foldo-icon-tile--lg foldo-icon-tile--solid tone-purple">{% include "partials/icon.html" with name="spark" %}</span>
+  <div class="min-w-0"><strong>{{ item_label }}</strong><span>ทักษะและประสบการณ์</span></div>
 {% endblock %}
+{% block confirm_body %}<strong>{{ item_label }}</strong> จะถูกลบออกจากโปรไฟล์นี้ กู้คืนไม่ได้{% endblock %}
+{% block cancel_url %}{{ cancel_url }}{% endblock %}

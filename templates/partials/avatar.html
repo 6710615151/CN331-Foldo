@@ -1,0 +1,7 @@
+{% comment %}
+  Round avatar with the brand gradient ring. Params: photo_url, initials,
+  name (for alt text), size ("sm" | "lg" | "xl").
+{% endcomment %}
+<span class="foldo-avatar{% if size %} foldo-avatar--{{ size }}{% endif %}">
+  {% if photo_url %}<img src="{{ photo_url }}" alt="{% if name %}รูปของ {{ name }}{% endif %}">{% else %}<span aria-hidden="true">{{ initials|default:"?" }}</span>{% endif %}
+</span>

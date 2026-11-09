@@ -1,77 +1,87 @@
 {% extends "base.html" %}
-{% load static %}
+{% load foldo_tags %}
 {% block html_lang %}th{% endblock %}
-{% block title %}ตั้งค่าบัญชี · FOLDO{% endblock %}
-
-{% block extra_css %}<link rel="stylesheet" href="{% static 'accounts/settings.css' %}">{% endblock %}
+{% block title %}ตั้งค่าบัญชี — FOLDO{% endblock %}
 
 {% block content %}
-<section class="foldo-settings container py-5">
-  <header class="foldo-settings__header">
-    <p class="foldo-settings__eyebrow" lang="en">Account</p>
-    <h1 class="foldo-settings__title">ตั้งค่า<span class="foldo-text-lime">บัญชี</span></h1>
-    <div class="foldo-settings__bands" aria-hidden="true"><span></span><span></span></div>
-    <p class="foldo-settings__subtitle">จัดการข้อมูลบัญชีพื้นฐานของคุณ</p>
-  </header>
-
-  <div class="row g-4">
-    <div class="col-12 col-lg-5">
-      <div class="card h-100 foldo-settings__card foldo-settings__card--accent">
-        <div class="card-body">
-          <div class="foldo-settings__profile">
-            <span class="foldo-settings__avatar" aria-hidden="true">{{ object.username|first|upper }}</span>
-            <div class="min-w-0">
-              <p class="foldo-settings__name">{{ object.get_full_name|default:object.username }}</p>
-              <p class="foldo-settings__handle">@{{ object.username }}</p>
-            </div>
-          </div>
-          <h2 class="visually-hidden">ข้อมูลบัญชี</h2>
-          <dl class="mb-0">
-            <dt>ชื่อผู้ใช้</dt>
-            <dd>{{ object.username }}</dd>
-            <dt>วันที่สมัคร</dt>
-            <dd>{{ object.date_joined|date:"j M Y" }}</dd>
-            <dt>เข้าสู่ระบบล่าสุด</dt>
-            <dd class="mb-0">{{ object.last_login|date:"j M Y H:i"|default:"—" }}</dd>
-          </dl>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-12 col-lg-7">
-      <div class="card h-100 foldo-settings__card">
-        <div class="card-body">
-          <h2 class="h5 card-title mb-3">แก้ไขข้อมูล</h2>
-          <form method="post" novalidate data-loading>
-            {% csrf_token %}
-            {% if form.non_field_errors %}
-              <div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>
-            {% endif %}
-
-            {% for field in form %}
-              <div class="mb-3">
-                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-                <input type="{{ field.field.widget.input_type }}"
-                       name="{{ field.html_name }}"
-                       id="{{ field.id_for_label }}"
-                       value="{{ field.value|default_if_none:'' }}"
-                       class="form-control{% if field.errors %} is-invalid{% endif %}"
-                       autocomplete="{{ field.field.widget.attrs.autocomplete }}"
-                       {% if field.field.required %}required{% endif %}
-                       {% if field.errors %}aria-invalid="true" aria-describedby="{{ field.id_for_label }}-error"{% endif %}>
-                {% if field.errors %}
-                  <div id="{{ field.id_for_label }}-error" class="invalid-feedback">
-                    {% for error in field.errors %}{{ error }}{% if not forloop.last %}<br>{% endif %}{% endfor %}
-                  </div>
-                {% endif %}
-              </div>
-            {% endfor %}
-
-            <button type="submit" class="btn btn-lime btn-lg foldo-settings__submit" data-loading-text="กำลังบันทึก…">บันทึก</button>
-          </form>
-        </div>
-      </div>
+<div class="foldo-page foldo-page--medium foldo-settings">
+  <div class="foldo-page-head">
+    <div class="foldo-page-head__text tone-muted">
+      <p class="foldo-eyebrow" lang="en">Account</p>
+      <h1 class="foldo-page-title">ตั้งค่า<em>บัญชี</em></h1>
+      <p class="foldo-page-lead">จัดการข้อมูลบัญชีและความปลอดภัย ข้อมูลบนพอร์ตโฟลิโอแก้ได้ที่หน้าโปรไฟล์</p>
     </div>
   </div>
-</section>
+
+  <div class="foldo-settings__layout">
+    <nav class="foldo-settings__nav" aria-label="หมวดการตั้งค่า">
+      <a href="#account-info">{% include "partials/icon.html" with name="user" %}ข้อมูลบัญชี</a>
+      <a href="#security">{% include "partials/icon.html" with name="shield" %}ความปลอดภัย</a>
+      <a href="#about-account">{% include "partials/icon.html" with name="info" %}รายละเอียดบัญชี</a>
+    </nav>
+
+    <div class="foldo-settings__sections">
+      <section class="foldo-card foldo-settings__section" id="account-info" aria-labelledby="account-info-heading">
+        <div class="foldo-settings__who">
+          {% include "partials/avatar.html" with photo_url=shell.photo_url initials=shell.initials size="lg" %}
+          <div class="min-w-0">
+            <p class="foldo-settings__name">{{ object.get_full_name|default:object.username }}</p>
+            <p class="foldo-settings__handle">@{{ object.username }} · ชื่อผู้ใช้เปลี่ยนไม่ได้</p>
+          </div>
+        </div>
+        <h2 id="account-info-heading" class="foldo-section-title mb-3">ข้อมูลบัญชี</h2>
+        <form method="post" novalidate data-loading data-unsaved-guard>
+          {% csrf_token %}
+          {% include "partials/form_errors.html" %}
+          <div class="row">
+            <div class="col-md-6">{% include "partials/form_field.html" with field=form.first_name %}</div>
+            <div class="col-md-6">{% include "partials/form_field.html" with field=form.last_name %}</div>
+          </div>
+          {% include "partials/form_field.html" with field=form.email %}
+          <p class="form-text mt-0 mb-3">อีเมลนี้ใช้เข้าสู่ระบบและรับลิงก์รีเซ็ตรหัสผ่าน อีเมลที่แสดงบนพอร์ตโฟลิโอตั้งแยกได้ในโปรไฟล์</p>
+          <button type="submit" class="btn btn-lime" data-loading-text="กำลังบันทึก…">{% include "partials/icon.html" with name="check" %}บันทึก</button>
+        </form>
+      </section>
+
+      <section class="foldo-card foldo-settings__section" id="security" aria-labelledby="security-heading">
+        <h2 id="security-heading" class="foldo-section-title mb-3">
+          <span class="foldo-icon-tile foldo-icon-tile--sm tone-blue">{% include "partials/icon.html" with name="shield" %}</span>ความปลอดภัย
+        </h2>
+        <div class="foldo-settings__row">
+          <div>
+            <strong>รหัสผ่าน</strong>
+            <p>เปลี่ยนรหัสผ่านโดยยืนยันรหัสเดิม คุณจะยังอยู่ในระบบต่อ</p>
+          </div>
+          <a class="btn btn-outline-foldo" href="{% url 'accounts:password_change' %}">{% include "partials/icon.html" with name="key" %}เปลี่ยนรหัสผ่าน</a>
+        </div>
+        <div class="foldo-settings__row">
+          <div>
+            <strong>ลืมรหัสผ่าน</strong>
+            <p>ส่งลิงก์ตั้งรหัสผ่านใหม่ไปที่อีเมลของบัญชี</p>
+          </div>
+          <a class="btn btn-ghost" href="{% url 'accounts:password_reset' %}">ส่งลิงก์รีเซ็ต</a>
+        </div>
+        <div class="foldo-settings__row">
+          <div>
+            <strong>ออกจากระบบ</strong>
+            <p>ออกจากระบบบนอุปกรณ์นี้</p>
+          </div>
+          <form method="post" action="{% url 'accounts:logout' %}" class="m-0">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-danger">{% include "partials/icon.html" with name="logout" %}ออกจากระบบ</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="foldo-card foldo-card--flat foldo-settings__section" id="about-account" aria-labelledby="about-account-heading">
+        <h2 id="about-account-heading" class="foldo-section-title mb-3">รายละเอียดบัญชี</h2>
+        <dl class="foldo-dl">
+          <dt>ชื่อผู้ใช้</dt><dd>{{ object.username }}</dd>
+          <dt>วันที่สมัคร</dt><dd>{{ object.date_joined|th_date }}</dd>
+          <dt>เข้าสู่ระบบล่าสุด</dt><dd>{{ object.last_login|th_date:"time"|default:"—" }}</dd>
+        </dl>
+      </section>
+    </div>
+  </div>
+</div>
 {% endblock %}

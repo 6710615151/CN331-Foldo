@@ -1,48 +1,51 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="{% block html_lang %}en{% endblock %}" class="h-100" data-bs-theme="dark">
+{% load static %}<!DOCTYPE html>
+<html lang="{% block html_lang %}th{% endblock %}" data-bs-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="{% block meta_description %}FOLDO — One Profile. Many Forms. Maintain one reusable profile and create tailored portfolios for every opportunity.{% endblock %}">
+  <meta name="description" content="{% block meta_description %}FOLDO — One Profile. Many Forms. เก็บโปรไฟล์ไว้ที่เดียว แล้วสร้างพอร์ตโฟลิโอได้หลายเวอร์ชันสำหรับทุกโอกาส{% endblock %}">
   <title>{% block title %}FOLDO{% endblock %}</title>
+  {% include "partials/head_icons.html" %}
 
-  <!-- Bootstrap 5 (course-required CSS framework) -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-    crossorigin="anonymous">
+  <!-- Bootstrap 5 (course-required CSS framework); FOLDO restyles it via tokens -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 
-  <!-- Display (Prompt covers Latin + Thai) and body fonts -->
+  <!-- Prompt (display, Latin + Thai), Inter + Noto Sans Thai (body) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600;700&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&family=Prompt:wght@500;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- FOLDO design tokens and layout -->
+  <!-- FOLDO design system + page compositions -->
   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <link rel="stylesheet" href="{% static 'css/icons.css' %}">
+  <link rel="stylesheet" href="{% static 'css/pages.css' %}">
+  <link rel="stylesheet" href="{% static 'css/ux.css' %}">
   {% block extra_css %}{% endblock %}
 </head>
-<body class="d-flex flex-column min-vh-100">
-
-  <!-- Keyboard users can jump straight past the navigation -->
+<body class="{% block body_class %}{% endblock %}">
   <a class="foldo-skip-link" href="#main-content">ข้ามไปยังเนื้อหาหลัก</a>
 
-  {% block header %}{% include "partials/navbar.html" %}{% endblock %}
+  {% comment %}
+    Signed-in pages: sidebar + top bar (the "app shell"). Visitors: a top navbar.
+    Full-bleed pages (landing, sign-in) override header/topbar/footer and frame_class.
+  {% endcomment %}
+  <div class="foldo-frame {% block frame_class %}{% if user.is_authenticated %}foldo-frame--app{% else %}foldo-frame--public{% endif %}{% endblock %}">
+    {% block header %}{% if user.is_authenticated %}{% include "partials/app_sidebar.html" %}{% else %}{% include "partials/navbar.html" %}{% endif %}{% endblock %}
 
-  <main id="main-content" class="flex-grow-1" tabindex="-1">
-    {% include "partials/messages.html" %}
-    {% block content %}{% endblock %}
-  </main>
+    <div class="foldo-frame__main">
+      {% block topbar %}{% if user.is_authenticated %}{% include "partials/app_topbar.html" %}{% endif %}{% endblock %}
 
-  {% block footer %}{% include "partials/footer.html" %}{% endblock %}
+      <main id="main-content" class="foldo-main" tabindex="-1">
+        {% include "partials/messages.html" %}
+        {% block content %}{% endblock %}
+      </main>
 
-  <!-- Bootstrap 5 bundle (includes Popper) for responsive navigation -->
-  <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    crossorigin="anonymous"></script>
+      {% block footer %}{% include "partials/footer.html" %}{% endblock %}
+    </div>
+  </div>
 
+  <!-- Bootstrap 5 bundle (includes Popper): off-canvas menu, dropdowns, modals -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
   <!-- FOLDO progressive enhancements (ES6 module) -->
   <script type="module" src="{% static 'js/main.js' %}"></script>
   {% block extra_js %}{% endblock %}

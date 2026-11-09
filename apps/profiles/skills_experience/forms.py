@@ -11,8 +11,8 @@ class SkillForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
         model = Skill
         fields = ["name", "proficiency"]
-        labels = {"name": "Skill", "proficiency": "Level"}
-        help_texts = {"name": "e.g. Python, Figma, Public speaking."}
+        labels = {"name": "ชื่อทักษะ", "proficiency": "ระดับความชำนาญ"}
+        help_texts = {"name": "เช่น Python, Figma, การนำเสนอ"}
 
     def __init__(self, *args, profile, **kwargs):
         super().__init__(*args, **kwargs)
@@ -33,13 +33,13 @@ class ExperienceForm(BootstrapFormMixin, forms.ModelForm):
         model = Experience
         fields = ["company", "job_title", "start_date", "end_date", "description"]
         labels = {
-            "company": "Company / organisation",
-            "job_title": "Job title",
-            "start_date": "Start date",
-            "end_date": "End date",
-            "description": "What you did",
+            "company": "บริษัท / องค์กร",
+            "job_title": "ตำแหน่ง",
+            "start_date": "วันที่เริ่ม",
+            "end_date": "วันที่สิ้นสุด",
+            "description": "สิ่งที่ทำ / ผลงาน",
         }
-        help_texts = {"end_date": "Leave empty if you still work here."}
+        help_texts = {"end_date": "เว้นว่างไว้ถ้ายังทำงานที่นี่อยู่"}
         widgets = {
             "start_date": forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"),
             "end_date": forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"),

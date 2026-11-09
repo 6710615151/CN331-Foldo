@@ -1,38 +1,19 @@
-{% extends "base.html" %}
-
-{% block title %}Create an Account — FOLDO{% endblock %}
-
-{% block content %}
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-12 col-md-6 col-lg-5">
-      
-      <div class="card shadow border-0 mb-4">
-        <div class="card-body p-4 p-md-5">
-          <h2 class="h3 mb-4 text-center fw-bold">Create an Account</h2>
-
-          <form method="post">
-            {% csrf_token %}
-            
-            <div class="mb-4">
-              {{ form.as_p }}
-            </div>
-            
-            <div class="d-grid">
-              <button type="submit" class="btn btn-primary py-2 fw-semibold">Sign Up</button>
-            </div>
-          </form>
-          
-        </div>
-      </div>
-
-      <div class="text-center">
-        <p>
-          Already have an account? <a href="{% url 'accounts:login' %}" class="text-decoration-none fw-bold">Log in</a>
-        </p>
-      </div>
-
-    </div>
+{% extends "layouts/auth.html" %}
+{% block title %}สมัครสมาชิก — FOLDO{% endblock %}
+{% block auth_eyebrow %}Get started{% endblock %}
+{% block auth_title %}สร้างบัญชี FOLDO{% endblock %}
+{% block auth_lead %}ใช้เวลาไม่ถึงนาที แล้วเริ่มสร้างโปรไฟล์หลักได้ทันที{% endblock %}
+{% block auth_body %}
+<form method="post" novalidate data-loading>
+  {% csrf_token %}
+  {% include "partials/form_errors.html" %}
+  {% include "partials/form_field.html" with field=form.username %}
+  {% include "partials/form_field.html" with field=form.email %}
+  <div class="row">
+    <div class="col-sm-6">{% include "partials/form_field.html" with field=form.password1 %}</div>
+    <div class="col-sm-6">{% include "partials/form_field.html" with field=form.password2 %}</div>
   </div>
-</div>
+  <button type="submit" class="btn btn-lime btn-lg w-100" data-loading-text="กำลังสร้างบัญชี…">สมัครสมาชิก<span class="foldo-arrow" aria-hidden="true">&rarr;</span></button>
+</form>
 {% endblock %}
+{% block auth_footer %}มีบัญชีอยู่แล้ว? <a href="{% url 'accounts:login' %}">เข้าสู่ระบบ</a>{% endblock %}

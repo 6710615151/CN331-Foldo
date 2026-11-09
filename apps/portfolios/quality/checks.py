@@ -70,6 +70,14 @@ class QualityReport:
         return bool(self.errors)
 
     @property
+    def score(self):
+        """0–100 readiness for the summary ring. Anything blocking keeps it under 50."""
+        value = 100 - 25 * len(self.errors) - 8 * len(self.warnings) - 2 * len(self.infos)
+        if self.errors:
+            value = min(value, 49)
+        return max(0, value)
+
+    @property
     def groups(self):
         """[(severity, label, findings)] in severity order, empty groups left out."""
         return [(s, SEVERITY_LABELS[s], self.by_severity(s)) for s in SEVERITY_ORDER if self.by_severity(s)]

@@ -1,0 +1,28 @@
+{% comment %}
+  Miniature mock-up of a portfolio template, drawn in CSS so it always matches
+  the real layouts (classic = one column, modern = sidebar, creative = colour
+  header + cards). Decorative.
+    {% include "partials/theme_thumb.html" with key=theme.key %}
+{% endcomment %}
+<div class="foldo-thumb foldo-thumb--{{ key|default:'classic' }} {{ class|default:'' }}" aria-hidden="true">
+  <span class="foldo-thumb__deco foldo-thumb__deco--a"></span>
+  <span class="foldo-thumb__deco foldo-thumb__deco--b"></span>
+  <div class="foldo-thumb__page">
+    {% if key == "modern" %}
+      <div class="foldo-thumb__row">
+        <div class="foldo-thumb__side">
+          <span class="foldo-thumb__avatar"></span>
+          <i></i><i class="is-short"></i><i class="is-lime"></i><i></i><i class="is-short"></i>
+        </div>
+        <div class="foldo-thumb__col">
+          <i class="is-title"></i><i class="is-sub"></i><i></i><i class="is-short"></i><i class="is-accent"></i><i></i><i class="is-short"></i><i></i>
+        </div>
+      </div>
+    {% elif key == "creative" %}
+      <div class="foldo-thumb__hero"><i class="is-title"></i><i class="is-sub" style="margin-top:6%"></i></div>
+      <div class="foldo-thumb__grid"><span></span><span></span><span></span><span></span></div>
+    {% else %}
+      <i class="is-title"></i><i class="is-sub"></i><i class="is-accent"></i><i></i><i class="is-short"></i><i></i><i class="is-accent"></i><i></i><i class="is-short"></i>
+    {% endif %}
+  </div>
+</div>

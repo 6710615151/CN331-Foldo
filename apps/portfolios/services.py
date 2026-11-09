@@ -16,6 +16,7 @@ goes through ``render_version_html`` so they can never disagree.
 """
 from __future__ import annotations
 
+from django.db import transaction
 from django.urls import reverse
 
 from apps.profiles.services import build_display, get_default_profile, get_profiles
@@ -23,7 +24,7 @@ from apps.rendering.selectors import PortfolioContent, build_portfolio_content
 from apps.rendering.services import render_portfolio_html
 from apps.rendering.themes import PortfolioTheme, resolve_theme
 
-from .models import Portfolio
+from .models import Portfolio, PortfolioContentSelection, PortfolioContentSetup
 
 # Sentinel: "look the selection up" (as opposed to None = "show everything").
 _LOOKUP = object()
@@ -52,6 +53,34 @@ def resolve_profile(portfolio: Portfolio):
 def profile_choices(user):
     """The profiles this user may pick from."""
     return get_profiles(user)
+
+
+COPY_SUFFIX = " (สำเนา)"
+
+
+@transaction.atomic
+def duplicate_portfolio(portfolio: Portfolio) -> Portfolio:
+    """A private copy of a version: same profile, template and content selection.
+
+    The copy is never published (it gets its own new public slug), so duplicating
+    can't expose anything. The original is only read.
+    """
+    max_len = Portfolio._meta.get_field("title").max_length
+    title = portfolio.title[: max_len - len(COPY_SUFFIX)] + COPY_SUFFIX
+    copy = Portfolio.objects.create(
+        owner=portfolio.owner,
+        title=title,
+        profile=portfolio.profile,
+        template_key=portfolio.template_key,
+        is_published=False,
+    )
+    if PortfolioContentSetup.objects.filter(portfolio=portfolio).exists():
+        PortfolioContentSetup.objects.create(portfolio=copy)
+        PortfolioContentSelection.objects.bulk_create(
+            PortfolioContentSelection(portfolio=copy, section=row.section, item_id=row.item_id)
+            for row in portfolio.content_selections.all()
+        )
+    return copy
 
 
 # --- FOLDO-07: templates and rendering ---------------------------------------
@@ -97,11 +126,14 @@ def _preview_toolbar(portfolio: Portfolio, theme: PortfolioTheme) -> dict:
         status = f"ตัวอย่าง · {theme.name} · เผยแพร่แล้ว"
     else:
         status = f"ตัวอย่าง · {theme.name} · ส่วนตัว เห็นได้เฉพาะคุณ"
+    # Same order as the builder steps in the app (setup → content → preview → quality → share).
     links = [
         ("แก้ไขเวอร์ชันและเทมเพลต", reverse("portfolios:update", args=[portfolio.pk])),
+        ("เลือกเนื้อหา", reverse("portfolios:content", args=[portfolio.pk])),
         ("Desktop / Mobile", reverse("portfolios:device_preview", args=[portfolio.pk])),
         ("ดาวน์โหลด PDF", reverse("portfolios:pdf", args=[portfolio.pk])),
         ("ตรวจคุณภาพ", reverse("portfolios:quality", args=[portfolio.pk])),
+        ("แชร์" if portfolio.is_published else "เผยแพร่และแชร์", reverse("portfolios:share", args=[portfolio.pk])),
     ]
     if portfolio.is_published:
         links.append(("หน้าสาธารณะ", portfolio.public_path))

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% comment %}
+  403 / 404 / 500: a big code, a geometric "broken card" illustration and clear
+  ways back. Children fill error_code, error_title, error_title_en, error_message.
+{% endcomment %}
+{% block html_lang %}th{% endblock %}
+{% block content %}
+<div class="foldo-page foldo-error">
+  <div class="foldo-error__art">
+    <span class="foldo-error__code" aria-hidden="true">{% block error_code %}{% endblock %}</span>
+    {% include "partials/geo_art.html" with variant="error" %}
+  </div>
+  <div class="foldo-error__copy">
+    <p class="foldo-eyebrow tone-pink" lang="en">Error {% block error_code_label %}{% endblock %}</p>
+    <h1 class="foldo-page-title">{% block error_title %}{% endblock %}</h1>
+    <p class="foldo-error__en" lang="en">{% block error_title_en %}{% endblock %}</p>
+    <p class="foldo-page-lead">{% block error_message %}{% endblock %}</p>
+    <div class="foldo-error__actions">
+      {% block error_actions %}
+        {% if user.is_authenticated %}
+          <a class="btn btn-lime btn-lg" href="{% url 'core:dashboard' %}">{% include "partials/icon.html" with name="home" %}กลับไปแดชบอร์ด</a>
+        {% else %}
+          <a class="btn btn-lime btn-lg" href="{% url 'core:landing' %}">{% include "partials/icon.html" with name="home" %}กลับหน้าแรก</a>
+          <a class="btn btn-outline-foldo btn-lg" href="{% url 'accounts:login' %}">เข้าสู่ระบบ</a>
+        {% endif %}
+      {% endblock %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% comment %}
+  Ordered "what to do next" list from apps.core.selectors.get_next_steps.
+  Params: steps (list of dicts), compact (optional: smaller rows, no detail).
+  Required steps are marked as such; the rest are recommendations.
+{% endcomment %}
+<ol class="foldo-nextlist{% if compact %} foldo-nextlist--compact{% endif %}">
+  {% for step in steps %}
+    <li class="foldo-nextlist__item tone-{{ step.tone }}">
+      <a class="foldo-nextlist__link" href="{{ step.url }}">
+        <span class="foldo-icon-tile foldo-icon-tile--sm">{% include "partials/icon.html" with name=step.icon %}</span>
+        <span class="foldo-nextlist__text">
+          <strong>{{ step.title }}</strong>
+          {% if not compact %}<small>{{ step.detail }}</small>{% endif %}
+        </span>
+        {% if step.required %}<span class="foldo-badge tone-pink foldo-nextlist__tag">จำเป็น</span>{% else %}<span class="foldo-badge tone-muted foldo-nextlist__tag">แนะนำ</span>{% endif %}
+        <span class="foldo-nextlist__go">{{ step.action }}{% include "partials/icon.html" with name="arrow-right" %}</span>
+      </a>
+    </li>
+  {% endfor %}
+</ol>

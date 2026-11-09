@@ -1,52 +1,58 @@
 {% extends "base.html" %}
 {% block title %}{{ heading }} · {{ profile.label }} — FOLDO{% endblock %}
 {% block content %}
-<section class="foldo-section foldo-profile" aria-labelledby="education-form-heading">
-  <div class="container foldo-profile__narrow">
-    <a class="foldo-profile__back" href="{{ cancel_url }}">&larr; การศึกษา</a>
-    <header class="mt-2 mb-4">
+<div class="foldo-page foldo-page--narrow">
+  <a class="foldo-back" href="{{ cancel_url }}">{% include "partials/icon.html" with name="arrow-left" %}การศึกษา · {{ profile.label }}</a>
+  <div class="foldo-page-head">
+    <div class="foldo-page-head__text tone-blue">
       <p class="foldo-eyebrow" lang="en">{{ heading }}</p>
-      <h1 id="education-form-heading" class="foldo-section__title">
-        {% if form.instance.pk %}แก้ไขการศึกษา{% else %}เพิ่มการศึกษา{% endif %}
-      </h1>
-      <p class="foldo-section__subtitle mb-0">
-        ต้องกรอกชื่อสถาบันและวันที่เริ่ม ที่เหลือไม่บังคับ
-        ช่องที่มี <span class="text-danger">*</span> ต้องกรอก
-      </p>
-    </header>
-
-    <form method="post" novalidate data-loading>
-      {% csrf_token %}
-      {% include "partials/form_errors.html" %}
-
-      <section class="foldo-card mb-4" aria-labelledby="sec-school">
-        <h2 id="sec-school" class="h5">สถาบัน</h2>
-        {% include "partials/form_field.html" with field=form.institution %}
-        <div class="row">
-          <div class="col-md-6">{% include "partials/form_field.html" with field=form.degree %}</div>
-          <div class="col-md-6">{% include "partials/form_field.html" with field=form.field_of_study %}</div>
-        </div>
-      </section>
-
-      <section class="foldo-card mb-4" aria-labelledby="sec-dates">
-        <h2 id="sec-dates" class="h5">ช่วงเวลา</h2>
-        <div class="row">
-          <div class="col-md-6">{% include "partials/form_field.html" with field=form.start_date %}</div>
-          <div class="col-md-6">{% include "partials/form_field.html" with field=form.end_date %}</div>
-        </div>
-      </section>
-
-      <section class="foldo-card mb-4" aria-labelledby="sec-details">
-        <h2 id="sec-details" class="h5">รายละเอียดเพิ่มเติม</h2>
-        {% include "partials/form_field.html" with field=form.grade %}
-        {% include "partials/form_field.html" with field=form.description %}
-      </section>
-
-      <div class="d-flex flex-wrap gap-2">
-        <button type="submit" class="btn btn-lime" data-loading-text="กำลังบันทึก…">{{ submit_label }}</button>
-        <a class="btn btn-outline-foldo" href="{{ cancel_url }}">ยกเลิก</a>
-      </div>
-    </form>
+      <h1 id="education-form-heading" class="foldo-page-title">{% if form.instance.pk %}แก้ไข<em>การศึกษา</em>{% else %}เพิ่ม<em>การศึกษา</em>{% endif %}</h1>
+      <p class="foldo-page-lead">ต้องกรอกชื่อสถาบันและวันที่เริ่ม ที่เหลือไม่บังคับ ช่องที่มี <span class="foldo-required">*</span> ต้องกรอก</p>
+    </div>
   </div>
-</section>
+
+  <form method="post" novalidate data-loading data-unsaved-guard aria-labelledby="education-form-heading">
+    {% csrf_token %}
+    {% include "partials/form_errors.html" %}
+
+    <section class="foldo-form-section tone-blue" aria-labelledby="sec-school">
+      <div class="foldo-form-section__head">
+        <span class="foldo-form-section__num">1</span>
+        <div><h2 id="sec-school" class="foldo-form-section__title">สถาบัน</h2><p class="foldo-form-section__hint">ชื่อสถาบัน วุฒิ และสาขา</p></div>
+      </div>
+      {% include "partials/form_field.html" with field=form.institution %}
+      <div class="row">
+        <div class="col-md-6">{% include "partials/form_field.html" with field=form.degree %}</div>
+        <div class="col-md-6">{% include "partials/form_field.html" with field=form.field_of_study %}</div>
+      </div>
+    </section>
+
+    <section class="foldo-form-section tone-lime" aria-labelledby="sec-dates">
+      <div class="foldo-form-section__head">
+        <span class="foldo-form-section__num">2</span>
+        <div><h2 id="sec-dates" class="foldo-form-section__title">ช่วงเวลา</h2><p class="foldo-form-section__hint">ถ้ายังเรียนอยู่ เว้นวันที่จบไว้ จะแสดงเป็น “ปัจจุบัน”</p></div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">{% include "partials/form_field.html" with field=form.start_date %}</div>
+        <div class="col-md-6">{% include "partials/form_field.html" with field=form.end_date %}</div>
+      </div>
+    </section>
+
+    <section class="foldo-form-section tone-purple" aria-labelledby="sec-details">
+      <div class="foldo-form-section__head">
+        <span class="foldo-form-section__num">3</span>
+        <div><h2 id="sec-details" class="foldo-form-section__title">รายละเอียดเพิ่มเติม</h2><p class="foldo-form-section__hint">เกรด รางวัล หรือกิจกรรมเด่น</p></div>
+      </div>
+      {% include "partials/form_field.html" with field=form.grade %}
+      {% include "partials/form_field.html" with field=form.description %}
+    </section>
+
+    <div class="foldo-form-actions">
+      <button type="submit" class="btn btn-lime" data-loading-text="กำลังบันทึก…">{% include "partials/icon.html" with name="check" %}{{ submit_label }}</button>
+      {% if can_add_another %}<button type="submit" name="add_another" value="1" class="btn btn-outline-foldo" data-loading-text="กำลังบันทึก…">{% include "partials/icon.html" with name="plus" %}บันทึกแล้วเพิ่มอีก</button>{% endif %}
+      <a class="btn btn-ghost" href="{{ cancel_url }}">ยกเลิก</a>
+      <p class="foldo-form-actions__note" data-unsaved-note>{% if form.instance.pk %}กำลังแก้ไขรายการเดิม{% else %}รายการใหม่ใน {{ profile.label }}{% endif %}</p>
+    </div>
+  </form>
+</div>
 {% endblock %}

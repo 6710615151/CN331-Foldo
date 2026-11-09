@@ -1,38 +1,34 @@
-<article class="foldo-card foldo-profile-card mb-4">
-  <div>
-    <div class="d-flex align-items-center gap-3 mb-3">
-      {% if display.photo_url %}
-        <img src="{{ display.photo_url }}" alt="Photo of {{ display.display_name }}"
-             width="112" height="112" class="rounded-circle object-fit-cover flex-shrink-0">
-      {% else %}
-        <div class="rounded-circle foldo-profile-card__initials d-flex align-items-center justify-content-center fw-bold fs-2 flex-shrink-0"
-             style="width:112px;height:112px" aria-hidden="true">{{ display.initials }}</div>
-      {% endif %}
-      <div>
-        <h2 class="h4 mb-1">{{ display.display_name|default:"Unnamed profile" }}</h2>
-        {% if display.headline %}<p class="mb-1 foldo-section__subtitle">{{ display.headline }}</p>{% endif %}
-        {% if display.location %}<p class="mb-0 small foldo-section__subtitle">{{ display.location }}</p>{% endif %}
+{% comment %}
+  Identity block for a profile (used by profiles/detail.html and the
+  {% profile_card %} tag). Reads only the render-safe ProfileDisplay.
+{% endcomment %}
+<article class="foldo-identity tone-blue">
+  <div class="foldo-identity__cover" aria-hidden="true">
+    <span class="foldo-shape foldo-shape--tri" style="--s:4.5rem; right:12%; top:16%; transform:rotate(18deg)"></span>
+    <span class="foldo-shape foldo-shape--diamond" style="--s:2.2rem; right:30%; bottom:18%"></span>
+    <span class="foldo-shape foldo-shape--ring" style="--s:8rem; --c1:#c4f500; right:-2rem; bottom:-3.5rem"></span>
+    <span class="foldo-shape foldo-shape--dot" style="--s:1.2rem; right:45%; top:22%; --c1:#ff6a2b; --c2:#a33a0c"></span>
+  </div>
+  <div class="foldo-identity__body">
+    {% include "partials/avatar.html" with photo_url=display.photo_url initials=display.initials name=display.display_name size="xl" %}
+    <div class="foldo-identity__text">
+      <h2 class="foldo-identity__name">{{ display.display_name|default:"Unnamed profile" }}</h2>
+      {% if display.headline %}<p class="foldo-identity__headline">{{ display.headline }}</p>{% endif %}
+      <div class="foldo-chip-row">
+        {% if display.location %}<span class="foldo-chip">{% include "partials/icon.html" with name="pin" %}{{ display.location }}</span>{% endif %}
+        {% for item in display.contacts %}
+          {% if item.href %}
+            <a class="foldo-chip" href="{{ item.href }}">{% if item.label == "Email" %}{% include "partials/icon.html" with name="mail" %}{% else %}{% include "partials/icon.html" with name="call" %}{% endif %}<span class="visually-hidden">{{ item.label }}: </span>{{ item.value }}</a>
+          {% else %}
+            <span class="foldo-chip">{{ item.value }}</span>
+          {% endif %}
+        {% endfor %}
+        {% for item in display.links %}
+          <a class="foldo-chip {% if item.label == 'GitHub' %}tone-purple{% elif item.label == 'LinkedIn' %}tone-blue{% else %}tone-lime{% endif %}" href="{{ item.href }}" target="_blank" rel="noopener noreferrer">
+            {% if item.label == "GitHub" %}{% include "partials/icon.html" with name="github" %}{% elif item.label == "LinkedIn" %}{% include "partials/icon.html" with name="linkedin" %}{% else %}{% include "partials/icon.html" with name="globe" %}{% endif %}{{ item.label }}<span class="visually-hidden"> (เปิดในแท็บใหม่)</span>
+          </a>
+        {% endfor %}
       </div>
     </div>
-
-    {% if display.bio %}<p>{{ display.bio|linebreaksbr }}</p>{% endif %}
-
-    {% if display.contacts %}
-      <ul class="list-unstyled mb-2">
-        {% for item in display.contacts %}
-          <li><strong>{{ item.label }}:</strong>
-            {% if item.href %}<a href="{{ item.href }}">{{ item.value }}</a>{% else %}{{ item.value }}{% endif %}
-          </li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-
-    {% if display.links %}
-      <div class="d-flex flex-wrap gap-2">
-        {% for item in display.links %}
-          <a class="btn btn-outline-foldo btn-sm" href="{{ item.href }}" target="_blank" rel="noopener noreferrer">{{ item.label }}</a>
-        {% endfor %}
-      </div>
-    {% endif %}
   </div>
 </article>
