@@ -1,0 +1,122 @@
+/* Export PDF page (FOLDO-11) — FOLDO tokens from static/css/styles.css. */
+
+#main-content {
+  background:
+    radial-gradient(ellipse 60% 420px at 8% 0%, rgba(47, 95, 230, 0.32), transparent 100%),
+    radial-gradient(ellipse 45% 360px at 95% 0%, rgba(100, 37, 255, 0.2), transparent 100%);
+  background-repeat: no-repeat;
+}
+
+.foldo-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.9rem 0.35rem 0.7rem;
+  border: 1px solid var(--foldo-border-strong);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--foldo-ink);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s, color 0.15s, transform 0.15s;
+}
+.foldo-back:hover,
+.foldo-back:focus-visible {
+  border-color: var(--foldo-lime);
+  background: rgba(184, 243, 74, 0.1);
+  color: var(--foldo-lime);
+  transform: translateX(-2px);
+}
+.foldo-back span[aria-hidden] { font-size: 1.1rem; line-height: 1; }
+
+.foldo-ex__header { margin: var(--foldo-space-3) 0 var(--foldo-space-4); }
+.foldo-ex__eyebrow {
+  margin: 0 0 0.25rem;
+  color: var(--foldo-lime);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+.foldo-ex__title { font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 700; }
+.foldo-ex__bands {
+  display: flex;
+  height: 6px;
+  max-width: 7rem;
+  margin: 0.75rem 0 var(--foldo-space-2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.foldo-ex__bands span:first-child { flex: 2; background: var(--foldo-lime); }
+.foldo-ex__bands span:last-child { flex: 1; background: var(--foldo-orange); }
+.foldo-ex__subtitle { color: var(--foldo-muted); margin: 0; }
+
+.foldo-ex__card {
+  background: linear-gradient(160deg, var(--foldo-surface-2), var(--foldo-surface) 55%);
+  border: 1px solid var(--foldo-border);
+  border-top: 4px solid var(--foldo-lime);
+  border-radius: var(--foldo-radius-lg);
+  box-shadow: var(--foldo-shadow-md);
+}
+.foldo-ex__card-title {
+  font-family: var(--foldo-font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.foldo-ex__sizes { border: 0; padding: 0; margin: 0 0 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.foldo-ex__legend { float: none; width: auto; font-size: 0.9rem; font-weight: 500; margin: 0 0.5rem 0 0; color: var(--foldo-muted); }
+.foldo-ex__size {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1.5px solid var(--foldo-border-strong);
+  border-radius: var(--foldo-radius);
+  background: var(--foldo-bg-deep);
+  cursor: pointer;
+  font-weight: 600;
+  transition: border-color 0.15s, background 0.15s;
+}
+.foldo-ex__size input { accent-color: var(--foldo-lime); width: 1.1rem; height: 1.1rem; margin: 0; }
+.foldo-ex__size:hover { border-color: rgba(184, 243, 74, 0.5); }
+.foldo-ex__size:has(input:checked) { border-color: var(--foldo-lime); background: rgba(184, 243, 74, 0.07); }
+.foldo-ex__size:has(input:focus-visible) { box-shadow: 0 0 0 3px rgba(184, 243, 74, 0.25); }
+
+/* State panels: progress, success, failure */
+.foldo-ex__state {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1rem 1.1rem;
+  margin-top: 0.5rem;
+  border: 1px solid var(--foldo-border-strong);
+  border-radius: var(--foldo-radius);
+  background: var(--foldo-bg-deep);
+}
+.foldo-ex__state[hidden] { display: none; }
+.foldo-ex__state--success { border-color: rgba(184, 243, 74, 0.5); background: rgba(184, 243, 74, 0.07); }
+.foldo-ex__state--failure { border-color: rgba(255, 143, 208, 0.6); background: rgba(255, 143, 208, 0.07); }
+.foldo-ex__state-title { margin: 0 0 0.25rem; font-weight: 600; }
+.foldo-ex__state-text { margin: 0 0 0.75rem; color: var(--foldo-muted); font-size: 0.92rem; overflow-wrap: anywhere; }
+.foldo-ex__state .btn + .btn, .foldo-ex__state .btn + a { margin-left: 0.25rem; }
+
+.foldo-ex__spinner {
+  flex: none;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-top: 0.15rem;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: var(--foldo-lime);
+  border-radius: 50%;
+  animation: foldo-ex-spin 0.9s linear infinite;
+}
+@keyframes foldo-ex-spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .foldo-back, .foldo-ex__size { transition: none; }
+  .foldo-ex__spinner { animation-duration: 3s; }
+}

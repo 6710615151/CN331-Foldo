@@ -1,10 +1,17 @@
+{% comment %}
+  Flash messages as toasts (top-right). Success toasts fade on their own;
+  warnings and errors stay until dismissed. Tags keep Bootstrap's alert-* names.
+{% endcomment %}
 {% if messages %}
-<div class="container mt-3" role="status" aria-live="polite">
+<div class="foldo-toasts" role="status" aria-live="polite" data-toasts>
   {% for message in messages %}
-    <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
-      {{ message }}
+    {% with tag=message.tags|default:"info" %}
+    <div class="alert alert-{{ tag }} foldo-toast foldo-toast--{{ tag }} alert-dismissible fade show {% if tag == 'success' %}tone-lime{% elif tag == 'danger' %}tone-danger{% elif tag == 'warning' %}tone-warning{% else %}tone-blue{% endif %}" role="alert">
+      <span class="foldo-toast__icon">{% if tag == "success" %}{% include "partials/icon.html" with name="check" %}{% elif tag == "danger" or tag == "warning" %}{% include "partials/icon.html" with name="alert" %}{% else %}{% include "partials/icon.html" with name="info" %}{% endif %}</span>
+      <div class="foldo-toast__body">{{ message }}</div>
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="ปิด"></button>
     </div>
+    {% endwith %}
   {% endfor %}
 </div>
 {% endif %}

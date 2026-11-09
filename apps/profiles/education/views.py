@@ -16,7 +16,7 @@ from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import CreateView, DeleteView, TemplateView, UpdateView
 
-from apps.core.mixins import OwnerRequiredMixin
+from apps.core.mixins import AddAnotherMixin, OwnerRequiredMixin
 
 from ..models import Education
 from ..services import get_profile
@@ -104,7 +104,8 @@ class _EducationFormMixin:
         return super().form_invalid(form)
 
 
-class EducationCreateView(OwnedProfileMixin, _EducationFormMixin, CreateView):
+class EducationCreateView(AddAnotherMixin, OwnedProfileMixin, _EducationFormMixin, CreateView):
+    add_another_url_name = "profiles:education_add"
     heading = "Add education"
     submit_label = "Add education"
 

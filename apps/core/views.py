@@ -18,7 +18,8 @@ class LandingView(TemplateView):
 class OnboardingView(LoginRequiredMixin, TemplateView):
     """First-time entry flow: a three-step walkthrough before the dashboard.
 
-    Signed-in users only. Step 1 reflects whether the user has a Main Profile.
+    Signed-in users only. Each step reflects the user's real progress: a Main
+    Profile, a portfolio version, and a published (shareable) version.
     """
 
     template_name = "core/onboarding.html"
@@ -30,10 +31,10 @@ class OnboardingView(LoginRequiredMixin, TemplateView):
 
 
 class DashboardView(LoginRequiredMixin, TemplateView):
-    """Signed-in app shell: navigation, layout and an empty-state summary.
+    """Signed-in home: profile completion, portfolio versions and recent activity.
 
-    Signed-in users only. Shows the user's own Main Profile status; portfolio
-    versions join once ``apps.portfolios`` exists (FOLDO-05).
+    Signed-in users only; every number comes from the user's own rows
+    (``apps.core.selectors.get_dashboard_summary``).
     """
 
     template_name = "core/dashboard.html"

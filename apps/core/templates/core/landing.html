@@ -6,7 +6,9 @@
 {% block meta_description %}FOLDO — เก็บทุกผลงานไว้ที่เดียว แล้วสร้าง Portfolio ได้หลายเวอร์ชัน{% endblock %}
 
 {# Full-bleed hero: the landing page carries its own large logo, so no navbar or footer. #}
+{% block frame_class %}foldo-frame--bare{% endblock %}
 {% block header %}{% endblock %}
+{% block topbar %}{% endblock %}
 {% block footer %}{% endblock %}
 
 {% comment %}
@@ -48,7 +50,7 @@
         </a>
 
         {% if not user.is_authenticated %}
-          <a class="btn btn-outline-light btn-lg" href="{% url 'accounts:login' %}">
+          <a class="btn btn-outline-light btn-lg foldo-hero__login" href="{% url 'accounts:login' %}">
             เข้าสู่ระบบ
           </a>
         {% endif %}

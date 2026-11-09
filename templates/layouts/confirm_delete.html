@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% comment %}
+  Shared "are you sure?" page for every destructive action (profiles, education,
+  skills, experience, projects, portfolios). Child templates fill:
+    confirm_title (h1), confirm_title_en (screen-reader English), confirm_item
+    (what is being deleted), confirm_body (consequences), cancel_url.
+  The POST form, CSRF token and loading state live here once.
+{% endcomment %}
+{% block content %}
+<div class="foldo-page foldo-page--narrow foldo-confirm">
+  <div class="foldo-confirm__card">
+    <div class="foldo-confirm__art" aria-hidden="true">
+      <span class="foldo-confirm__icon">{% include "partials/icon.html" with name="trash" %}</span>
+      <span class="foldo-shape foldo-shape--tri" style="--s:2.2rem; --c1:#ff3d9a; --c2:#b51568; right:12%; top:18%; transform:rotate(-14deg)"></span>
+      <span class="foldo-shape foldo-shape--dot" style="--s:1rem; left:16%; bottom:20%"></span>
+    </div>
+    <p class="foldo-eyebrow tone-danger" lang="en">{% block confirm_eyebrow %}Delete{% endblock %}</p>
+    <h1 id="delete-heading" class="foldo-page-title foldo-confirm__title">{% block confirm_title %}{% endblock %}</h1>
+    <p class="visually-hidden" lang="en">{% block confirm_title_en %}{% endblock %}</p>
+
+    <div class="foldo-confirm__item">{% block confirm_item %}{% endblock %}</div>
+
+    <p class="foldo-confirm__body">
+      {% include "partials/icon.html" with name="alert" class="foldo-text-pink" %}
+      <span>{% block confirm_body %}ข้อมูลนี้จะถูกลบถาวร กู้คืนไม่ได้{% endblock %}</span>
+    </p>
+
+    <form method="post" class="foldo-confirm__actions" data-loading>
+      {% csrf_token %}
+      <a class="btn btn-outline-foldo" href="{% block cancel_url %}{% url 'core:dashboard' %}{% endblock %}">ยกเลิก</a>
+      <button type="submit" class="btn btn-danger" data-loading-text="กำลังลบ…">{% include "partials/icon.html" with name="trash" %}{% block confirm_button %}ยืนยันลบ{% endblock %}</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

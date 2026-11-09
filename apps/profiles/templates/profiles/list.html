@@ -1,49 +1,52 @@
 {% extends "base.html" %}
+{% load foldo_tags %}
 {% block title %}โปรไฟล์ของฉัน — FOLDO{% endblock %}
 {% block content %}
-<section class="foldo-section foldo-profile" aria-labelledby="profiles-heading">
-  <div class="container">
-    <header class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
-      <div>
-        <p class="foldo-eyebrow" lang="en">Main profile</p>
-        <h1 id="profiles-heading" class="foldo-section__title mb-0">โปรไฟล์ของฉัน</h1>
-      </div>
-      <div class="d-flex align-items-center flex-wrap gap-2">
-        {% if can_create %}
-          <a class="btn btn-lime" href="{% url 'profiles:create' %}">สร้างโปรไฟล์ใหม่</a>
-        {% else %}
-          <span class="small foldo-section__subtitle">สร้างได้สูงสุด {{ max_profiles }} โปรไฟล์</span>
-        {% endif %}
-      </div>
-    </header>
+<div class="foldo-page">
+  <div class="foldo-page-head">
+    <div class="foldo-page-head__text tone-blue">
+      <p class="foldo-eyebrow" lang="en">Main profile</p>
+      <h1 id="profiles-heading" class="foldo-page-title">โปรไฟล์<em>ของฉัน</em></h1>
+      <p class="foldo-page-lead">เก็บข้อมูลแนะนำตัวได้หลายชุด เช่น สายเทคกับสายออกแบบ ทุกพอร์ตโฟลิโอดึงข้อมูลจากที่นี่ แก้ครั้งเดียวอัปเดตทุกเวอร์ชัน</p>
+    </div>
+    <div class="foldo-page-head__actions">
+      {% if can_create %}
+        <a class="btn btn-lime" href="{% url 'profiles:create' %}">{% include "partials/icon.html" with name="plus" %}สร้างโปรไฟล์ใหม่</a>
+      {% else %}
+        <span class="foldo-badge tone-muted">สร้างได้สูงสุด {{ max_profiles }} โปรไฟล์</span>
+      {% endif %}
+    </div>
+  </div>
 
-    {% url "profiles:create" as create_url %}
-    <div class="row g-4">
+  {% url "profiles:create" as create_url %}
+  {% if profiles %}
+    <ul class="foldo-id-grid" aria-labelledby="profiles-heading">
       {% for profile in profiles %}
-        <div class="col-12 col-md-6">
-          <article class="foldo-card h-100 d-flex flex-column">
-            <div class="d-flex align-items-start gap-3 mb-2">
-              {% if profile.photo %}
-                <img src="{{ profile.photo.url }}" alt="" width="56" height="56"
-                     class="rounded-circle object-fit-cover flex-shrink-0">
-              {% endif %}
-              <div class="flex-grow-1">
-                <h2 class="h5 mb-1">
-                  {{ profile.label }}
-                  {% if profile.is_default %}<span class="badge foldo-badge ms-1">Default</span>{% endif %}
-                </h2>
-                <p class="mb-0">{{ profile.full_name }}</p>
-                {% if profile.headline %}<p class="mb-0 small foldo-section__subtitle">{{ profile.headline }}</p>{% endif %}
+        <li class="foldo-id-card foldo-card--interactive {% cycle 'tone-blue' 'tone-purple' 'tone-pink' 'tone-lime' %}">
+          <div class="foldo-id-card__banner" aria-hidden="true">
+            <span class="foldo-shape foldo-shape--tri" style="--s:3.2rem; right:14%; top:18%; transform:rotate(16deg)"></span>
+            <span class="foldo-shape foldo-shape--dot" style="--s:1.1rem; right:38%; top:30%; --c1:#fff; --c2:#9db6ff"></span>
+          </div>
+          <div class="foldo-id-card__body">
+            {% include "partials/avatar.html" with photo_url=profile.photo|file_url initials=profile.full_name|initial size="lg" %}
+            <h2 class="foldo-id-card__label">
+              <a class="foldo-card__link" href="{% url 'profiles:view' profile.pk %}">{{ profile.label }}</a>
+              {% if profile.is_default %}<span class="foldo-badge foldo-badge--solid tone-lime">Default</span>{% endif %}
+            </h2>
+            <p class="foldo-id-card__name">{{ profile.full_name }}</p>
+            <p class="foldo-id-card__headline">{{ profile.headline|default:"ยังไม่มีหัวข้อแนะนำตัว" }}</p>
+
+            <div class="foldo-id-card__progress">
+              <div class="d-flex justify-content-between small mb-1">
+                <span class="foldo-muted">ความครบของโปรไฟล์</span><strong>{{ profile.completion_percent }}%</strong>
               </div>
+              <div class="progress" role="progressbar" aria-label="ความครบของ {{ profile.label }}" aria-valuenow="{{ profile.completion_percent }}" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-bar" style="width: {{ profile.completion_percent }}%"></div>
+              </div>
+              {% if not profile.is_complete %}<p class="foldo-id-card__missing">ยังขาด: {{ profile.missing_fields|join:", " }}</p>{% endif %}
             </div>
 
-            {% if not profile.is_complete %}
-              <p class="small foldo-profile__warn mb-2">
-                ยังไม่ครบ ({{ profile.completion_percent }}%) ขาด: {{ profile.missing_fields|join:", " }}
-              </p>
-            {% endif %}
-
-            <div class="d-flex flex-wrap gap-2 mt-auto pt-2">
+            <div class="foldo-id-card__actions foldo-above-link">
               <a class="btn btn-sm btn-foldo" href="{% url 'profiles:view' profile.pk %}">ดู<span class="visually-hidden"> {{ profile.label }}</span></a>
               <a class="btn btn-sm btn-outline-foldo" href="{% url 'profiles:update' profile.pk %}">แก้ไข<span class="visually-hidden"> {{ profile.label }}</span></a>
               {% if not profile.is_default %}
@@ -52,16 +55,25 @@
                   <button type="submit" class="btn btn-sm btn-outline-foldo">ตั้งเป็น Default</button>
                 </form>
               {% endif %}
-              <a class="btn btn-sm btn-outline-danger ms-auto" href="{% url 'profiles:delete' profile.pk %}">ลบ<span class="visually-hidden"> {{ profile.label }}</span></a>
+              <a class="btn btn-sm btn-ghost btn-icon ms-auto" href="{% url 'profiles:delete' profile.pk %}" title="ลบ">
+                {% include "partials/icon.html" with name="trash" %}<span class="visually-hidden">ลบ {{ profile.label }}</span>
+              </a>
             </div>
-          </article>
-        </div>
-      {% empty %}
-        <div class="col-12">
-          {% include "partials/empty_state.html" with message="คุณยังไม่มีโปรไฟล์หลัก" action_url=create_url action_label="สร้างโปรไฟล์แรก" %}
-        </div>
+          </div>
+        </li>
       {% endfor %}
-    </div>
-  </div>
-</section>
+      {% if can_create %}
+        <li class="foldo-id-card foldo-id-card--new">
+          <a href="{% url 'profiles:create' %}">
+            <span class="foldo-icon-tile foldo-icon-tile--lg foldo-icon-tile--solid tone-lime">{% include "partials/icon.html" with name="plus" %}</span>
+            <strong>เพิ่มโปรไฟล์อีกชุด</strong>
+            <span>เช่น “สายออกแบบ” หรือ “สำหรับทุนการศึกษา”</span>
+          </a>
+        </li>
+      {% endif %}
+    </ul>
+  {% else %}
+    {% include "partials/empty_state.html" with title="เริ่มจากโปรไฟล์หลัก" message="คุณยังไม่มีโปรไฟล์หลัก กรอกชื่อและหัวข้อแนะนำตัวก่อน ที่เหลือค่อยเติมทีหลังได้" action_url=create_url action_label="สร้างโปรไฟล์แรก" %}
+  {% endif %}
+</div>
 {% endblock %}

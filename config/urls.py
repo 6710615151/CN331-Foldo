@@ -1,7 +1,19 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.templatetags.static import static as static_url
 from django.urls import include, path
+from django.views.generic import RedirectView
+
+
+class FaviconView(RedirectView):
+    """Resolved per request (not at import) so hashed static storages also work."""
+
+    permanent = True
+
+    def get_redirect_url(self, *args, **kwargs):
+        return static_url("images/favicon.ico")
+
 
 # ---------------------------------------------------------------------------
 # FOLDO URL configuration
@@ -9,6 +21,9 @@ from django.urls import include, path
 # Top-level routing only. Each app owns its own urls.py so features stay
 # self-contained and easier for five developers to work on in parallel.
 urlpatterns = [
+    # Browsers ask for /favicon.ico even on pages without a <link rel="icon">
+    # (the PDF source, JSON responses); send them to the static file.
+    path("favicon.ico", FaviconView.as_view()),
     path("admin/", admin.site.urls),
     path("", include("apps.core.urls")),
     path("accounts/", include("apps.accounts.urls")),

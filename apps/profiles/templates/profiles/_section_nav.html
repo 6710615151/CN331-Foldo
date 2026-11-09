@@ -1,0 +1,36 @@
+{% comment %}
+  Local navigation between the parts of ONE profile, so moving from education
+  to projects never means going back to the overview first. Params:
+    profile — the MainProfile;  active — overview | education | skills | projects.
+  An empty section shows a "ว่าง" marker so gaps are visible at a glance.
+{% endcomment %}
+{% with edu=profile.educations.count sk=profile.skills.count ex=profile.experiences.count pr=profile.projects.count %}
+<nav class="foldo-subnav" aria-label="ส่วนของโปรไฟล์ {{ profile.label }}">
+  <ul class="foldo-subnav__list">
+    <li>
+      <a class="foldo-subnav__item tone-blue{% if active == 'overview' %} active{% endif %}" href="{% url 'profiles:view' profile.pk %}"{% if active == 'overview' %} aria-current="page"{% endif %}>
+        {% include "partials/icon.html" with name="user" %}<span>ภาพรวม</span>
+        {% if profile.is_complete %}<span class="foldo-subnav__count">{{ profile.completion_percent }}%</span>{% else %}<span class="foldo-subnav__count is-empty" title="ข้อมูลยังไม่ครบ">{{ profile.completion_percent }}%</span>{% endif %}
+      </a>
+    </li>
+    <li>
+      <a class="foldo-subnav__item tone-blue{% if active == 'education' %} active{% endif %}" href="{% url 'profiles:education_list' profile.pk %}"{% if active == 'education' %} aria-current="page"{% endif %}>
+        {% include "partials/icon.html" with name="cap" %}<span>การศึกษา</span>
+        {% if edu %}<span class="foldo-subnav__count">{{ edu }}</span>{% else %}<span class="foldo-subnav__count is-empty">ว่าง</span>{% endif %}
+      </a>
+    </li>
+    <li>
+      <a class="foldo-subnav__item tone-purple{% if active == 'skills' %} active{% endif %}" href="{% url 'profiles:skills_experience' profile.pk %}"{% if active == 'skills' %} aria-current="page"{% endif %}>
+        {% include "partials/icon.html" with name="spark" %}<span>ทักษะและประสบการณ์</span>
+        {% if sk or ex %}<span class="foldo-subnav__count">{{ sk }} · {{ ex }}</span>{% else %}<span class="foldo-subnav__count is-empty">ว่าง</span>{% endif %}
+      </a>
+    </li>
+    <li>
+      <a class="foldo-subnav__item tone-pink{% if active == 'projects' %} active{% endif %}" href="{% url 'profiles:projects' profile.pk %}"{% if active == 'projects' %} aria-current="page"{% endif %}>
+        {% include "partials/icon.html" with name="code" %}<span>โปรเจกต์</span>
+        {% if pr %}<span class="foldo-subnav__count">{{ pr }}</span>{% else %}<span class="foldo-subnav__count is-empty">ว่าง</span>{% endif %}
+      </a>
+    </li>
+  </ul>
+</nav>
+{% endwith %}

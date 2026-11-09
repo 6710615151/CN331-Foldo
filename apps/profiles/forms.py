@@ -19,7 +19,7 @@ def _link_field(label):
 
 
 class MainProfileForm(BootstrapFormMixin, forms.ModelForm):
-    website = _link_field("Website")
+    website = _link_field("เว็บไซต์")
     linkedin_url = _link_field("LinkedIn")
     github_url = _link_field("GitHub")
 
@@ -39,20 +39,20 @@ class MainProfileForm(BootstrapFormMixin, forms.ModelForm):
             "github_url",
         ]
         labels = {
-            "label": "Profile name",
-            "full_name": "Full name",
-            "headline": "Headline",
-            "bio": "About you",
-            "location": "Location",
-            "photo": "Profile photo",
-            "contact_email": "Contact email",
-            "phone": "Phone",
+            "label": "ชื่อโปรไฟล์",
+            "full_name": "ชื่อ-นามสกุล",
+            "headline": "หัวข้อแนะนำตัว (Headline)",
+            "bio": "ประวัติย่อ",
+            "location": "ที่อยู่ / จังหวัด",
+            "photo": "รูปโปรไฟล์",
+            "contact_email": "อีเมลติดต่อ",
+            "phone": "เบอร์โทรศัพท์",
         }
         help_texts = {
-            "label": "Only you see this, e.g. \"Backend developer\" or \"Design portfolio\".",
-            "headline": "One line, e.g. \"Backend developer and DevOps enthusiast\".",
-            "photo": f"JPG, PNG, WebP or GIF, up to {MAX_PHOTO_BYTES // (1024 * 1024)} MB.",
-            "contact_email": "Shown on your portfolios. Can differ from your login email.",
+            "label": "มีแค่คุณที่เห็น เช่น “สาย Backend” หรือ “พอร์ตงานออกแบบ”",
+            "headline": "หนึ่งบรรทัด เช่น “นักศึกษาวิศวะคอมฯ สนใจ Backend และ DevOps”",
+            "photo": f"JPG, PNG, WebP หรือ GIF ขนาดไม่เกิน {MAX_PHOTO_BYTES // (1024 * 1024)} MB",
+            "contact_email": "แสดงบนพอร์ตโฟลิโอ ใช้คนละอีเมลกับที่ใช้เข้าสู่ระบบได้",
         }
         widgets = {
             "bio": forms.Textarea(attrs={"rows": 6}),

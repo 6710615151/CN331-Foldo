@@ -1,19 +1,17 @@
-{# Confirm-delete popup. Needs: key, pk, delete_url, item_label, kind. #}
-<div class="modal fade foldo-modal" id="delete-{{ key }}-{{ pk }}" tabindex="-1" aria-labelledby="delete-{{ key }}-{{ pk }}-title" aria-hidden="true">
+{# Confirm-delete popup. Needs: key, pk, delete_url, item_label, kind. Without JS the link opens the full confirm page. #}
+<div class="modal fade foldo-modal--danger" id="delete-{{ key }}-{{ pk }}" tabindex="-1" aria-labelledby="delete-{{ key }}-{{ pk }}-title" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <form method="post" action="{{ delete_url }}" data-loading>
         {% csrf_token %}
-        <div class="modal-header border-0 pb-0">
-          <h2 class="modal-title h5" id="delete-{{ key }}-{{ pk }}-title">Delete {{ kind }}?</h2>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
         <div class="modal-body">
-          <strong>{{ item_label }}</strong> will be removed from this profile. This can't be undone.
+          <span class="foldo-modal__icon">{% include "partials/icon.html" with name="trash" %}</span>
+          <h2 class="modal-title h4" id="delete-{{ key }}-{{ pk }}-title">ลบ{{ kind }}นี้?</h2>
+          <p class="mb-0 foldo-muted"><strong class="text-white">{{ item_label }}</strong> จะถูกลบออกจากโปรไฟล์นี้ กู้คืนไม่ได้</p>
         </div>
-        <div class="modal-footer border-0 pt-0">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-danger" data-loading-text="Deleting…">Delete</button>
+        <div class="modal-footer pt-0">
+          <button type="button" class="btn btn-outline-foldo" data-bs-dismiss="modal">ยกเลิก</button>
+          <button type="submit" class="btn btn-danger" data-loading-text="กำลังลบ…">{% include "partials/icon.html" with name="trash" %}ยืนยันลบ</button>
         </div>
       </form>
     </div>

@@ -1,0 +1,123 @@
+{% comment %}
+  Signed-in navigation (desktop: fixed left sidebar; below lg: Bootstrap
+  off-canvas opened from the top bar). It is the page's <header> landmark.
+  Active state comes from shell.section (apps/core/context_processors.py).
+  No nested <header> elements in here: tests read the first <header>…</header>.
+{% endcomment %}
+{% with s=shell.section p=shell.nav_profile %}
+<header class="foldo-sidebar offcanvas-lg offcanvas-start" id="foldo-sidebar" tabindex="-1" aria-label="เมนูหลัก">
+  <div class="foldo-sidebar__inner">
+    <div class="foldo-sidebar__brand-row">
+      <a class="foldo-brand" href="{% url 'core:dashboard' %}" lang="en">
+        {% include "partials/logo_mark.html" %}
+        <span>Foldo</span>
+      </a>
+      <button type="button" class="btn btn-ghost btn-icon btn-sm d-lg-none" data-bs-dismiss="offcanvas" data-bs-target="#foldo-sidebar" aria-label="ปิดเมนู">
+        {% include "partials/icon.html" with name="x" %}
+      </button>
+    </div>
+
+    <nav class="foldo-sidebar__nav" aria-label="เมนูหลัก">
+      <ul class="foldo-nav-group">
+        <li><span class="foldo-nav-group__label">เวิร์กสเปซ</span></li>
+        <li>
+          <a class="foldo-nav-item tone-lime{% if s == 'dashboard' %} active{% endif %}" href="{% url 'core:dashboard' %}"{% if s == 'dashboard' %} aria-current="page"{% endif %}>
+            <span class="foldo-nav-item__icon">{% include "partials/icon.html" with name="home" %}</span>
+            <span>แดชบอร์ด</span>
+          </a>
+        </li>
+        <li>
+          <a class="foldo-nav-item tone-orange{% if s == 'onboarding' %} active{% endif %}" href="{% url 'core:onboarding' %}"{% if s == 'onboarding' %} aria-current="page"{% endif %}>
+            <span class="foldo-nav-item__icon">{% include "partials/icon.html" with name="compass" %}</span>
+            <span>เริ่มต้นใช้งาน</span>
+          </a>
+        </li>
+      </ul>
+
+      <ul class="foldo-nav-group">
+        <li><span class="foldo-nav-group__label">โปรไฟล์</span></li>
+        {% if p and shell.profile_count > 1 %}
+          <li>
+            <a class="foldo-nav-context" href="{% url 'profiles:list' %}" title="สลับโปรไฟล์">
+              <span class="visually-hidden">กำลังแก้ไขโปรไฟล์: </span><span class="foldo-nav-context__label">{{ p.label }}</span>
+              <span class="foldo-nav-context__switch">สลับ</span>
+            </a>
+          </li>
+        {% endif %}
+        <li>
+          <a class="foldo-nav-item tone-blue{% if s == 'profile' %} active{% endif %}" href="{% url 'profiles:list' %}"{% if s == 'profile' %} aria-current="page"{% endif %}>
+            <span class="foldo-nav-item__icon">{% include "partials/icon.html" with name="user" %}</span>
+            <span>โปรไฟล์ของฉัน</span>
+          </a>
+        </li>
+        <li>
+          <a class="foldo-nav-item tone-blue{% if s == 'education' %} active{% endif %}" href="{% if p %}{% url 'profiles:education_list' p.pk %}{% else %}{% url 'profiles:create' %}{% endif %}"{% if s == 'education' %} aria-current="page"{% endif %}>
+            <span class="foldo-nav-item__icon">{% include "partials/icon.html" with name="cap" %}</span>
+            <span>การศึกษา</span>
+          </a>
+        </li>
+        <li>
+          <a class="foldo-nav-item tone-purple{% if s == 'skills' %} active{% endif %}" href="{% if p %}{% url 'profiles:skills_experience' p.pk %}{% else %}{% url 'profiles:create' %}{% endif %}"{% if s == 'skills' %} aria-current="page"{% endif %}>
+            <span class="foldo-nav-item__icon">{% include "partials/icon.html" with name="spark" %}</span>
+            <span>ทักษะและประสบการณ์</span>
+          </a>
+        </li>
+        <li>
+          <a class="foldo-nav-item tone-pink{% if s == 'projects' %} active{% endif %}" href="{% if p %}{% url 'profiles:projects' p.pk %}{% else %}{% url 'profiles:create' %}{% endif %}"{% if s == 'projects' %} aria-current="page"{% endif %}>
+            <span class="foldo-nav-item__icon">{% include "partials/icon.html" with name="code" %}</span>
+            <span>โปรเจกต์</span>
+          </a>
+        </li>
+      </ul>
+
+      <ul class="foldo-nav-group">
+        <li><span class="foldo-nav-group__label">พอร์ตโฟลิโอ</span></li>
+        <li>
+          <a class="foldo-nav-item tone-magenta{% if s == 'portfolios' %} active{% endif %}" href="{% url 'portfolios:list' %}"{% if s == 'portfolios' %} aria-current="page"{% endif %}>
+            <span class="foldo-nav-item__icon">{% include "partials/icon.html" with name="layers" %}</span>
+            <span>เวอร์ชันพอร์ตโฟลิโอ</span>
+          </a>
+        </li>
+        <li>
+          <a class="foldo-nav-item tone-lime{% if s == 'templates' %} active{% endif %}" href="{% url 'rendering:gallery' %}"{% if s == 'templates' %} aria-current="page"{% endif %}>
+            <span class="foldo-nav-item__icon">{% include "partials/icon.html" with name="palette" %}</span>
+            <span>เทมเพลต</span>
+          </a>
+        </li>
+      </ul>
+
+      <ul class="foldo-nav-group">
+        <li><span class="foldo-nav-group__label">บัญชี</span></li>
+        <li>
+          <a class="foldo-nav-item tone-muted{% if s == 'settings' %} active{% endif %}" href="{% url 'accounts:settings' %}"{% if s == 'settings' %} aria-current="page"{% endif %}>
+            <span class="foldo-nav-item__icon">{% include "partials/icon.html" with name="settings" %}</span>
+            <span>ตั้งค่าบัญชี</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="foldo-sidebar__promo">
+      <strong>งานใหม่ = เวอร์ชันใหม่</strong>
+      <p>สร้างพอร์ตโฟลิโอที่เลือกเนื้อหาให้ตรงกับแต่ละตำแหน่ง จากโปรไฟล์เดียว</p>
+      <a class="btn btn-lime btn-sm w-100" href="{% url 'portfolios:create' %}">{% include "partials/icon.html" with name="plus" %}สร้างพอร์ตโฟลิโอ</a>
+    </div>
+
+    <ul class="foldo-nav-group mb-0">
+      <li class="foldo-sidebar__user">
+        {% include "partials/avatar.html" with photo_url=shell.photo_url initials=shell.initials size="sm" %}
+        <span class="foldo-sidebar__user-text">
+          <span class="foldo-sidebar__user-name">{{ shell.display_name }}</span>
+          <span class="foldo-sidebar__user-handle">@{{ user.get_username }}</span>
+        </span>
+        <form method="post" action="{% url 'accounts:logout' %}" class="foldo-sidebar__logout">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-ghost btn-icon btn-sm" title="ออกจากระบบ">
+            {% include "partials/icon.html" with name="logout" %}<span class="visually-hidden">ออกจากระบบ</span>
+          </button>
+        </form>
+      </li>
+    </ul>
+  </div>
+</header>
+{% endwith %}

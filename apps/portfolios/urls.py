@@ -12,6 +12,7 @@ urlpatterns = [
     path("<int:pk>/preview/frame/", views.portfolio_preview_frame, name="preview_frame"),
     path("<int:pk>/edit/", views.portfolio_edit, name="update"),
     path("<int:pk>/delete/", views.portfolio_delete, name="delete"),
+    path("<int:pk>/duplicate/", views.portfolio_duplicate, name="duplicate"),
     path("p/<slug:slug>/", views.portfolio_public, name="public"),
     path("<int:pk>/pdf/", views.portfolio_pdf, name="pdf"),
     # FOLDO-06: per-version content selection (Dev 2)
@@ -20,4 +21,6 @@ urlpatterns = [
     path("", include("apps.portfolios.quality.urls")),
     # FOLDO-17: share kit, copy link and QR code (Dev 4 task, done by Dev 2)
     path("", include("apps.portfolios.share_kit.urls")),
+    # FOLDO-11: export page with progress / success / failure / retry (Dev 2)
+    path("", include("apps.portfolios.pdf_export.urls")),
 ]

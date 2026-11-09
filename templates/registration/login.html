@@ -1,51 +1,19 @@
-{% extends "base.html" %}
-
-{% block title %}Log In — FOLDO{% endblock %}
-
-{% block content %}
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-12 col-md-6 col-lg-5">
-      
-      <div class="card shadow border-0 mb-4">
-        <div class="card-body p-4 p-md-5">
-          <h2 class="h3 mb-4 text-center fw-bold">Log In</h2>
-
-          {% if form.errors %}
-            <div class="alert alert-danger p-3 mb-4 rounded-3" role="alert">
-              Your username and password didn't match. Please try again.
-            </div>
-          {% endif %}
-
-          <form method="post">
-            {% csrf_token %}
-            
-            <!-- Default Django form render -->
-            <div class="mb-4">
-              {{ form.as_p }}
-            </div>
-            
-            <input type="hidden" name="next" value="{{ next }}">
-            
-            <div class="d-grid">
-              <button type="submit" class="btn btn-primary py-2 fw-semibold">Log In</button>
-            </div>
-          </form>
-          
-        </div>
-      </div>
-
-      <!-- Links below the card -->
-      <div class="text-center">
-        <p class="mb-2">
-          <a href="{% url 'accounts:password_reset' %}" class="text-decoration-none">Forgot your password?</a>
-        </p>
-        <p>
-          Don't have an account? <a href="{% url 'accounts:register' %}" class="text-decoration-none fw-bold">Sign up</a>
-        </p>
-      </div>
-
-    </div>
+{% extends "layouts/auth.html" %}
+{% block title %}เข้าสู่ระบบ — FOLDO{% endblock %}
+{% block auth_eyebrow %}Welcome back{% endblock %}
+{% block auth_title %}เข้าสู่ระบบ{% endblock %}
+{% block auth_lead %}กลับมาจัดการโปรไฟล์และพอร์ตโฟลิโอของคุณต่อ{% endblock %}
+{% block auth_body %}
+<form method="post" novalidate data-loading>
+  {% csrf_token %}
+  {% include "partials/form_errors.html" %}
+  {% include "partials/form_field.html" with field=form.username %}
+  {% include "partials/form_field.html" with field=form.password %}
+  <input type="hidden" name="next" value="{{ next }}">
+  <div class="d-flex justify-content-end mb-3">
+    <a class="small" href="{% url 'accounts:password_reset' %}">ลืมรหัสผ่าน?</a>
   </div>
-</div>
+  <button type="submit" class="btn btn-lime btn-lg w-100" data-loading-text="กำลังเข้าสู่ระบบ…">เข้าสู่ระบบ<span class="foldo-arrow" aria-hidden="true">&rarr;</span></button>
+</form>
 {% endblock %}
+{% block auth_footer %}ยังไม่มีบัญชี? <a href="{% url 'accounts:register' %}">สมัครสมาชิกฟรี</a>{% endblock %}

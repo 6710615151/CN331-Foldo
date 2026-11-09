@@ -1,18 +1,18 @@
-{% extends "base.html" %}
-
-{% block title %}Something went wrong — FOLDO{% endblock %}
-
-{% block content %}
-<section class="foldo-section">
-  <div class="container">
-    <div class="foldo-state">
-      <p class="foldo-state__code">500</p>
-      <h1 class="foldo-section__title">Something went wrong on our side</h1>
-      <p class="foldo-section__subtitle">
-        We've logged the problem. Please try again in a moment.
-      </p>
-      <a class="btn btn-foldo mt-2" href="{% url 'core:landing' %}">Back to dashboard</a>
-    </div>
-  </div>
-</section>
+{% extends "layouts/error.html" %}
+{% comment %}
+  Rendered when something already went wrong, so it avoids the signed-in shell
+  (no database reads): just the visitor navbar and footer.
+{% endcomment %}
+{% block title %}เกิดข้อผิดพลาด (500) — FOLDO{% endblock %}
+{% block frame_class %}foldo-frame--public{% endblock %}
+{% block header %}{% include "partials/navbar.html" %}{% endblock %}
+{% block topbar %}{% endblock %}
+{% block error_code %}500{% endblock %}
+{% block error_code_label %}500{% endblock %}
+{% block error_title %}เกิดข้อผิดพลาดฝั่งเรา{% endblock %}
+{% block error_title_en %}Something went wrong on our side.{% endblock %}
+{% block error_message %}เราบันทึกปัญหาไว้แล้ว ข้อมูลของคุณยังปลอดภัย ลองใหม่อีกครั้งในอีกสักครู่{% endblock %}
+{% block error_actions %}
+  <a class="btn btn-lime btn-lg" href="{% url 'core:landing' %}">{% include "partials/icon.html" with name="home" %}กลับหน้าแรก</a>
+  <a class="btn btn-outline-foldo btn-lg" href="{% url 'core:dashboard' %}">แดชบอร์ด</a>
 {% endblock %}

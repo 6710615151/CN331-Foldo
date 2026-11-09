@@ -3,16 +3,25 @@ import logging
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import DatabaseError, transaction
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.utils.text import slugify
-from .pdf import PdfUnavailable, render_pdf
+from .pdf import PdfUnavailable, normalize_page_size, render_pdf
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.clickjacking import xframe_options_sameorigin
+from django.views.decorators.http import require_POST
+
+from apps.rendering.themes import get_theme
 
 from .forms import PortfolioForm
 from .models import Portfolio
-from .services import get_portfolio, get_portfolios, profile_choices, render_version_html
+from .services import (
+    duplicate_portfolio,
+    get_portfolio,
+    get_portfolios,
+    profile_choices,
+    render_version_html,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +44,11 @@ def _process_form(request, portfolio):
     instance = portfolio or Portfolio(owner=request.user)
 
     if request.method != "POST":
-        return None, PortfolioForm(instance=instance, owner=request.user)
+        # "Use this template" in the gallery links here with ?template=<key>.
+        initial = {}
+        if portfolio is None and get_theme(request.GET.get("template", "")):
+            initial["template_key"] = request.GET["template"]
+        return None, PortfolioForm(instance=instance, owner=request.user, initial=initial)
 
     form = PortfolioForm(request.POST, instance=instance, owner=request.user)
     if not form.is_valid():
@@ -120,6 +133,20 @@ def portfolio_delete(request, pk):
 
 
 
+@require_POST
+@login_required
+def portfolio_duplicate(request, pk):
+    """POST only. Copies one of the user's own versions as a new private draft."""
+    portfolio = _owned_or_404(request, pk)
+    try:
+        copy = duplicate_portfolio(portfolio)
+    except DatabaseError:
+        logger.exception("Failed duplicating portfolio %s for user %s", pk, request.user.pk)
+        messages.error(request, "Couldn't duplicate that portfolio. Please try again.")
+        return redirect("portfolios:list")
+    messages.success(request, f"สร้างสำเนา “{copy.title}” แล้ว (ยังไม่เผยแพร่)")
+    return redirect("portfolios:update", pk=copy.pk)
+
 
 # --- FOLDO-08: device preview (desktop / mobile), loading and rendering-error states ---
 
@@ -155,15 +182,25 @@ def portfolio_preview_frame(request, pk):
 @login_required
 def portfolio_pdf(request, pk):
     portfolio = _owned_or_404(request, pk)
+    page_size = normalize_page_size(request.GET.get("size"))
+    # The export page (JavaScript) sends this header and wants a status code it can show,
+    # not a redirect. Everything else (a plain link) keeps the redirect plus message.
+    in_page = request.headers.get("X-Foldo-Export") == "1"
     try:
-        pdf = render_pdf(portfolio, request=request)
+        pdf = render_pdf(portfolio, request=request, page_size=page_size)
     except PdfUnavailable:
         logger.warning("PDF export unavailable: WeasyPrint or Pango missing", exc_info=True)
-        messages.error(request, "PDF export isn't set up on this server yet.")
+        message = "PDF export isn't set up on this server yet."
+        if in_page:
+            return JsonResponse({"error": message}, status=503)
+        messages.error(request, message)
         return redirect("portfolios:list")
     except Exception:
         logger.exception("PDF export failed for portfolio %s", pk)
-        messages.error(request, "Couldn't create the PDF. Please try again.")
+        message = "Couldn't create the PDF. Please try again."
+        if in_page:
+            return JsonResponse({"error": message}, status=500)
+        messages.error(request, message)
         return redirect("portfolios:list")
 
     filename = f"{slugify(portfolio.title) or 'portfolio'}.pdf"

@@ -14,7 +14,7 @@ from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
 
-from apps.core.mixins import OwnerRequiredMixin
+from apps.core.mixins import AddAnotherMixin, OwnerRequiredMixin
 
 from ..models import Project
 from ..services import get_profile
@@ -63,7 +63,8 @@ class ProjectListView(ProfileFromUrlMixin, ListView):
         return selectors.get_projects(self.profile)
 
 
-class ProjectCreateView(ProfileFromUrlMixin, CreateView):
+class ProjectCreateView(AddAnotherMixin, ProfileFromUrlMixin, CreateView):
+    add_another_url_name = "profiles:project_add"
     form_class = ProjectForm
     template_name = "profiles/projects/form.html"
     extra_context = {"heading": "เพิ่มโปรเจกต์", "submit_label": "บันทึกโปรเจกต์"}

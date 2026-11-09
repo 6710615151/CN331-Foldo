@@ -1,23 +1,17 @@
-{% extends "base.html" %}
+{% extends "layouts/confirm_delete.html" %}
+{% load foldo_tags %}
 {% block title %}ลบ {{ profile.label }} — FOLDO{% endblock %}
-{% block content %}
-<section class="foldo-section foldo-profile" aria-labelledby="delete-heading">
-  <div class="container foldo-profile__narrow">
-    <h1 id="delete-heading" class="foldo-section__title">ลบโปรไฟล์นี้?</h1>
-    <p class="visually-hidden" lang="en">Delete this profile?</p>
-    <div class="foldo-card mb-3">
-      <p class="mb-1"><strong>{{ profile.label }}</strong></p>
-      <p class="mb-0 foldo-section__subtitle">{{ profile.full_name }}{% if profile.headline %} &middot; {{ profile.headline }}{% endif %}</p>
-    </div>
-    <p>
-      โปรไฟล์และรูปจะถูกลบถาวร กู้คืนไม่ได้
-      {% if profile.is_default %}โปรไฟล์ที่แก้ไขล่าสุดจะกลายเป็น Default แทน{% endif %}
-    </p>
-    <form method="post" class="d-flex gap-2">
-      {% csrf_token %}
-      <button type="submit" class="btn btn-danger">ยืนยันลบ</button>
-      <a class="btn btn-outline-foldo" href="{% url 'profiles:view' profile.pk %}">ยกเลิก</a>
-    </form>
+{% block confirm_title %}ลบโปรไฟล์นี้?{% endblock %}
+{% block confirm_title_en %}Delete this profile?{% endblock %}
+{% block confirm_item %}
+  {% include "partials/avatar.html" with photo_url=profile.photo|file_url initials=profile.full_name|initial size="lg" %}
+  <div class="min-w-0">
+    <strong>{{ profile.label }}</strong>{% if profile.is_default %} <span class="foldo-badge tone-lime">Default</span>{% endif %}
+    <span>{{ profile.full_name }}{% if profile.headline %} · {{ profile.headline }}{% endif %}</span>
   </div>
-</section>
 {% endblock %}
+{% block confirm_body %}
+  โปรไฟล์ รูป การศึกษา ทักษะ ประสบการณ์ และโปรเจกต์ทั้งหมดในโปรไฟล์นี้จะถูกลบถาวร กู้คืนไม่ได้
+  {% if profile.is_default %}โปรไฟล์ที่แก้ไขล่าสุดจะกลายเป็น Default แทน{% endif %}
+{% endblock %}
+{% block cancel_url %}{% url 'profiles:view' profile.pk %}{% endblock %}

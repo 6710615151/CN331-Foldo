@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 170">
+  <style>
+    .float-a, .float-b, .float-c, .spin-slow { transform-box: fill-box; transform-origin: center; }
+    .float-a { animation: f 7s ease-in-out infinite; }
+    .float-b { animation: f 9s ease-in-out -3s infinite; }
+    .float-c { animation: f 8s ease-in-out -5s infinite reverse; }
+    .spin-slow { animation: s 30s linear infinite; }
+    @keyframes f { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-8px) rotate(3deg); } }
+    @keyframes s { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  </style>
+  <defs>
+    <radialGradient id="gm-ball" cx="35%" cy="30%" r="70%"><stop offset="0" stop-color="#ffd1ea"/><stop offset=".4" stop-color="#ff3d9a"/><stop offset="1" stop-color="#9c0f6a"/></radialGradient>
+  </defs>
+  <ellipse cx="120" cy="150" rx="86" ry="12" fill="#145bff" opacity=".25"/>
+  <g class="float-a">
+    <rect x="66" y="26" width="108" height="112" rx="16" fill="#0d2460" stroke="#3d78ff" stroke-width="2.5" stroke-dasharray="7 6"/>
+    <circle cx="120" cy="82" r="22" fill="#c4f500"/>
+    <path d="M120 72v20M110 82h20" stroke="#06143d" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <g class="float-b"><path d="M40 52l18 10-18 10-18-10Z" fill="#b99bff"/><path d="M22 62l18 10v22L22 84Z" fill="#702eff"/><path d="M58 62 40 72v22l18-10Z" fill="#4c16c4"/></g>
+  <g class="float-c"><path d="M204 30l-20 36 18 7Z" fill="#c4f500"/><path d="M204 30l-2 43 24-10Z" fill="#8fb800"/></g>
+  <circle class="float-a" cx="200" cy="118" r="11" fill="url(#gm-ball)"/>
+  <path d="M30 120l2 5 5 2-5 2-2 5-2-5-5-2 5-2Z" fill="#c4f500"/>
+</svg>

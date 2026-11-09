@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 340">
+  <style>
+    .float-a, .float-b, .float-c, .spin-slow { transform-box: fill-box; transform-origin: center; }
+    .float-a { animation: f 7s ease-in-out infinite; }
+    .float-b { animation: f 9s ease-in-out -3s infinite; }
+    .float-c { animation: f 8s ease-in-out -5s infinite reverse; }
+    .spin-slow { animation: s 30s linear infinite; }
+    @keyframes f { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-8px) rotate(3deg); } }
+    @keyframes s { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  </style>
+  <defs>
+    <radialGradient id="gd-glow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#7fb2ff" stop-opacity=".55"/><stop offset=".6" stop-color="#3d78ff" stop-opacity=".18"/><stop offset="1" stop-color="#3d78ff" stop-opacity="0"/></radialGradient>
+    <linearGradient id="gd-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe0ff"/><stop offset="1" stop-color="#eef7ff"/></linearGradient>
+    <linearGradient id="gd-ring" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ff3d9a"/><stop offset=".5" stop-color="#702eff"/><stop offset="1" stop-color="#c4f500"/></linearGradient>
+    <radialGradient id="gd-ball" cx="35%" cy="30%" r="70%"><stop offset="0" stop-color="#ffd1ea"/><stop offset=".35" stop-color="#ff3d9a"/><stop offset="1" stop-color="#9c0f6a"/></radialGradient>
+    <radialGradient id="gd-ball2" cx="35%" cy="30%" r="70%"><stop offset="0" stop-color="#d7e4ff"/><stop offset=".4" stop-color="#3d78ff"/><stop offset="1" stop-color="#0b2a9a"/></radialGradient>
+  </defs>
+  <circle cx="230" cy="175" r="160" fill="url(#gd-glow)"/>
+  <ellipse class="spin-slow" cx="230" cy="185" rx="196" ry="58" fill="none" stroke="url(#gd-ring)" stroke-width="3" opacity=".75" transform="rotate(-10 230 185)"/>
+
+  <!-- back cards -->
+  <g transform="rotate(-13 150 150)">
+    <rect x="84" y="62" width="128" height="166" rx="14" fill="#145bff" stroke="#8fb0ff" stroke-opacity=".5"/>
+    <rect x="98" y="112" width="100" height="70" rx="8" fill="url(#gd-sky)"/>
+    <path d="M98 166c18-14 34-16 50-8s32 4 50-6v22a8 8 0 0 1-8 8H106a8 8 0 0 1-8-8Z" fill="#8cc63f"/>
+    <rect x="132" y="78" width="34" height="24" rx="4" fill="#fff"/><path d="M142 78v-4a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v4" fill="none" stroke="#fff" stroke-width="3"/><rect x="146" y="87" width="6" height="5" rx="1" fill="#145bff"/>
+  </g>
+  <g>
+    <rect x="186" y="26" width="128" height="166" rx="14" fill="#c4f500" stroke="#eaff9e" stroke-opacity=".7"/>
+    <rect x="200" y="78" width="100" height="70" rx="8" fill="url(#gd-sky)"/>
+    <path d="M200 132c20-12 36-14 52-6s30 6 48-4v20a8 8 0 0 1-8 8h-84a8 8 0 0 1-8-8Z" fill="#7fb53a"/>
+    <path d="M230 52l20-9 20 9-20 9Z" fill="#06143d"/><path d="M238 56v8c0 3 5 5 12 5s12-2 12-5v-8" fill="#06143d"/>
+  </g>
+  <g transform="rotate(11 346 168)">
+    <rect x="284" y="84" width="128" height="166" rx="14" fill="#702eff" stroke="#b99bff" stroke-opacity=".6"/>
+    <rect x="298" y="136" width="100" height="70" rx="8" fill="url(#gd-sky)"/>
+    <path d="M298 190c18-12 34-14 50-6s32 4 50-6v22a8 8 0 0 1-8 8h-84a8 8 0 0 1-8-8Z" fill="#8cc63f"/>
+    <path d="M330 102l-10 9 10 9M366 102l10 9-10 9M354 98l-12 26" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g transform="rotate(-7 116 248)">
+    <rect x="50" y="176" width="118" height="138" rx="14" fill="#ff3d9a" stroke="#ffb3d6" stroke-opacity=".6"/>
+    <rect x="63" y="224" width="92" height="74" rx="8" fill="url(#gd-sky)"/>
+    <path d="M63 282c16-12 30-12 46-6s30 4 46-4v18a8 8 0 0 1-8 8H71a8 8 0 0 1-8-8Z" fill="#8cc63f"/>
+    <path d="M109 190a17 17 0 1 0 0 34c2 0 3-2 2.5-3.5-.6-1.8.4-3.5 2.4-3.5h3.4A7 7 0 0 0 124 210c0-11-7-20-15-20Z" fill="#fff"/>
+    <circle cx="101" cy="205" r="2.6" fill="#ff3d9a"/><circle cx="107" cy="198" r="2.6" fill="#ff3d9a"/><circle cx="115" cy="200" r="2.6" fill="#ff3d9a"/>
+  </g>
+
+  <!-- the user's portfolio, front and centre -->
+  <g class="float-a">
+    <rect x="176" y="146" width="142" height="176" rx="16" fill="#fff"/>
+    <rect x="176" y="146" width="142" height="54" rx="16" fill="#145bff"/><rect x="176" y="184" width="142" height="16" fill="#145bff"/>
+    <rect x="176" y="194" width="74" height="7" fill="#c4f500"/><rect x="176" y="201" width="80" height="5" fill="#ff6a2b"/>
+    <circle cx="208" cy="174" r="16" fill="#c4f500" stroke="#fff" stroke-width="3"/>
+    <rect x="232" y="164" width="62" height="7" rx="3.5" fill="#fff"/><rect x="232" y="177" width="40" height="5" rx="2.5" fill="#c4f500"/>
+    <rect x="192" y="220" width="96" height="6" rx="3" fill="#06143d"/>
+    <rect x="192" y="234" width="110" height="5" rx="2.5" fill="#cdd5ea"/><rect x="192" y="245" width="86" height="5" rx="2.5" fill="#cdd5ea"/>
+    <rect x="192" y="262" width="48" height="40" rx="6" fill="#e6ecfb" stroke="#702eff" stroke-width="2"/>
+    <rect x="248" y="262" width="54" height="40" rx="6" fill="#e6ecfb" stroke="#ff3d9a" stroke-width="2"/>
+  </g>
+
+  <!-- floating solids -->
+  <g class="float-b">
+    <path d="M58 30l28 15-28 15-28-15Z" fill="#d8ff3d"/><path d="M30 45l28 15v32L30 77Z" fill="#a8d400"/><path d="M86 45 58 60v32l28-15Z" fill="#86ad00"/>
+  </g>
+  <g class="float-c">
+    <path d="M398 12 370 62 394 72Z" fill="#702eff"/><path d="M398 12 394 72 428 58Z" fill="#ec20b8"/>
+  </g>
+  <circle class="float-a" cx="404" cy="296" r="18" fill="url(#gd-ball)"/>
+  <circle class="float-b" cx="26" cy="168" r="11" fill="url(#gd-ball2)"/>
+  <path class="float-c" d="M346 300l22 6-14 16Z" fill="#ff6a2b"/>
+  <path class="float-a" d="M150 16l18 4-10 14Z" fill="#3d78ff"/>
+  <path d="M352 30l3 8 8 3-8 3-3 8-3-8-8-3 8-3Z" fill="#c4f500"/>
+  <path d="M34 280l2.5 6 6 2.5-6 2.5-2.5 6-2.5-6-6-2.5 6-2.5Z" fill="#fff" opacity=".8"/>
+</svg>
