@@ -8,12 +8,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class OwnerRequiredMixin(LoginRequiredMixin):
-    
+
     owner_field = "user"
 
     def get_queryset(self):
         queryset = super().get_queryset()
         return queryset.filter(**{self.owner_field: self.request.user.pk})
+
 
 ADD_ANOTHER = "add_another"
 

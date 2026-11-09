@@ -1,4 +1,5 @@
 """Read side of content selection (FOLDO-06)."""
+
 from __future__ import annotations
 
 from ..models import PortfolioContentSelection, PortfolioContentSetup

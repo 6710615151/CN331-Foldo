@@ -38,9 +38,17 @@ urlpatterns = [
 # skipped when the optional package is not installed (e.g. in CI).
 if settings.DEBUG and settings.DEV_TOOLS_INSTALLED:
     urlpatterns += [path("__reload__/", include("django_browser_reload.urls"))]
-    
+
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+elif settings.SERVE_MEDIA:
+    # Opt-in for small single-server deployments without object storage.
+    from django.urls import re_path
+    from django.views.static import serve
+
+    urlpatterns += [
+        re_path(r"^media/(?P<path>.*)$", serve, {"document_root": settings.MEDIA_ROOT}),
+    ]
 
 # Custom error handlers render friendly, non-technical pages in production
 # (DEBUG must be False for these to be used).

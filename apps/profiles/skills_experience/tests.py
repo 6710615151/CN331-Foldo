@@ -106,7 +106,7 @@ class SkillTests(SkillsExperienceTestCase):
         self.assertRedirects(response, reverse("profiles:skills_experience", args=[self.alice_profile.pk]))
         skill = self.alice_profile.skills.get(name="Django")
         self.assertEqual(skill.proficiency, "advanced")
-        self.assertEqual(self.messages(response), ["Skill “Django” added."])
+        self.assertEqual(self.messages(response), ["เพิ่มทักษะ “Django” แล้ว"])
 
     def test_profile_in_post_data_is_ignored(self):
         url = reverse("profiles:skill_add", args=[self.alice_profile.pk])
@@ -163,7 +163,7 @@ class SkillTests(SkillsExperienceTestCase):
         response = self.client.post(url)
         self.assertRedirects(response, reverse("profiles:skills_experience", args=[self.alice_profile.pk]))
         self.assertFalse(Skill.objects.filter(pk=self.alice_skill.pk).exists())
-        self.assertEqual(self.messages(response), ["Skill “Python” deleted."])
+        self.assertEqual(self.messages(response), ["ลบทักษะ “Python” แล้ว"])
 
 
 class ExperienceTests(SkillsExperienceTestCase):
@@ -185,7 +185,7 @@ class ExperienceTests(SkillsExperienceTestCase):
         exp = self.alice_profile.experiences.get(job_title="Backend Intern")
         self.assertEqual((exp.company, exp.description), ("Globex", "Built APIs."))
         self.assertEqual(exp.end_date, datetime.date(2025, 8, 31))
-        self.assertEqual(self.messages(response), ["Experience “Backend Intern” added."])
+        self.assertEqual(self.messages(response), ["เพิ่มประสบการณ์ “Backend Intern” แล้ว"])
 
     def test_empty_end_date_means_current(self):
         url = reverse("profiles:experience_add", args=[self.alice_profile.pk])
@@ -242,30 +242,28 @@ class ExperienceTests(SkillsExperienceTestCase):
         response = self.client.get(reverse("profiles:skills_experience", args=[self.alice_profile.pk]))
         companies = [e.company for e in response.context["experiences"]]
         self.assertEqual(companies, ["Newer Co", "Acme"])
-        self.assertContains(response, "Present")
+        self.assertContains(response, "ปัจจุบัน")
 
 
 class EmptyStateAndPersistenceTests(SkillsExperienceTestCase):
     def test_empty_profile_shows_empty_states_with_add_links(self):
         empty = MainProfile.objects.create(owner=self.alice, label="Empty", full_name="Alice A")
         response = self.client.get(reverse("profiles:skills_experience", args=[empty.pk]))
-        self.assertContains(response, "No skills yet")
-        self.assertContains(response, "No experience yet")
+        self.assertContains(response, "ยังไม่มีทักษะ")
+        self.assertContains(response, "ยังไม่มีประสบการณ์")
         self.assertContains(response, reverse("profiles:skill_add", args=[empty.pk]))
         self.assertContains(response, reverse("profiles:experience_add", args=[empty.pk]))
 
     def test_filled_profile_has_no_empty_state(self):
         response = self.client.get(reverse("profiles:skills_experience", args=[self.alice_profile.pk]))
-        self.assertNotContains(response, "No skills yet")
-        self.assertNotContains(response, "No experience yet")
+        self.assertNotContains(response, "ยังไม่มีทักษะ")
+        self.assertNotContains(response, "ยังไม่มีประสบการณ์")
 
     def test_changes_survive_refresh_and_a_new_login(self):
         add_skill = reverse("profiles:skill_add", args=[self.alice_profile.pk])
         add_exp = reverse("profiles:experience_add", args=[self.alice_profile.pk])
         self.client.post(add_skill, {"name": "Docker", "proficiency": "intermediate"})
-        self.client.post(
-            add_exp, {"company": "Initech", "job_title": "Analyst", "start_date": "2024-01-01"}
-        )
+        self.client.post(add_exp, {"company": "Initech", "job_title": "Analyst", "start_date": "2024-01-01"})
         overview = reverse("profiles:skills_experience", args=[self.alice_profile.pk])
         self.assertContains(self.client.get(overview), "Docker")  # refresh
 

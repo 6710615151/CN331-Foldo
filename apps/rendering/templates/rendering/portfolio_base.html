@@ -43,6 +43,12 @@
         </ul>
       {% endif %}
     </nav>
+    {# The owner usually lands here right after saving: confirm it here, not later on another page. #}
+    {% if messages %}
+      <div class="pf-toolbar__messages" role="status" aria-live="polite">
+        {% for message in messages %}<p class="pf-toolbar__msg pf-toolbar__msg--{{ message.tags|default:'info' }}">{{ message }}</p>{% endfor %}
+      </div>
+    {% endif %}
   {% endif %}
 
   <main class="pf-page">

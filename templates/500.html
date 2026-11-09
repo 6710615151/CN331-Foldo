@@ -9,9 +9,8 @@
 {% block topbar %}{% endblock %}
 {% block error_code %}500{% endblock %}
 {% block error_code_label %}500{% endblock %}
-{% block error_title %}เกิดข้อผิดพลาดฝั่งเรา{% endblock %}
-{% block error_title_en %}Something went wrong on our side.{% endblock %}
-{% block error_message %}เราบันทึกปัญหาไว้แล้ว ข้อมูลของคุณยังปลอดภัย ลองใหม่อีกครั้งในอีกสักครู่{% endblock %}
+{% block error_title %}ระบบขัดข้อง{% endblock %}
+{% block error_message %}ปัญหาอยู่ที่ระบบ ไม่ใช่สิ่งที่คุณทำ ข้อมูลที่บันทึกไว้แล้วยังอยู่ครบ ลองใหม่ในอีกสักครู่{% endblock %}
 {% block error_actions %}
   <a class="btn btn-lime btn-lg" href="{% url 'core:landing' %}">{% include "partials/icon.html" with name="home" %}กลับหน้าแรก</a>
   <a class="btn btn-outline-foldo btn-lg" href="{% url 'core:dashboard' %}">แดชบอร์ด</a>

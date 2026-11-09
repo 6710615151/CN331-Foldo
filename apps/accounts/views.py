@@ -35,12 +35,13 @@ class AccountSettingsView(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         services.update_account(user=self.request.user, data=form.cleaned_data)
-        messages.success(self.request, "บันทึกการตั้งค่าเรียบร้อยแล้ว")
+        messages.success(self.request, "บันทึกการตั้งค่าบัญชีแล้ว")
         return HttpResponseRedirect(self.get_success_url())
 
     def form_invalid(self, form):
-        messages.error(self.request, "กรุณาตรวจสอบข้อมูลที่กรอกอีกครั้ง")
+        messages.error(self.request, "ยังไม่ได้บันทึก — แก้ช่องที่ไฮไลต์ ข้อมูลอื่นที่กรอกไว้ยังอยู่ครบ")
         return super().form_invalid(form)
+
 
 class PasswordChangeView(auth_views.PasswordChangeView):
     """Change password from Account settings. Django keeps the session signed in."""
@@ -51,7 +52,7 @@ class PasswordChangeView(auth_views.PasswordChangeView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        messages.success(self.request, "เปลี่ยนรหัสผ่านเรียบร้อยแล้ว")
+        messages.success(self.request, "เปลี่ยนรหัสผ่านแล้ว ใช้รหัสใหม่ในการเข้าสู่ระบบครั้งถัดไป")
         return response
 
 

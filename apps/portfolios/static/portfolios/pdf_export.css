@@ -1,34 +1,6 @@
 /* Export PDF page (FOLDO-11) — FOLDO tokens from static/css/styles.css. */
 
-#main-content {
-  background:
-    radial-gradient(ellipse 60% 420px at 8% 0%, rgba(47, 95, 230, 0.32), transparent 100%),
-    radial-gradient(ellipse 45% 360px at 95% 0%, rgba(100, 37, 255, 0.2), transparent 100%);
-  background-repeat: no-repeat;
-}
-
-.foldo-back {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.35rem 0.9rem 0.35rem 0.7rem;
-  border: 1px solid var(--foldo-border-strong);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--foldo-ink);
-  font-size: 0.875rem;
-  font-weight: 500;
-  text-decoration: none;
-  transition: border-color 0.15s, background 0.15s, color 0.15s, transform 0.15s;
-}
-.foldo-back:hover,
-.foldo-back:focus-visible {
-  border-color: var(--foldo-lime);
-  background: rgba(184, 243, 74, 0.1);
-  color: var(--foldo-lime);
-  transform: translateX(-2px);
-}
-.foldo-back span[aria-hidden] { font-size: 1.1rem; line-height: 1; }
+/* Page chrome (back link, header, bands) comes from styles.css; only the export card lives here. */
 
 .foldo-ex__header { margin: var(--foldo-space-3) 0 var(--foldo-space-4); }
 .foldo-ex__eyebrow {
@@ -55,7 +27,7 @@
 
 .foldo-ex__card {
   background: linear-gradient(160deg, var(--foldo-surface-2), var(--foldo-surface) 55%);
-  border: 1px solid var(--foldo-border);
+  border: 1px solid var(--foldo-line);
   border-top: 4px solid var(--foldo-lime);
   border-radius: var(--foldo-radius-lg);
   box-shadow: var(--foldo-shadow-md);
@@ -74,7 +46,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  border: 1.5px solid var(--foldo-border-strong);
+  border: 1.5px solid var(--foldo-line-strong);
   border-radius: var(--foldo-radius);
   background: var(--foldo-bg-deep);
   cursor: pointer;
@@ -93,7 +65,7 @@
   align-items: flex-start;
   padding: 1rem 1.1rem;
   margin-top: 0.5rem;
-  border: 1px solid var(--foldo-border-strong);
+  border: 1px solid var(--foldo-line-strong);
   border-radius: var(--foldo-radius);
   background: var(--foldo-bg-deep);
 }

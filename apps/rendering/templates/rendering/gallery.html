@@ -11,19 +11,19 @@
       <span class="foldo-shape foldo-shape--ring" style="--s:12rem; --c1:#c4f500; right:-4rem; bottom:-6rem"></span>
       <span class="foldo-shape foldo-shape--dot" style="--s:1.5rem; right:38%; top:1.5rem; --c1:#ff6a2b; --c2:#a33a0c"></span>
     </div>
-    <p class="foldo-eyebrow tone-lime" lang="en">Portfolio templates</p>
+    <p class="foldo-eyebrow foldo-eyebrow--plain tone-lime">เทมเพลต</p>
     <h1 id="themes-heading" class="foldo-tpl-hero__title">เลือกหน้าตา<br><span>พอร์ตโฟลิโอ</span></h1>
-    <p class="foldo-tpl-hero__lead">ทุกเทมเพลตใช้ข้อมูลจากโปรไฟล์หลักชุดเดียวกัน กด “ดูตัวอย่าง” เพื่อดูโปรไฟล์ของคุณในเทมเพลตนั้น (สลับเทียบเทมเพลตได้จากแถบด้านบน) แล้วเปลี่ยนได้ทุกเมื่อ ไม่กระทบเวอร์ชันอื่น</p>
+    <p class="foldo-tpl-hero__lead">ทุกเทมเพลตใช้ข้อมูลชุดเดียวกัน ต่างกันแค่หน้าตา กด “ดูตัวอย่าง” เพื่อดูโปรไฟล์หลักของคุณในเทมเพลตนั้น แล้วสลับเทียบจากแถบด้านบนได้</p>
     <div class="foldo-chip-row" data-filter-group="themes" role="group" aria-label="กรองตามหมวด" hidden>
       <button type="button" class="foldo-chip" data-filter="all" aria-pressed="true">ทั้งหมด</button>
-      {% for theme in themes %}<button type="button" class="foldo-chip" data-filter="{{ theme.category|lower }}" aria-pressed="false">{{ theme.category }}</button>{% endfor %}
+      {% for theme in themes %}<button type="button" class="foldo-chip" data-filter="{{ theme.category|lower }}" aria-pressed="false">{{ theme.category|category_th }}</button>{% endfor %}
     </div>
   </section>
 
   {% if not profile %}
     {% url "profiles:create" as create_url %}
     <div class="mb-4">
-      {% include "partials/empty_state.html" with title="ยังดูตัวอย่างกับข้อมูลจริงไม่ได้" message="สร้างโปรไฟล์หลักก่อน แล้วจึงดูตัวอย่างเทมเพลตได้" action_url=create_url action_label="สร้างโปรไฟล์หลัก" %}
+      {% include "partials/empty_state.html" with title="ยังดูตัวอย่างกับข้อมูลจริงไม่ได้" message="สร้างโปรไฟล์ก่อน แล้วจะดูตัวอย่างกับข้อมูลของคุณได้" action_url=create_url action_label="สร้างโปรไฟล์" %}
     </div>
   {% endif %}
 
@@ -32,13 +32,13 @@
       <li class="foldo-tpl {% cycle 'tone-blue' 'tone-purple' 'tone-pink' %}" data-filter-item="themes" data-filter-tags="{{ theme.category|lower }}">
         <div class="foldo-tpl__preview">
           {% include "partials/theme_thumb.html" with key=theme.key %}
-          <span class="foldo-badge foldo-badge--solid foldo-tpl__cat">{{ theme.category }}</span>
+          <span class="foldo-badge foldo-badge--solid foldo-tpl__cat">{{ theme.category|category_th }}</span>
         </div>
         <div class="foldo-tpl__body">
           <h2 class="foldo-tpl__name">{{ theme.name }}</h2>
           <p class="foldo-tpl__desc">{{ theme.description }}</p>
           {% with used=theme_usage|lookup:theme.key %}
-            {% if used %}<p class="foldo-tpl__used"><span class="foldo-badge tone-lime">{% include "partials/icon.html" with name="check" %}ใช้อยู่ใน {{ used }} เวอร์ชัน</span></p>{% endif %}
+            {% if used %}<p class="foldo-tpl__used"><span class="foldo-badge tone-lime">{% include "partials/icon.html" with name="check" %}ใช้อยู่ใน {{ used }} พอร์ตโฟลิโอ</span></p>{% endif %}
           {% endwith %}
           <div class="foldo-tpl__actions">
             {% if profile %}

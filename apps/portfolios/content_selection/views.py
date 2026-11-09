@@ -1,4 +1,5 @@
 """Presentation layer for per-version content selection (FOLDO-06)."""
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
@@ -39,12 +40,16 @@ class ContentSelectionView(LoginRequiredMixin, View):
             }
             for key, title in SECTIONS
         ]
-        return render(request, TEMPLATE, {
-            "portfolio": self.portfolio,
-            "sections": sections,
-            "customised": selectors.is_customised(self.portfolio),
-            "has_content": any(section["items"] for section in sections),
-        })
+        return render(
+            request,
+            TEMPLATE,
+            {
+                "portfolio": self.portfolio,
+                "sections": sections,
+                "customised": selectors.is_customised(self.portfolio),
+                "has_content": any(section["items"] for section in sections),
+            },
+        )
 
     def get(self, request, pk):
         return self._render(request)
@@ -52,10 +57,10 @@ class ContentSelectionView(LoginRequiredMixin, View):
     def post(self, request, pk):
         if "reset" in request.POST:
             services.reset_selection(self.portfolio)
-            messages.success(request, "This version now shows all of your profile content.")
+            messages.success(request, "พอร์ตโฟลิโอนี้กลับมาแสดงทุกอย่างในโปรไฟล์แล้ว")
         else:
             ignored = services.save_selection(self.portfolio, parse_selection(request.POST))
-            messages.success(request, f"Content for “{self.portfolio.title}” saved.")
+            messages.success(request, f"บันทึกเนื้อหาของ “{self.portfolio.title}” แล้ว")
             if ignored:
-                messages.warning(request, f"{ignored} item(s) were no longer available and were skipped.")
+                messages.warning(request, f"ข้าม {ignored} รายการที่ถูกลบออกจากโปรไฟล์ไปแล้ว")
         return redirect("portfolios:content", pk=self.portfolio.pk)

@@ -14,6 +14,7 @@ Rendering a version (FOLDO-07):
 Every output (owner preview, device-preview frame, public page, later the PDF)
 goes through ``render_version_html`` so they can never disagree.
 """
+
 from __future__ import annotations
 
 from django.db import transaction
@@ -125,10 +126,10 @@ def _preview_toolbar(portfolio: Portfolio, theme: PortfolioTheme) -> dict:
     if portfolio.is_published:
         status = f"ตัวอย่าง · {theme.name} · เผยแพร่แล้ว"
     else:
-        status = f"ตัวอย่าง · {theme.name} · ส่วนตัว เห็นได้เฉพาะคุณ"
+        status = f"ตัวอย่าง · {theme.name} · ยังไม่เผยแพร่ เห็นได้เฉพาะคุณ"
     # Same order as the builder steps in the app (setup → content → preview → quality → share).
     links = [
-        ("แก้ไขเวอร์ชันและเทมเพลต", reverse("portfolios:update", args=[portfolio.pk])),
+        ("ตั้งค่าและเทมเพลต", reverse("portfolios:update", args=[portfolio.pk])),
         ("เลือกเนื้อหา", reverse("portfolios:content", args=[portfolio.pk])),
         ("Desktop / Mobile", reverse("portfolios:device_preview", args=[portfolio.pk])),
         ("ดาวน์โหลด PDF", reverse("portfolios:pdf", args=[portfolio.pk])),
@@ -146,8 +147,9 @@ def _preview_toolbar(portfolio: Portfolio, theme: PortfolioTheme) -> dict:
     }
 
 
-def render_version_html(portfolio: Portfolio, *, request=None, preview: bool = False,
-                        toolbar: bool | None = None) -> str:
+def render_version_html(
+    portfolio: Portfolio, *, request=None, preview: bool = False, toolbar: bool | None = None
+) -> str:
     """The complete HTML page of one version in its own template.
 
     ``preview`` — owner is looking (not the public page): adds ``noindex``.

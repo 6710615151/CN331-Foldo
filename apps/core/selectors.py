@@ -107,40 +107,40 @@ def get_onboarding_steps(user, progress=None) -> list[dict]:
     published = progress["published_portfolio"]
 
     if published:
-        step3_url, step3_label = reverse("portfolios:share", args=[published.pk]), "เปิด Share Kit"
+        step3_url, step3_label = reverse("portfolios:share", args=[published.pk]), "แชร์ลิงก์และ QR"
     elif latest:
-        step3_url, step3_label = reverse("portfolios:device_preview", args=[latest.pk]), "ดูตัวอย่างและส่งออก"
+        step3_url, step3_label = reverse("portfolios:device_preview", args=[latest.pk]), "ดูตัวอย่าง"
     else:
         step3_url, step3_label = "", ""
 
     return [
         {
             "number": 1,
-            "title": "สร้างโปรไฟล์หลักของคุณ",
+            "title": "สร้างโปรไฟล์",
             "title_en": "Build your main profile",
-            "description": "กรอกข้อมูลส่วนตัว การศึกษา ทักษะ และผลงานไว้ที่เดียว",
-            "done": profile is not None,
-            "action_url": (
-                reverse("profiles:update", args=[profile.pk])
-                if profile
-                else reverse("profiles:create")
+            "description": (
+                "เก็บข้อมูลส่วนตัว การศึกษา ทักษะ และโปรเจกต์ไว้ที่เดียว " "แก้ครั้งเดียว ทุกพอร์ตโฟลิโอเปลี่ยนตาม"
             ),
+            "done": profile is not None,
+            "action_url": (reverse("profiles:update", args=[profile.pk]) if profile else reverse("profiles:create")),
             "action_label": "แก้ไขโปรไฟล์" if profile else "สร้างโปรไฟล์",
         },
         {
             "number": 2,
-            "title": "สร้างพอร์ตโฟลิโอหลายเวอร์ชัน",
+            "title": "สร้างพอร์ตโฟลิโอ",
             "title_en": "Create tailored portfolio versions",
-            "description": "เลือกเนื้อหาและเทมเพลตที่เหมาะกับงานหรือทุนที่สมัคร",
+            "description": "เลือกเทมเพลตและเนื้อหาให้ตรงกับงานหรือทุนที่จะสมัคร งานละหนึ่งพอร์ตโฟลิโอก็ได้",
             "done": latest is not None,
             "action_url": reverse("portfolios:list") if latest else reverse("portfolios:create"),
-            "action_label": "ดูพอร์ตโฟลิโอทั้งหมด" if latest else "สร้างพอร์ตโฟลิโอ",
+            "action_label": "ดูพอร์ตโฟลิโอของฉัน" if latest else "สร้างพอร์ตโฟลิโอ",
         },
         {
             "number": 3,
-            "title": "ดูตัวอย่าง ส่งออก PDF และแชร์ลิงก์",
+            "title": "ตรวจ แล้วแชร์",
             "title_en": "Preview, export and share",
-            "description": "ตรวจพอร์ตโฟลิโอบนจอคอมและมือถือ ดาวน์โหลด PDF แล้วเผยแพร่เพื่อแชร์ลิงก์หรือ QR code",
+            "description": (
+                "ดูตัวอย่างบนจอคอมและมือถือ ดาวน์โหลด PDF " "แล้วเผยแพร่เพื่อส่งลิงก์หรือ QR code ให้ผู้รับสมัคร"
+            ),
             "done": published is not None,
             "action_url": step3_url,
             "action_label": step3_label,
@@ -159,9 +159,11 @@ def profile_missing_labels(profile) -> list[str]:
     """``profile.missing_fields`` in Thai, in the same order (for UI copy)."""
     if profile is None:
         return []
-    return [PROFILE_FIELD_LABELS_TH.get(name, label)
-            for name, label in profile.REQUIRED_FOR_PORTFOLIO.items()
-            if not (getattr(profile, name) or "").strip()]
+    return [
+        PROFILE_FIELD_LABELS_TH.get(name, label)
+        for name, label in profile.REQUIRED_FOR_PORTFOLIO.items()
+        if not (getattr(profile, name) or "").strip()
+    ]
 
 
 def _first_missing_field(profile) -> str:
@@ -172,8 +174,16 @@ def _first_missing_field(profile) -> str:
 
 
 def _step(key, title, detail, url, icon, tone, *, required, action):
-    return {"key": key, "title": title, "detail": detail, "url": url, "icon": icon,
-            "tone": tone, "required": required, "action": action}
+    return {
+        "key": key,
+        "title": title,
+        "detail": detail,
+        "url": url,
+        "icon": icon,
+        "tone": tone,
+        "required": required,
+        "action": action,
+    }
 
 
 def get_next_steps(user, *, include_recommended=True, profile=None, portfolios=None) -> list[dict]:
@@ -189,65 +199,149 @@ def get_next_steps(user, *, include_recommended=True, profile=None, portfolios=N
     steps = []
 
     if profile is None:
-        steps.append(_step(
-            "profile", "สร้างโปรไฟล์หลัก", "เริ่มจากข้อมูลพื้นฐาน แล้วค่อยเติมผลงานทีหลังได้",
-            reverse("profiles:create"), "user", "lime", required=True, action="สร้างโปรไฟล์"))
+        steps.append(
+            _step(
+                "profile",
+                "สร้างโปรไฟล์",
+                "เริ่มจากชื่อและหัวข้อแนะนำตัว ที่เหลือเติมทีหลังได้",
+                reverse("profiles:create"),
+                "user",
+                "lime",
+                required=True,
+                action="สร้างโปรไฟล์",
+            )
+        )
     elif not profile.is_complete:
         missing = profile_missing_labels(profile)
-        steps.append(_step(
-            "profile_fields", f"โปรไฟล์ครบ {profile.completion_percent}%", "ยังขาด " + ", ".join(missing),
-            reverse("profiles:update", args=[profile.pk]) + f"#id_{_first_missing_field(profile)}",
-            "user", "pink", required=True, action="กรอกให้ครบ"))
+        steps.append(
+            _step(
+                "profile_fields",
+                "กรอกโปรไฟล์ให้ครบ",
+                f"ยังขาด {', '.join(missing)} (ครบ {profile.completion_percent}%)",
+                reverse("profiles:update", args=[profile.pk]) + f"#id_{_first_missing_field(profile)}",
+                "user",
+                "pink",
+                required=True,
+                action="กรอก",
+            )
+        )
 
     recommended = []
     if include_recommended and profile is not None:
         pk = profile.pk
         if not profile.educations.exists():
-            recommended.append(_step(
-                "education", "เพิ่มการศึกษา", "ผู้อ่านส่วนใหญ่มองหาสถาบันและสาขาเป็นอย่างแรก",
-                reverse("profiles:education_add", args=[pk]), "cap", "blue", required=False, action="เพิ่ม"))
+            recommended.append(
+                _step(
+                    "education",
+                    "เพิ่มการศึกษา",
+                    "สถาบันและสาขาช่วยให้ผู้อ่านเข้าใจพื้นฐานของคุณ",
+                    reverse("profiles:education_add", args=[pk]),
+                    "cap",
+                    "blue",
+                    required=False,
+                    action="เพิ่ม",
+                )
+            )
         if not profile.skills.exists():
-            recommended.append(_step(
-                "skills", "เพิ่มทักษะ", "ใส่ 5–8 ทักษะหลักพร้อมระดับความชำนาญ",
-                reverse("profiles:skill_add", args=[pk]), "spark", "purple", required=False, action="เพิ่ม"))
+            recommended.append(
+                _step(
+                    "skills",
+                    "เพิ่มทักษะ",
+                    "ใส่ 5–8 ทักษะหลักพร้อมระดับความชำนาญ",
+                    reverse("profiles:skill_add", args=[pk]),
+                    "spark",
+                    "purple",
+                    required=False,
+                    action="เพิ่ม",
+                )
+            )
         projects = list(profile.projects.all()[:20])
         if not projects:
-            recommended.append(_step(
-                "projects", "เพิ่มโปรเจกต์แรก", "ผลงานจริงคือส่วนที่ทำให้พอร์ตโฟลิโอน่าสนใจที่สุด",
-                reverse("profiles:project_add", args=[pk]), "code", "pink", required=False, action="เพิ่ม"))
+            recommended.append(
+                _step(
+                    "projects",
+                    "เพิ่มโปรเจกต์แรก",
+                    "โปรเจกต์คือหลักฐานว่าคุณทำงานได้จริง",
+                    reverse("profiles:project_add", args=[pk]),
+                    "code",
+                    "pink",
+                    required=False,
+                    action="เพิ่ม",
+                )
+            )
         else:
             no_story = [p for p in projects if not p.has_story]
             if no_story:
                 first = no_story[0]
-                more = f" และอีก {len(no_story) - 1} โปรเจกต์" if len(no_story) > 1 else ""
-                recommended.append(_step(
-                    "story", f"เล่า Project Story ของ “{first.project_name}”",
-                    f"บอกปัญหา บทบาท และผลลัพธ์{more} ให้ผู้อ่านเห็นวิธีทำงานของคุณ",
-                    reverse("profiles:project_edit", args=[first.pk]) + "#sec-story",
-                    "book", "pink", required=False, action="เขียน"))
+                more = f" (ยังเหลืออีก {len(no_story) - 1} โปรเจกต์)" if len(no_story) > 1 else ""
+                recommended.append(
+                    _step(
+                        "story",
+                        f"เล่า Project Story ของ “{first.project_name}”",
+                        f"บอกปัญหา บทบาท และผลลัพธ์ ให้ผู้อ่านเห็นวิธีทำงานของคุณ{more}",
+                        reverse("profiles:project_edit", args=[first.pk]) + "#sec-story",
+                        "book",
+                        "pink",
+                        required=False,
+                        action="เขียน",
+                    )
+                )
 
     latest = portfolios.first()
     if latest is None:
-        steps.append(_step(
-            "portfolio", "สร้างพอร์ตโฟลิโอเวอร์ชันแรก", "เลือกโปรไฟล์และเทมเพลตให้ตรงกับงานที่สมัคร",
-            reverse("portfolios:create"), "layers", "blue", required=True, action="สร้าง"))
+        steps.append(
+            _step(
+                "portfolio",
+                "สร้างพอร์ตโฟลิโอแรก",
+                "เลือกเทมเพลตให้เหมาะกับงานที่จะสมัคร ใช้เวลาไม่ถึงนาที",
+                reverse("portfolios:create"),
+                "layers",
+                "blue",
+                required=True,
+                action="สร้าง",
+            )
+        )
     elif not portfolios.filter(is_published=True).exists():
-        steps.append(_step(
-            "publish", "ยังไม่ได้เผยแพร่พอร์ตโฟลิโอ", f"เผยแพร่ “{latest.title}” เพื่อแชร์ลิงก์และ QR code",
-            reverse("portfolios:update", args=[latest.pk]) + "#id_is_published",
-            "share", "purple", required=True, action="เผยแพร่"))
+        steps.append(
+            _step(
+                "publish",
+                f"เผยแพร่ “{latest.title}”",
+                "เพื่อรับลิงก์สาธารณะและ QR code ไว้ส่งให้ผู้รับสมัคร",
+                reverse("portfolios:update", args=[latest.pk]) + "#id_is_published",
+                "share",
+                "purple",
+                required=True,
+                action="เผยแพร่",
+            )
+        )
 
     if include_recommended and profile is not None:
         if not profile.experiences.exists():
-            recommended.append(_step(
-                "experience", "เพิ่มประสบการณ์ (ถ้ามี)", "งาน ฝึกงาน หรืองานอาสา นับทั้งหมด",
-                reverse("profiles:experience_add", args=[profile.pk]), "briefcase", "magenta",
-                required=False, action="เพิ่ม"))
+            recommended.append(
+                _step(
+                    "experience",
+                    "เพิ่มประสบการณ์ (ถ้ามี)",
+                    "งานประจำ ฝึกงาน พาร์ตไทม์ หรืองานอาสา นับได้ทั้งหมด",
+                    reverse("profiles:experience_add", args=[profile.pk]),
+                    "briefcase",
+                    "magenta",
+                    required=False,
+                    action="เพิ่ม",
+                )
+            )
         if not profile.photo:
-            recommended.append(_step(
-                "photo", "ใส่รูปโปรไฟล์", "ไม่บังคับ แต่ช่วยให้พอร์ตโฟลิโอดูเป็นตัวคุณมากขึ้น",
-                reverse("profiles:update", args=[profile.pk]) + "#id_photo", "image", "purple",
-                required=False, action="อัปโหลด"))
+            recommended.append(
+                _step(
+                    "photo",
+                    "ใส่รูปโปรไฟล์",
+                    "ไม่บังคับ แต่ช่วยให้ผู้อ่านจำคุณได้",
+                    reverse("profiles:update", args=[profile.pk]) + "#id_photo",
+                    "image",
+                    "purple",
+                    required=False,
+                    action="อัปโหลด",
+                )
+            )
 
     # Required steps first (the journey), then what makes the portfolio stronger.
     return steps + recommended
@@ -276,24 +370,78 @@ def get_recent_activity(user, limit=RECENT_ACTIVITY) -> list[dict]:
     """
     items = []
     for profile in get_profiles(user).order_by("-updated_at")[:limit]:
-        items.append(_activity("profile", "โปรไฟล์", profile.label,
-                               reverse("profiles:view", args=[profile.pk]), profile, "user", "blue"))
+        items.append(
+            _activity(
+                "profile",
+                "โปรไฟล์",
+                profile.label,
+                reverse("profiles:view", args=[profile.pk]),
+                profile,
+                "user",
+                "blue",
+            )
+        )
     owned = {"profile__owner": user}
     for row in Education.objects.filter(**owned).order_by("-updated_at")[:limit]:
-        items.append(_activity("education", "การศึกษา", row.institution,
-                               reverse("profiles:education_list", args=[row.profile_id]), row, "cap", "blue"))
+        items.append(
+            _activity(
+                "education",
+                "การศึกษา",
+                row.institution,
+                reverse("profiles:education_list", args=[row.profile_id]),
+                row,
+                "cap",
+                "blue",
+            )
+        )
     for row in Skill.objects.filter(**owned).order_by("-updated_at")[:limit]:
-        items.append(_activity("skill", "ทักษะ", row.name,
-                               reverse("profiles:skills_experience", args=[row.profile_id]), row, "spark", "purple"))
+        items.append(
+            _activity(
+                "skill",
+                "ทักษะ",
+                row.name,
+                reverse("profiles:skills_experience", args=[row.profile_id]),
+                row,
+                "spark",
+                "purple",
+            )
+        )
     for row in Experience.objects.filter(**owned).order_by("-updated_at")[:limit]:
-        items.append(_activity("experience", "ประสบการณ์", f"{row.job_title} · {row.company}",
-                               reverse("profiles:skills_experience", args=[row.profile_id]), row, "briefcase", "purple"))
+        items.append(
+            _activity(
+                "experience",
+                "ประสบการณ์",
+                f"{row.job_title} · {row.company}",
+                reverse("profiles:skills_experience", args=[row.profile_id]),
+                row,
+                "briefcase",
+                "purple",
+            )
+        )
     for row in Project.objects.filter(**owned).order_by("-updated_at")[:limit]:
-        items.append(_activity("project", "โปรเจกต์", row.project_name,
-                               reverse("profiles:project_detail", args=[row.pk]), row, "code", "pink"))
+        items.append(
+            _activity(
+                "project",
+                "โปรเจกต์",
+                row.project_name,
+                reverse("profiles:project_detail", args=[row.pk]),
+                row,
+                "code",
+                "pink",
+            )
+        )
     for row in get_portfolios(user).order_by("-updated_at")[:limit]:
-        items.append(_activity("portfolio", "พอร์ตโฟลิโอ", row.title,
-                               reverse("portfolios:device_preview", args=[row.pk]), row, "layers", "lime"))
+        items.append(
+            _activity(
+                "portfolio",
+                "พอร์ตโฟลิโอ",
+                row.title,
+                reverse("portfolios:device_preview", args=[row.pk]),
+                row,
+                "layers",
+                "lime",
+            )
+        )
     items.sort(key=lambda item: item["at"], reverse=True)
     return items[:limit]
 

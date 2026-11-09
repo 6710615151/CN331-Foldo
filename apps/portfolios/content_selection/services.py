@@ -1,4 +1,5 @@
 """Write side of content selection (FOLDO-06). Never touches source profile data."""
+
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
@@ -25,8 +26,7 @@ def save_selection(portfolio, chosen: Mapping[str, Iterable[int]]) -> int:
         valid = wanted & available[key]
         ignored += len(wanted - valid)
         rows.extend(
-            PortfolioContentSelection(portfolio=portfolio, section=key, item_id=item_id)
-            for item_id in sorted(valid)
+            PortfolioContentSelection(portfolio=portfolio, section=key, item_id=item_id) for item_id in sorted(valid)
         )
     PortfolioContentSelection.objects.filter(portfolio=portfolio).delete()
     PortfolioContentSelection.objects.bulk_create(rows)

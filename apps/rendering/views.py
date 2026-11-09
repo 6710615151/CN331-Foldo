@@ -44,9 +44,7 @@ class ThemePreviewView(OwnerRequiredMixin, DetailView):
         toolbar = {
             "back_url": reverse("rendering:gallery"),
             "current": theme.key,
-            "switch": [
-                (t.key, t.name, reverse("rendering:preview", args=[t.key, profile.pk])) for t in THEMES
-            ],
+            "switch": [(t.key, t.name, reverse("rendering:preview", args=[t.key, profile.pk])) for t in THEMES],
         }
         html = render_portfolio_html(
             theme, build_portfolio_content(profile), request=request, toolbar=toolbar, noindex=True

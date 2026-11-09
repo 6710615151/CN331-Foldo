@@ -119,11 +119,13 @@ class ShellContextTests(_Users):
         request = RequestFactory().get(path)
         request.user = user
         from django.urls import resolve
+
         request.resolver_match = resolve(path)
         return shell(request)["shell"]
 
     def test_visitors_get_no_shell(self):
         from django.contrib.auth.models import AnonymousUser
+
         request = RequestFactory().get("/")
         request.user = AnonymousUser()
         self.assertIsNone(shell(request)["shell"])
@@ -154,7 +156,7 @@ class ShellContextTests(_Users):
     def test_sidebar_links_go_to_the_default_profiles_sections(self):
         profile = MainProfile.objects.create(owner=self.user, full_name="Dev")
         html = self.client.get(reverse("core:dashboard")).content.decode()
-        nav = html[html.index("<header"):html.index("</header>")]
+        nav = html[html.index("<header") : html.index("</header>")]
         for name in ("profiles:education_list", "profiles:skills_experience", "profiles:projects"):
             self.assertIn(reverse(name, args=[profile.pk]), nav)
 

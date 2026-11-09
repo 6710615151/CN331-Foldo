@@ -5,6 +5,7 @@ The URL always comes from ``Portfolio.public_path``, the same route the public p
 (``portfolios:public``) is served on, so the copied link, the QR code and the page
 itself can never disagree. Nothing here changes a portfolio.
 """
+
 from __future__ import annotations
 
 import io
@@ -41,7 +42,12 @@ def qr_svg_inline(url: str, *, title: str) -> str:
     box would crop the code and make it unscannable.
     """
     return _qr(url).svg_inline(
-        scale=1, border=2, dark=QR_DARK, light=QR_LIGHT, title=title, desc=f"QR code for {url}",
+        scale=1,
+        border=2,
+        dark=QR_DARK,
+        light=QR_LIGHT,
+        title=title,
+        desc=f"QR code ของลิงก์ {url}",
         omitsize=True,
     )
 

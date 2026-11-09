@@ -7,9 +7,9 @@
 
   <div class="foldo-page-head">
     <div class="foldo-page-head__text tone-pink">
-      <p class="foldo-eyebrow" lang="en">Projects</p>
+      <p class="foldo-eyebrow foldo-eyebrow--plain">โปรไฟล์ · {{ profile.label }}</p>
       <h1 id="projects-heading" class="foldo-page-title">โปรเจกต์<em>ของฉัน</em></h1>
-      <p class="foldo-page-lead">ผลงานที่อยากโชว์ เล่าเป็น Project Story (ปัญหา → บทบาท → วิธีทำ → ทางออก → ผลลัพธ์) เพื่อให้ผู้อ่านเห็นภาพการทำงานของคุณ</p>
+      <p class="foldo-page-lead">งานที่อยากให้ผู้อ่านเห็น เล่าเป็น Project Story (ปัญหา → บทบาท → วิธีทำ → ทางออก → ผลลัพธ์) ให้เห็นว่าคุณทำงานอย่างไร</p>
     </div>
     {% if projects %}
       <div class="foldo-page-head__actions">
@@ -34,15 +34,15 @@
           <div class="foldo-project__body">
             <h2 class="foldo-project__title"><a class="foldo-card__link" href="{% url 'profiles:project_detail' project.pk %}">{{ project.project_name }}</a></h2>
             {% if project.start_date %}
-              <p class="foldo-project__date">{% include "partials/icon.html" with name="calendar" %}{{ project.start_date|th_month }} – {% if project.end_date %}{{ project.end_date|th_month }}{% else %}<span lang="en">Present</span>{% endif %}</p>
+              <p class="foldo-project__date">{% include "partials/icon.html" with name="calendar" %}{{ project.start_date|th_month }} – {% if project.end_date %}{{ project.end_date|th_month }}{% else %}ปัจจุบัน{% endif %}</p>
             {% endif %}
             <p class="foldo-project__desc">{{ project.description|default:"ยังไม่มีคำอธิบาย"|truncatechars:150 }}</p>
             <div class="foldo-chip-row">
-              {% if project.problem %}<span class="foldo-chip">Problem</span>{% endif %}
-              {% if project.role %}<span class="foldo-chip">Role</span>{% endif %}
-              {% if project.process %}<span class="foldo-chip">Process</span>{% endif %}
-              {% if project.solution %}<span class="foldo-chip">Solution</span>{% endif %}
-              {% if project.outcome %}<span class="foldo-chip">Outcome</span>{% endif %}
+              {% if project.problem %}<span class="foldo-chip">ปัญหา</span>{% endif %}
+              {% if project.role %}<span class="foldo-chip">บทบาท</span>{% endif %}
+              {% if project.process %}<span class="foldo-chip">วิธีทำ</span>{% endif %}
+              {% if project.solution %}<span class="foldo-chip">ทางออก</span>{% endif %}
+              {% if project.outcome %}<span class="foldo-chip">ผลลัพธ์</span>{% endif %}
               {% if project.project_url %}<span class="foldo-chip tone-lime">{% include "partials/icon.html" with name="link" %}{{ project.project_url|domain|truncatechars:28 }}</span>{% endif %}
             </div>
             <div class="foldo-project__actions foldo-above-link">
@@ -62,7 +62,7 @@
     </ul>
   {% else %}
     {% url 'profiles:project_add' profile.pk as add_url %}
-    {% include "partials/empty_state.html" with title="แกลเลอรีผลงานยังว่างอยู่" message="ยังไม่มีโปรเจกต์ เพิ่มโปรเจกต์ที่อยากให้อยู่ใน Portfolio" action_url=add_url action_label="เพิ่มโปรเจกต์แรก" tone="pink" %}
+    {% include "partials/empty_state.html" with title="ยังไม่มีโปรเจกต์" message="งานในคลาส โปรเจกต์จบ ฟรีแลนซ์ หรือ side project นับได้ทั้งหมด" action_url=add_url action_label="เพิ่มโปรเจกต์แรก" tone="pink" %}
   {% endif %}
 </div>
 {% endblock %}

@@ -37,9 +37,7 @@ class DuplicateTests(TestCase):
         self.assertFalse(copy.is_published)
         self.assertNotEqual(copy.slug, self.original.slug)
         self.assertTrue(PortfolioContentSetup.objects.filter(portfolio=copy).exists())
-        self.assertEqual(
-            list(copy.content_selections.values_list("section", "item_id")), [("skills", self.skill.pk)]
-        )
+        self.assertEqual(list(copy.content_selections.values_list("section", "item_id")), [("skills", self.skill.pk)])
         self.original.refresh_from_db()
         self.assertTrue(self.original.is_published)
 
@@ -82,10 +80,12 @@ class TemplatePreselectTests(TestCase):
     def test_unknown_template_is_ignored(self):
         response = self.client.get(reverse("portfolios:create") + "?template=<script>")
         self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, "<script>\"")
+        self.assertNotContains(response, '<script>"')
 
     def test_gallery_links_to_create_with_template(self):
-        self.assertContains(self.client.get(reverse("rendering:gallery")), reverse("portfolios:create") + "?template=modern")
+        self.assertContains(
+            self.client.get(reverse("rendering:gallery")), reverse("portfolios:create") + "?template=modern"
+        )
 
 
 class QualityScoreTests(TestCase):

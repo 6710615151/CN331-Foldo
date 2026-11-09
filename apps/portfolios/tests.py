@@ -1,4 +1,5 @@
 """FOLDO-08: device preview (desktop / mobile), loading and rendering-error states."""
+
 from unittest import mock
 
 from django.conf import settings
@@ -58,7 +59,7 @@ class DevicePreviewTests(TestCase):
     def test_loading_state_is_shown_until_the_frame_loads(self):
         response = self.client.get(self.device_url)
         self.assertContains(response, "data-preview-loading")
-        self.assertContains(response, "Loading preview")
+        self.assertContains(response, "กำลังโหลดตัวอย่าง")
 
     def test_list_page_links_to_device_preview(self):
         response = self.client.get(reverse("portfolios:list"))
@@ -87,7 +88,10 @@ class DevicePreviewTests(TestCase):
 
     def test_rendering_error_shows_a_message_not_a_crash(self):
         with mock.patch("apps.portfolios.views._render_portfolio", side_effect=RuntimeError("boom")):
-            with self.assertLogs("apps.portfolios.views", level="ERROR"), self.assertLogs("django.request", level="ERROR"):
+            with (
+                self.assertLogs("apps.portfolios.views", level="ERROR"),
+                self.assertLogs("django.request", level="ERROR"),
+            ):
                 response = self.client.get(self.frame_url)
         self.assertEqual(response.status_code, 500)
         self.assertContains(response, "couldn't show this preview", status_code=500)

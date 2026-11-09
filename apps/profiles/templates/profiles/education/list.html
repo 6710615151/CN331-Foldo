@@ -7,7 +7,7 @@
 
   <div class="foldo-page-head">
     <div class="foldo-page-head__text tone-blue">
-      <p class="foldo-eyebrow" lang="en">Education</p>
+      <p class="foldo-eyebrow foldo-eyebrow--plain">โปรไฟล์ · {{ profile.label }}</p>
       <h1 id="education-heading" class="foldo-page-title">การ<em>ศึกษา</em></h1>
       <p class="foldo-page-lead">โรงเรียนและมหาวิทยาลัยที่อยากให้แสดงในพอร์ตโฟลิโอ ที่กำลังศึกษาอยู่จะขึ้นก่อนเสมอ</p>
     </div>
@@ -54,7 +54,7 @@
       {% endfor %}
     </ol>
   {% else %}
-    {% include "partials/empty_state.html" with title="ยังไม่มีการศึกษา" message="ยังไม่มีข้อมูลการศึกษา เพิ่มโรงเรียนหรือมหาวิทยาลัยที่อยากให้แสดงในพอร์ตโฟลิโอ" action_url=add_url action_label="เพิ่มการศึกษา" tone="blue" %}
+    {% include "partials/empty_state.html" with title="ยังไม่มีการศึกษา" message="เพิ่มมหาวิทยาลัยหรือโรงเรียนที่อยากให้แสดงในพอร์ตโฟลิโอ" action_url=add_url action_label="เพิ่มการศึกษา" tone="blue" %}
   {% endif %}
 </div>
 {% endblock %}

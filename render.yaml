@@ -1,0 +1,49 @@
+# Render Blueprint: Dashboard -> New -> Blueprint -> pick this repo.
+# Creates the web service (Docker) and a PostgreSQL database, and wires them up.
+services:
+  - type: web
+    name: cn331-foldo
+    runtime: docker
+    plan: free
+    branch: main
+    healthCheckPath: /health/
+    envVars:
+      - key: DJANGO_DEBUG
+        value: "false"
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: foldo-db
+          property: connectionString
+      - key: DJANGO_TIME_ZONE
+        value: Asia/Bangkok
+      # No object storage on the free plan: Django serves uploads itself.
+      # Uploaded photos are lost on redeploy (ephemeral disk).
+      - key: DJANGO_SERVE_MEDIA
+        value: "true"
+      - key: WEB_CONCURRENCY
+        value: "2"
+      # Password-reset email. Without EMAIL_HOST, Django only prints mails to the
+      # log, so "ลืมรหัสผ่าน" sends nothing. Gmail: smtp.gmail.com + an App Password.
+      - key: EMAIL_HOST
+        sync: false
+      - key: EMAIL_HOST_USER
+        sync: false
+      - key: EMAIL_HOST_PASSWORD
+        sync: false
+      - key: DEFAULT_FROM_EMAIL
+        sync: false
+      # Optional first admin account (set the password in the dashboard).
+      - key: DJANGO_SUPERUSER_USERNAME
+        sync: false
+      - key: DJANGO_SUPERUSER_EMAIL
+        sync: false
+      - key: DJANGO_SUPERUSER_PASSWORD
+        sync: false
+
+databases:
+  - name: foldo-db
+    plan: free
+    databaseName: foldo
+    user: foldo

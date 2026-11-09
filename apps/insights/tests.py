@@ -38,9 +38,7 @@ class DnaBuildTests(TestCase):
     def test_portfolio_with_no_selection_uses_everything(self):
         """selected_ids() is None until FOLDO-06 configures a selection -> 'uses everything'."""
         Skill.objects.create(profile=self.profile, name="Python")
-        Experience.objects.create(
-            profile=self.profile, company="Acme", job_title="Dev", start_date="2024-01-01"
-        )
+        Experience.objects.create(profile=self.profile, company="Acme", job_title="Dev", start_date="2024-01-01")
         Portfolio.objects.create(owner=self.user, profile=self.profile, title="Career")
 
         dna = build_dna(self.profile)
@@ -80,9 +78,7 @@ class DnaBuildTests(TestCase):
 
     def test_education_experience_and_project_all_appear(self):
         Education.objects.create(profile=self.profile, institution="TU", start_date="2020-01-01")
-        Experience.objects.create(
-            profile=self.profile, company="Acme", job_title="Dev", start_date="2024-01-01"
-        )
+        Experience.objects.create(profile=self.profile, company="Acme", job_title="Dev", start_date="2024-01-01")
         Project.objects.create(profile=self.profile, project_name="FOLDO")
         dna = build_dna(self.profile)
         self.assertEqual(dna.total_items, 3)
@@ -134,9 +130,7 @@ class PortfolioVersionsSourceTests(TestCase):
         self.assertEqual(portfolio_versions(self.profile), [])
 
     def test_version_ref_carries_the_template_key(self):
-        Portfolio.objects.create(
-            owner=self.user, profile=self.profile, title="Career", template_key="modern"
-        )
+        Portfolio.objects.create(owner=self.user, profile=self.profile, title="Career", template_key="modern")
         [version] = portfolio_versions(self.profile)
         self.assertEqual(version.template, "modern")
 
@@ -176,9 +170,7 @@ class PortfolioDnaViewTests(TestCase):
     def test_visitor_is_sent_to_login(self):
         self.client.logout()
         response = self.client.get(self.url)
-        self.assertRedirects(
-            response, f"{reverse('accounts:login')}?next={self.url}", fetch_redirect_response=False
-        )
+        self.assertRedirects(response, f"{reverse('accounts:login')}?next={self.url}", fetch_redirect_response=False)
 
     def test_viewing_dna_changes_nothing(self):
         Skill.objects.create(profile=self.profile, name="Python")
@@ -189,3 +181,54 @@ class PortfolioDnaViewTests(TestCase):
     def test_dashboard_links_to_dna(self):
         response = self.client.get(reverse("core:dashboard"))
         self.assertContains(response, self.url)
+
+
+class DnaQueryCountTests(TestCase):
+    """Portfolio DNA must not run queries per portfolio (N+1)."""
+
+    @classmethod
+    def setUpTestData(cls):
+        import datetime
+
+        cls.user = get_user_model().objects.create_user(username="nplus1", password=PASSWORD)
+        cls.profile = MainProfile.objects.create(owner=cls.user, full_name="N")
+        cls.skill = Skill.objects.create(profile=cls.profile, name="Python")
+        Education.objects.create(profile=cls.profile, institution="KU", start_date=datetime.date(2020, 1, 1))
+
+    def _add_portfolios(self, count):
+        from apps.portfolios.models import PortfolioContentSelection, PortfolioContentSetup
+
+        for i in range(count):
+            # Alternate: chosen profile / default profile, customised / not.
+            portfolio = Portfolio.objects.create(
+                owner=self.user, title=f"V{i}", profile=self.profile if i % 2 else None
+            )
+            if i % 2:
+                PortfolioContentSetup.objects.create(portfolio=portfolio)
+                PortfolioContentSelection.objects.create(portfolio=portfolio, section="skills", item_id=self.skill.pk)
+
+    def _queries(self):
+        from django.db import connection
+        from django.test.utils import CaptureQueriesContext
+
+        with CaptureQueriesContext(connection) as captured:
+            versions = portfolio_versions(self.profile)
+        return len(captured), versions
+
+    def test_query_count_does_not_grow_with_the_number_of_portfolios(self):
+        # Both cases include a customised portfolio, so only the count differs.
+        self._add_portfolios(2)
+        few, _ = self._queries()
+        self._add_portfolios(8)
+        many, versions = self._queries()
+        self.assertEqual(len(versions), 10)
+        self.assertEqual(few, many)
+        self.assertLessEqual(many, 8)
+
+    def test_batched_read_keeps_the_same_selections(self):
+        self._add_portfolios(2)
+        _, versions = self._queries()
+        by_name = {v.name: v for v in versions}
+        self.assertIsNone(by_name["V0"].selected)  # never customised: shows everything
+        self.assertEqual(by_name["V1"].selected["skills"], frozenset({self.skill.pk}))
+        self.assertEqual(by_name["V1"].selected["education"], frozenset())

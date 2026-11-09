@@ -9,9 +9,7 @@ PASSWORD = "pw-Foldo-12345"
 
 class ThaiAuthTests(TestCase):
     def setUp(self):
-        self.user = get_user_model().objects.create_user(
-            username="alice", email="alice@example.com", password=PASSWORD
-        )
+        self.user = get_user_model().objects.create_user(username="alice", email="alice@example.com", password=PASSWORD)
 
     def test_auth_pages_are_in_thai(self):
         expectations = {
@@ -19,7 +17,7 @@ class ThaiAuthTests(TestCase):
             reverse("accounts:register"): "สมัครสมาชิก",
             reverse("accounts:password_reset"): "ลืมรหัสผ่าน",
             reverse("accounts:password_reset_done"): "ตรวจสอบอีเมล",
-            reverse("accounts:password_reset_complete"): "ตั้งรหัสผ่านใหม่เรียบร้อย",
+            reverse("accounts:password_reset_complete"): "ตั้งรหัสผ่านใหม่แล้ว",
         }
         for url, text in expectations.items():
             with self.subTest(url=url):
@@ -38,16 +36,28 @@ class ThaiAuthTests(TestCase):
         self.assertRedirects(response, reverse("core:dashboard"), fetch_redirect_response=False)
 
     def test_register_errors_are_thai(self):
-        response = self.client.post(reverse("accounts:register"), {
-            "username": "ALICE", "email": "new@example.com", "password1": "12345678", "password2": "12345678",
-        })
-        self.assertContains(response, "ชื่อผู้ใช้นี้ถูกใช้แล้ว")
+        response = self.client.post(
+            reverse("accounts:register"),
+            {
+                "username": "ALICE",
+                "email": "new@example.com",
+                "password1": "12345678",
+                "password2": "12345678",
+            },
+        )
+        self.assertContains(response, "ชื่อผู้ใช้นี้มีคนใช้แล้ว")
         self.assertContains(response, "รหัสผ่านต้องไม่เป็นตัวเลขล้วน")
 
     def test_register_password_mismatch_is_thai(self):
-        response = self.client.post(reverse("accounts:register"), {
-            "username": "newbie", "email": "new@example.com", "password1": PASSWORD, "password2": PASSWORD + "x",
-        })
+        response = self.client.post(
+            reverse("accounts:register"),
+            {
+                "username": "newbie",
+                "email": "new@example.com",
+                "password1": PASSWORD,
+                "password2": PASSWORD + "x",
+            },
+        )
         self.assertContains(response, "รหัสผ่านทั้งสองช่องไม่ตรงกัน")
 
 

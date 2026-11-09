@@ -12,10 +12,11 @@ from django.core.exceptions import ValidationError
 safe_url_validator = URLValidator(schemes=["http", "https"])
 
 # Maximum lengths (characters) shared by all apps.
-MAX_SHORT_NAME = 100   # display name, skill name
-MAX_SHORT_TEXT = 200   # project name, job title, institution
-MAX_URL = 500          # any link
-MAX_LONG_TEXT = 5000   # bio, description, project story
+MAX_SHORT_NAME = 100  # display name, skill name
+MAX_SHORT_TEXT = 200  # project name, job title, institution
+MAX_URL = 500  # any link
+MAX_LONG_TEXT = 5000  # bio, description, project story
+
 
 def validate_date_order(start_date, end_date):
     """Raise ValidationError when end_date is before start_date.

@@ -1,30 +1,36 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Export PDF · {{ portfolio.title }}{% endblock %}
+{% block title %}ดาวน์โหลด PDF · {{ portfolio.title }} — FOLDO{% endblock %}
 {% block extra_css %}<link rel="stylesheet" href="{% static 'portfolios/pdf_export.css' %}">{% endblock %}
-
+{% comment %}
+  FOLDO-11: build a PDF of one portfolio with progress, success and failure states.
+  Works without JavaScript (the form is a plain download). Copy: docs/CONTENT_GUIDE.md.
+{% endcomment %}
 {% block content %}
-<div class="foldo-ex container py-5" style="max-width: 760px;">
-  <a class="foldo-back" href="{% url 'portfolios:list' %}"><span aria-hidden="true">&larr;</span> My portfolios</a>
+<div class="foldo-page foldo-page--medium foldo-ex">
+  <a class="foldo-back" href="{% url 'portfolios:device_preview' portfolio.pk %}">{% include "partials/icon.html" with name="arrow-left" %}ดูตัวอย่าง</a>
 
-  <header class="foldo-ex__header">
-    <p class="foldo-ex__eyebrow" lang="en">{{ portfolio.title }}</p>
-    <h1 class="foldo-ex__title">Export <span class="foldo-text-lime">PDF</span></h1>
-    <div class="foldo-ex__bands" aria-hidden="true"><span></span><span></span></div>
-    <p class="foldo-ex__subtitle">
-      Template: {{ portfolio.get_template_key_display }}. Only the content you chose for this version is included.
-      Exporting does not publish it.
-    </p>
-  </header>
+  <div class="foldo-page-head">
+    <div class="foldo-page-head__text tone-lime">
+      <p class="foldo-eyebrow foldo-eyebrow--plain">{{ portfolio.title }}</p>
+      <h1 class="foldo-page-title">ดาวน์โหลด <em>PDF</em></h1>
+      <p class="foldo-page-lead">
+        ใช้เทมเพลต {{ portfolio.get_template_key_display }} และเฉพาะเนื้อหาที่เลือกไว้ในพอร์ตโฟลิโอนี้
+        การสร้าง PDF ไม่ได้เผยแพร่พอร์ตโฟลิโอ
+      </p>
+    </div>
+  </div>
+
+  {% include "portfolios/_workflow.html" with current="preview" %}
 
   <section class="foldo-ex__card card card-body" aria-labelledby="ex-heading"
            data-export data-timeout="{{ timeout_seconds }}">
-    <h2 class="foldo-ex__card-title" id="ex-heading">Create your PDF</h2>
+    <h2 class="foldo-ex__card-title" id="ex-heading">สร้างไฟล์ PDF</h2>
 
     {# Works without JavaScript: a plain download link of the chosen size. #}
     <form method="get" action="{% url 'portfolios:pdf' portfolio.pk %}" data-export-form>
       <fieldset class="foldo-ex__sizes">
-        <legend class="foldo-ex__legend">Page size</legend>
+        <legend class="foldo-ex__legend">ขนาดกระดาษ</legend>
         {% for size in page_sizes %}
           <label class="foldo-ex__size">
             <input type="radio" name="size" value="{{ size }}" {% if size == default_page_size %}checked{% endif %}>
@@ -32,40 +38,42 @@
           </label>
         {% endfor %}
       </fieldset>
-      <button type="submit" class="btn btn-primary" data-export-start>Create PDF</button>
-      <a class="btn btn-outline-secondary" href="{% url 'portfolios:content' portfolio.pk %}">Choose content</a>
+      <p class="small foldo-muted">A4 ใช้ทั่วไปในไทยและยุโรป Letter ใช้ในสหรัฐฯ</p>
+      <div class="d-flex flex-wrap gap-2">
+        <button type="submit" class="btn btn-lime" data-export-start>{% include "partials/icon.html" with name="file" %}สร้าง PDF</button>
+        <a class="btn btn-outline-foldo" href="{% url 'portfolios:content' portfolio.pk %}">เลือกเนื้อหาก่อน</a>
+      </div>
     </form>
 
     {# State panels. Only one is visible at a time; the page sets data-state on this section. #}
     <div class="foldo-ex__state foldo-ex__state--progress" data-state-panel="progress" role="status" aria-live="polite" hidden>
       <span class="foldo-ex__spinner" aria-hidden="true"></span>
       <div>
-        <p class="foldo-ex__state-title">Creating your PDF&hellip; <span data-elapsed>0</span>s</p>
-        <p class="foldo-ex__state-text">Long portfolios can take up to a minute. Please keep this page open.</p>
-        <button type="button" class="btn btn-sm btn-outline-secondary" data-export-cancel>Cancel</button>
+        <p class="foldo-ex__state-title">กำลังสร้าง PDF… <span data-elapsed>0</span> วินาที</p>
+        <p class="foldo-ex__state-text">พอร์ตโฟลิโอยาว ๆ อาจใช้เวลาถึง 1 นาที เปิดหน้านี้ค้างไว้</p>
+        <button type="button" class="btn btn-sm btn-outline-foldo" data-export-cancel>ยกเลิก</button>
       </div>
     </div>
 
     <div class="foldo-ex__state foldo-ex__state--success" data-state-panel="success" role="status" aria-live="polite" hidden>
       <div>
-        <p class="foldo-ex__state-title">Your PDF is ready</p>
+        <p class="foldo-ex__state-title">PDF พร้อมแล้ว</p>
         <p class="foldo-ex__state-text"><span data-result-name></span> &middot; <span data-result-size></span></p>
-        <a class="btn btn-primary" data-export-download download>Download PDF</a>
-        <a class="btn btn-outline-secondary" data-export-open target="_blank" rel="noopener">Open</a>
-        <button type="button" class="btn btn-outline-secondary" data-export-again>Create another</button>
+        <a class="btn btn-lime" data-export-download download>{% include "partials/icon.html" with name="download" %}ดาวน์โหลด PDF</a>
+        <a class="btn btn-outline-foldo" data-export-open target="_blank" rel="noopener">เปิดดู</a>
+        <button type="button" class="btn btn-outline-foldo" data-export-again>สร้างใหม่</button>
       </div>
     </div>
 
     <div class="foldo-ex__state foldo-ex__state--failure" data-state-panel="failure" role="alert" hidden>
       <div>
-        <p class="foldo-ex__state-title">The PDF could not be created</p>
-        <p class="foldo-ex__state-text" data-error-text>Something went wrong.</p>
-        <button type="button" class="btn btn-primary" data-export-retry>Try again</button>
-        <a class="btn btn-outline-secondary" href="{% url 'portfolios:preview' portfolio.pk %}">Check the preview</a>
+        <p class="foldo-ex__state-title">สร้าง PDF ไม่สำเร็จ</p>
+        <p class="foldo-ex__state-text" data-error-text>ระบบขัดข้อง ลองอีกครั้ง</p>
+        <button type="button" class="btn btn-lime" data-export-retry>ลองอีกครั้ง</button>
+        <a class="btn btn-outline-foldo" href="{% url 'portfolios:preview' portfolio.pk %}">เปิดตัวอย่างเต็มหน้า</a>
       </div>
     </div>
   </section>
 </div>
 {% endblock %}
-
 {% block extra_js %}<script src="{% static 'portfolios/pdf_export.js' %}" defer></script>{% endblock %}

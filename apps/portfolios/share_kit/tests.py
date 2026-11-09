@@ -1,4 +1,5 @@
 """Tests for the Share Kit: copy link and QR code (FOLDO-17)."""
+
 import re
 
 import segno
@@ -74,28 +75,28 @@ class PrivacyTests(ShareKitTestCase):
 class PublishedTests(ShareKitTestCase):
     def test_page_shows_status_url_and_qr(self):
         html = self.share(self.live).content.decode()
-        self.assertIn("Published", html)
+        self.assertIn("เผยแพร่แล้ว", html)
         self.assertIn(self.expected_url(self.live), html)
         self.assertIn("<svg", html)
         self.assertIn(reverse("portfolios:share_qr_png", args=[self.live.pk]), html)
 
     def test_inline_qr_is_built_from_the_exact_public_url(self):
         html = self.share(self.live).content.decode()
-        expected = services.qr_svg_inline(self.expected_url(self.live), title=f"QR code for {self.live.title}")
+        expected = services.qr_svg_inline(self.expected_url(self.live), title=f"QR code ของ {self.live.title}")
         self.assertIn(expected, html)
 
     def test_inline_qr_scales_instead_of_being_cropped(self):
         """Regression: a fixed width/height with no viewBox cut the code off in a smaller box."""
         svg = services.qr_svg_inline(self.expected_url(self.live), title="t")
         self.assertIn("viewBox=", svg)
-        self.assertNotRegex(svg, r'<svg[^>]*\swidth=')
-        self.assertNotRegex(svg, r'<svg[^>]*\sheight=')
+        self.assertNotRegex(svg, r"<svg[^>]*\swidth=")
+        self.assertNotRegex(svg, r"<svg[^>]*\sheight=")
 
     def test_png_download_is_a_png_for_the_public_url(self):
         response = self.qr(self.live)
         self.assertEqual(response["Content-Type"], "image/png")
         self.assertTrue(response.content.startswith(PNG_MAGIC))
-        self.assertIn(f'{self.live.slug}-qr.png', response["Content-Disposition"])
+        self.assertIn(f"{self.live.slug}-qr.png", response["Content-Disposition"])
         self.assertIn("attachment", response["Content-Disposition"])
         self.assertEqual(response.content, services.qr_file(self.expected_url(self.live), "png"))
 
@@ -125,7 +126,7 @@ class PublishedTests(ShareKitTestCase):
 class UnpublishedTests(ShareKitTestCase):
     def test_page_says_unpublished_and_shows_no_link_or_qr(self):
         html = self.share(self.draft).content.decode()
-        self.assertIn("not published yet", html)
+        self.assertIn("ยังไม่เผยแพร่", html)
         self.assertNotIn("<svg", html)
         self.assertNotIn("sk-url", html)
         self.assertNotIn(self.draft.slug, html)

@@ -60,13 +60,13 @@
         var type = response.headers.get("Content-Type") || "";
         if (response.ok && type.indexOf("application/pdf") === 0) {
           return response.blob().then(function (blob) {
-            if (!blob.size) throw new Error("The PDF came back empty.");
+            if (!blob.size) throw new Error("ไฟล์ PDF ที่ได้ว่างเปล่า ลองอีกครั้ง");
             return { blob: blob, name: filenameFrom(response, "portfolio.pdf") };
           });
         }
         // A server-side failure comes back as JSON; anything else (e.g. a login page) is not a PDF.
         return response.json().catch(function () { return {}; }).then(function (body) {
-          throw new Error(body.error || "The server did not return a PDF (error " + response.status + ").");
+          throw new Error(body.error || "เซิร์ฟเวอร์ไม่ได้ส่ง PDF กลับมา (รหัส " + response.status + ") ลองอีกครั้ง");
         });
       })
       .then(function (result) {
@@ -85,13 +85,13 @@
         window.clearTimeout(killer);
         if (error && error.name === "AbortError") {
           if (timedOut) {
-            fail("This is taking too long. Try again, or shorten the content you selected.");
+            fail("ใช้เวลานานเกินไป ลองอีกครั้ง หรือเลือกเนื้อหาให้น้อยลง");
           } else { // the user pressed Cancel: back to the form
             clearTimer(); hideAll(); form.hidden = false;
           }
           return;
         }
-        fail(error && error.message ? error.message : "We could not reach the server. Check your connection and try again.");
+        fail(error && error.message ? error.message : "ติดต่อเซิร์ฟเวอร์ไม่ได้ ตรวจอินเทอร์เน็ตแล้วลองอีกครั้ง");
       });
   }
 

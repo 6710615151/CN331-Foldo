@@ -1,4 +1,5 @@
 """Tests for per-version content selection (FOLDO-06, Dev 2)."""
+
 import datetime
 
 from django.contrib.auth import get_user_model
@@ -155,7 +156,7 @@ class IndependenceTests(SelectionTestCase):
 class UnavailableItemTests(SelectionTestCase):
     def test_another_users_ids_are_ignored_with_a_warning(self):
         response = self.choose(self.v1, skills=[self.python.pk, self.bob_skill.pk])
-        self.assertTrue(any("no longer available" in m for m in self.messages(response)))
+        self.assertTrue(any("ถูกลบออกจากโปรไฟล์ไปแล้ว" in m for m in self.messages(response)))
         self.assertEqual(selectors.get_selected_ids(self.v1)["skills"], {self.python.pk})
         self.assertFalse(PortfolioContentSelection.objects.filter(item_id=self.bob_skill.pk, section="skills").exists())
 
@@ -187,7 +188,7 @@ class UnavailableItemTests(SelectionTestCase):
         Experience.objects.all().delete()
         Education.objects.all().delete()
         html = self.client.get(self.url(self.v1)).content.decode()
-        self.assertIn("Nothing to choose from yet", html)
+        self.assertIn("ยังไม่มีเนื้อหาให้เลือก", html)
 
 
 class ServiceTests(SelectionTestCase):

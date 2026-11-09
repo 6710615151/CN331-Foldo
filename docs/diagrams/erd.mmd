@@ -1,0 +1,109 @@
+erDiagram
+    CustomUser {
+        BigAuto id PK
+        Char password
+        Char username UK
+        Email email
+        DateTime date_joined
+    }
+    MainProfile {
+        BigAuto id PK
+        CustomUser owner FK
+        Char label
+        Boolean is_default
+        Char full_name
+        Char headline
+        Text bio
+        Char location
+        Image photo
+        Email contact_email
+        Char phone
+        URL website
+        URL linkedin_url
+        URL github_url
+        DateTime created_at
+        DateTime updated_at
+    }
+    Education {
+        BigAuto id PK
+        MainProfile profile FK
+        Char institution
+        Char degree
+        Char field_of_study
+        Date start_date
+        Date end_date
+        Char grade
+        Text description
+        DateTime created_at
+        DateTime updated_at
+    }
+    Skill {
+        BigAuto id PK
+        MainProfile profile FK
+        Char name
+        Char proficiency
+        DateTime created_at
+        DateTime updated_at
+    }
+    Experience {
+        BigAuto id PK
+        MainProfile profile FK
+        Char company
+        Char job_title
+        Text description
+        Date start_date
+        Date end_date
+        DateTime created_at
+        DateTime updated_at
+    }
+    Project {
+        BigAuto id PK
+        MainProfile profile FK
+        Char project_name
+        Text description
+        URL project_url
+        Date start_date
+        Date end_date
+        Text problem
+        Text role
+        Text process
+        Text solution
+        Text outcome
+        DateTime created_at
+        DateTime updated_at
+    }
+    Portfolio {
+        BigAuto id PK
+        CustomUser owner FK
+        Char title
+        Slug slug UK
+        MainProfile profile FK
+        Char template_key
+        Boolean is_published
+        DateTime created_at
+        DateTime updated_at
+    }
+    PortfolioContentSetup {
+        BigAuto id PK
+        Portfolio portfolio FK
+        DateTime updated_at
+    }
+    PortfolioContentSelection {
+        BigAuto id PK
+        Portfolio portfolio FK
+        Char section
+        PositiveInteger item_id
+    }
+    CustomUser ||--o{ MainProfile : "owner"
+    MainProfile ||--o{ Education : "profile"
+    MainProfile ||--o{ Skill : "profile"
+    MainProfile ||--o{ Experience : "profile"
+    MainProfile ||--o{ Project : "profile"
+    CustomUser ||--o{ Portfolio : "owner"
+    MainProfile |o--o{ Portfolio : "profile (null = main profile)"
+    Portfolio ||--|| PortfolioContentSetup : "portfolio"
+    Portfolio ||--o{ PortfolioContentSelection : "portfolio"
+    PortfolioContentSelection }o..|| Education : "item_id (section=education)"
+    PortfolioContentSelection }o..|| Skill : "item_id (section=skills)"
+    PortfolioContentSelection }o..|| Experience : "item_id (section=experience)"
+    PortfolioContentSelection }o..|| Project : "item_id (section=projects)"

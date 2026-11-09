@@ -1,0 +1,7 @@
+[tool.black]
+# Same width as .flake8; CI runs `black --check apps config`.
+line-length = 120
+target-version = ["py311"]
+extend-exclude = '''
+/migrations/
+'''

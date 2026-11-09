@@ -15,19 +15,17 @@ class PortfolioForm(BootstrapFormMixin, forms.ModelForm):
         model = Portfolio
         fields = ["title", "profile", "template_key", "is_published"]
         labels = {
-            "title": "ชื่อเวอร์ชัน",
+            "title": "ชื่อพอร์ตโฟลิโอ",
             "profile": "โปรไฟล์ที่ใช้แสดง",
-            "template_key": "Template",
+            "template_key": "เทมเพลต",
             "is_published": "เผยแพร่พอร์ตโฟลิโอนี้",
         }
         widgets = {"template_key": forms.RadioSelect}
         help_texts = {
-            "template_key": "แต่ละเวอร์ชันมีเทมเพลตของตัวเอง "
-                            "เปลี่ยนแล้วไม่กระทบโปรไฟล์หรือเวอร์ชันอื่น",
-            "title": "ใช้แยกเวอร์ชันของคุณเอง เช่น “สำหรับงาน Backend”",
-            "profile": "เลือกโปรไฟล์ของคุณ แก้โปรไฟล์เมื่อไรเวอร์ชันนี้จะอัปเดตตามอัตโนมัติ",
-            "is_published": "เปิด = ใครมีลิงก์ก็ดูได้ รวมถึงข้อมูลติดต่อในโปรไฟล์ที่เลือก "
-                            "ปิด = มีแค่คุณที่ดูตัวอย่างได้",
+            "template_key": "เปลี่ยนได้ทุกเมื่อ ไม่กระทบโปรไฟล์หรือพอร์ตโฟลิโออื่น",
+            "title": "ตั้งตามงานที่จะสมัคร เช่น “Backend Intern — Agoda” ชื่อนี้เป็นส่วนหนึ่งของลิงก์สาธารณะ",
+            "profile": "แก้โปรไฟล์เมื่อไร พอร์ตโฟลิโอนี้จะเปลี่ยนตามทันที",
+            "is_published": "เปิด: ใครมีลิงก์ก็ดูได้ รวมถึงข้อมูลติดต่อในโปรไฟล์ " "ปิด: มีแค่คุณที่ดูได้",
         }
 
     def __init__(self, *args, owner, **kwargs):
@@ -38,8 +36,8 @@ class PortfolioForm(BootstrapFormMixin, forms.ModelForm):
         # Only the owner's own profiles can be chosen, so another user's id is rejected as invalid.
         field.queryset = profile_choices(owner)
         field.required = False
-        field.empty_label = "ใช้โปรไฟล์ Default ของฉัน"
-        field.label_from_instance = lambda p: f"{p.label} (Default)" if p.is_default else p.label
+        field.empty_label = "โปรไฟล์หลักของฉัน (เปลี่ยนตามเมื่อเปลี่ยนโปรไฟล์หลัก)"
+        field.label_from_instance = lambda p: f"{p.label} (โปรไฟล์หลัก)" if p.is_default else p.label
 
     def clean_title(self):
         return self.cleaned_data["title"].strip()

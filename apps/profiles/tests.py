@@ -147,9 +147,7 @@ class CreateAndEditTests(ProfileTestCase):
         self.assertContains(response, "Data engineer")
 
     def test_missing_full_name_is_rejected_and_input_is_kept(self):
-        response = self.client.post(
-            reverse("profiles:create"), profile_form_data(full_name="", headline="Keep me")
-        )
+        response = self.client.post(reverse("profiles:create"), profile_form_data(full_name="", headline="Keep me"))
         self.assertEqual(response.status_code, 200)
         self.assertFalse(MainProfile.objects.exists())
         self.assertIn("full_name", response.context["form"].errors)
@@ -183,9 +181,7 @@ class CreateAndEditTests(ProfileTestCase):
     def test_invalid_email_phone_and_link_are_rejected(self):
         response = self.client.post(
             reverse("profiles:create"),
-            profile_form_data(
-                contact_email="not-an-email", phone="call me", website="javascript:alert(1)"
-            ),
+            profile_form_data(contact_email="not-an-email", phone="call me", website="javascript:alert(1)"),
         )
         errors = response.context["form"].errors
         for field in ("contact_email", "phone", "website"):
@@ -194,9 +190,7 @@ class CreateAndEditTests(ProfileTestCase):
         self.assertFalse(MainProfile.objects.exists())
 
     def test_ftp_links_are_rejected(self):
-        response = self.client.post(
-            reverse("profiles:create"), profile_form_data(github_url="ftp://example.com/code")
-        )
+        response = self.client.post(reverse("profiles:create"), profile_form_data(github_url="ftp://example.com/code"))
         self.assertIn("github_url", response.context["form"].errors)
         self.assertFalse(MainProfile.objects.exists())
 
@@ -239,7 +233,7 @@ class CompletenessTests(ProfileTestCase):
         response = self.client.post(
             reverse("profiles:create"), profile_form_data(headline="", contact_email=""), follow=True
         )
-        self.assertContains(response, "incomplete")
+        self.assertContains(response, "แต่พอร์ตโฟลิโอยังต้องใช้")
         self.assertIn("warning", [m.level_tag for m in response.context["messages"]])
 
 
@@ -291,7 +285,7 @@ class DeleteTests(ProfileTestCase):
     def test_get_asks_for_confirmation_and_deletes_nothing(self):
         profile = make_profile(self.alice)
         response = self.client.get(reverse("profiles:delete", args=[profile.pk]))
-        self.assertContains(response, "Delete this profile?")
+        self.assertContains(response, "ลบโปรไฟล์นี้?")
         self.assertTrue(MainProfile.objects.filter(pk=profile.pk).exists())
 
     def test_post_deletes_and_returns_to_list(self):
@@ -369,3 +363,40 @@ class ServiceTests(ProfileTestCase):
         self.assertFalse(display.exists)
         self.assertEqual(display.display_name, "alice")
         self.assertEqual(display.initials, "A")
+
+
+class DefaultProfileLockingTests(TestCase):
+    """set_default_profile serialises concurrent switches with SELECT ... FOR UPDATE."""
+
+    def setUp(self):
+        from django.contrib.auth import get_user_model
+
+        self.owner = get_user_model().objects.create_user(username="lock-owner", password="pw-Foldo-12345")
+        self.first = MainProfile.objects.create(owner=self.owner, label="A", full_name="A")
+        self.second = MainProfile.objects.create(owner=self.owner, label="B", full_name="B")
+
+    def test_switching_default_locks_the_owners_profiles_first(self):
+        from unittest import mock
+
+        from django.db.models.query import QuerySet
+
+        from apps.profiles import services
+
+        calls = []
+        real = QuerySet.select_for_update
+
+        def spy(qs, *args, **kwargs):
+            calls.append(qs.model)
+            return real(qs, *args, **kwargs)
+
+        with mock.patch.object(QuerySet, "select_for_update", spy):
+            services.set_default_profile(self.second)
+        self.assertEqual(calls, [MainProfile])
+
+    def test_exactly_one_default_after_switching_back_and_forth(self):
+        from apps.profiles import services
+
+        for profile in (self.second, self.first, self.second):
+            services.set_default_profile(profile)
+        defaults = MainProfile.objects.filter(owner=self.owner, is_default=True)
+        self.assertEqual(list(defaults.values_list("label", flat=True)), ["B"])
