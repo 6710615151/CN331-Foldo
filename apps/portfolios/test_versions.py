@@ -53,8 +53,10 @@ class CreateVersionTests(VersionTestCase):
     def test_create_redirects_to_preview_with_a_saved_message(self):
         response = self.create()
         portfolio = Portfolio.objects.get()
-        self.assertRedirects(response, reverse("portfolios:preview", args=[portfolio.pk]))
-        self.assertContains(self.client.get(reverse("portfolios:list")), "saved as a private draft")
+        preview = reverse("portfolios:preview", args=[portfolio.pk])
+        self.assertRedirects(response, preview, fetch_redirect_response=False)
+        # The confirmation shows on the page the user lands on (the preview's owner bar).
+        self.assertContains(self.client.get(preview), "แล้ว (ยังไม่เผยแพร่)")
 
     def test_owner_always_comes_from_the_signed_in_user(self):
         self.create(owner=self.bob.pk)
@@ -72,14 +74,14 @@ class CreateVersionTests(VersionTestCase):
         response = self.create(title="   ", template_key="creative")
         self.assertEqual(response.status_code, 200)
         self.assertFalse(Portfolio.objects.exists())
-        self.assertContains(response, "This field is required.")
+        self.assertContains(response, "ต้องกรอกช่องนี้")
         self.assertContains(response, "is-invalid")
         self.assertRegex(response.content.decode(), r'value="creative"\s+id="id_template_key_creative" checked')
 
     def test_another_users_profile_cannot_be_chosen(self):
         response = self.create(profile=self.bob_profile.pk)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Select a valid choice")
+        self.assertContains(response, "ตัวเลือกนี้ใช้ไม่ได้แล้ว")
         self.assertFalse(Portfolio.objects.exists())
 
     def test_database_error_keeps_the_input(self):
@@ -87,7 +89,7 @@ class CreateVersionTests(VersionTestCase):
                 self.assertLogs("apps.portfolios.views", level="ERROR"):
             response = self.create(title="Kept title")
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "temporary problem")
+        self.assertContains(response, "ระบบขัดข้องชั่วคราว")
         self.assertContains(response, 'value="Kept title"')
         self.assertFalse(Portfolio.objects.exists())
 
@@ -127,7 +129,7 @@ class RenameAndStatusTests(VersionTestCase):
         self.backend.refresh_from_db()
         self.assertTrue(self.backend.is_published)
         list_page = self.client.get(reverse("portfolios:list"))
-        self.assertContains(list_page, "Published")
+        self.assertContains(list_page, "เผยแพร่แล้ว")
         self.assertContains(list_page, self.backend.public_path)
 
         self.edit(self.backend)  # checkbox left out = off
@@ -191,7 +193,7 @@ class DeleteVersionTests(VersionTestCase):
         with mock.patch.object(Portfolio, "delete", side_effect=DatabaseError("down")), \
                 self.assertLogs("apps.portfolios.views", level="ERROR"):
             response = self.client.post(self.url, follow=True)
-        self.assertContains(response, "Couldn&#x27;t delete that portfolio")
+        self.assertContains(response, "ลบพอร์ตโฟลิโอไม่สำเร็จ")
         self.assertTrue(Portfolio.objects.filter(pk=self.backend.pk).exists())
 
     def test_deleting_the_profile_keeps_the_version(self):
@@ -224,7 +226,7 @@ class OwnershipTests(VersionTestCase):
         self.client.logout()
         self.client.login(username="bob", password=PASSWORD)
         response = self.client.get(reverse("portfolios:list"))
-        self.assertContains(response, "You don't have a portfolio yet")
+        self.assertContains(response, "ยังไม่มีพอร์ตโฟลิโอ")
         self.assertContains(response, reverse("portfolios:create"))
 
     def test_another_user_gets_404_and_changes_nothing(self):

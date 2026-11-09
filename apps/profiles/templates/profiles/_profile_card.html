@@ -18,7 +18,7 @@
         {% if display.location %}<span class="foldo-chip">{% include "partials/icon.html" with name="pin" %}{{ display.location }}</span>{% endif %}
         {% for item in display.contacts %}
           {% if item.href %}
-            <a class="foldo-chip" href="{{ item.href }}">{% if item.label == "Email" %}{% include "partials/icon.html" with name="mail" %}{% else %}{% include "partials/icon.html" with name="call" %}{% endif %}<span class="visually-hidden">{{ item.label }}: </span>{{ item.value }}</a>
+            <a class="foldo-chip" href="{{ item.href }}">{% if item.label == "Email" %}{% include "partials/icon.html" with name="mail" %}{% else %}{% include "partials/icon.html" with name="call" %}{% endif %}<span class="visually-hidden">{% if item.label == "Email" %}อีเมล{% else %}โทรศัพท์{% endif %}: </span>{{ item.value }}</a>
           {% else %}
             <span class="foldo-chip">{{ item.value }}</span>
           {% endif %}

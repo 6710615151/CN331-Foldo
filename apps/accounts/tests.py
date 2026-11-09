@@ -142,7 +142,7 @@ class AccountSettingsViewTests(TestCase):
         self.assertRedirects(response, self.url)
         self.assertEqual(
             [str(m) for m in get_messages(response.wsgi_request)],
-            ["บันทึกการตั้งค่าเรียบร้อยแล้ว"],
+            ["บันทึกการตั้งค่าบัญชีแล้ว"],
         )
         self.alice.refresh_from_db()
         self.assertEqual(self.alice.last_name, "Smith")
@@ -153,7 +153,7 @@ class AccountSettingsViewTests(TestCase):
         self.assertIn("email", response.context["form"].errors)
         self.assertEqual(
             [str(m) for m in get_messages(response.wsgi_request)],
-            ["กรุณาตรวจสอบข้อมูลที่กรอกอีกครั้ง"],
+            ["ยังไม่ได้บันทึก — แก้ช่องที่ไฮไลต์ ข้อมูลอื่นที่กรอกไว้ยังอยู่ครบ"],
         )
         self._assert_alice_unchanged()
 

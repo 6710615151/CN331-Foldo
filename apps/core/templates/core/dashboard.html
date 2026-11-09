@@ -18,7 +18,7 @@
   {# 1. Welcome hero ------------------------------------------------------ #}
   <section class="foldo-dash-hero" aria-labelledby="dashboard-heading">
     <div class="foldo-dash-hero__copy">
-      <p class="foldo-eyebrow" lang="en">One Profile. Many Forms.</p>
+      <p class="foldo-eyebrow foldo-eyebrow--plain">แดชบอร์ด</p>
       <h1 id="dashboard-heading" class="foldo-dash-hero__title">
         สวัสดี {{ shell.display_name }}
         <span>{% if summary.required_steps %}ไปต่ออีกนิดเดียว{% elif summary.next_steps %}พร้อมแชร์แล้ว เติมอีกนิดให้โดดเด่น{% else %}พอร์ตโฟลิโอพร้อมแชร์แล้ว{% endif %}</span>
@@ -28,7 +28,7 @@
         {% if first %}
           ขั้นต่อไป: <strong>{{ first.title }}</strong> — {{ first.detail }}
         {% else %}
-          โปรไฟล์ เวอร์ชันพอร์ตโฟลิโอ และลิงก์สาธารณะของคุณพร้อมใช้งาน สร้างเวอร์ชันใหม่สำหรับโอกาสถัดไปได้เลย
+          โปรไฟล์และพอร์ตโฟลิโอพร้อมแชร์ สมัครงานใหม่เมื่อไร สร้างพอร์ตโฟลิโอใหม่จากโปรไฟล์เดิมได้เลย
         {% endif %}
         {% endwith %}
       </p>
@@ -39,7 +39,7 @@
           </a>
         {% else %}
           <a class="btn btn-lime btn-lg" href="{% url 'portfolios:create' %}">
-            สร้างเวอร์ชันใหม่<span class="foldo-arrow" aria-hidden="true">&rarr;</span>
+            สร้างพอร์ตโฟลิโอใหม่<span class="foldo-arrow" aria-hidden="true">&rarr;</span>
           </a>
         {% endif %}
         <a class="btn btn-outline-light btn-lg" href="{% url 'core:onboarding' %}">ดูขั้นตอนทั้งหมด</a>
@@ -63,7 +63,7 @@
       <div class="foldo-section-head">
         <h2 id="dash-profile-heading" class="foldo-section-title">
           <span class="foldo-icon-tile foldo-icon-tile--sm tone-blue">{% include "partials/icon.html" with name="user" %}</span>
-          โปรไฟล์หลัก <span class="visually-hidden" lang="en">Main profile</span>
+          โปรไฟล์หลัก
         </h2>
         {% if p %}<a class="btn btn-ghost btn-sm" href="{% url 'profiles:view' p.pk %}">ดูโปรไฟล์ {% include "partials/icon.html" with name="arrow-right" %}</a>{% endif %}
       </div>
@@ -97,14 +97,14 @@
         <div class="d-flex flex-wrap gap-2 mt-auto">
           <a class="btn btn-foldo" href="{% url 'profiles:update' p.pk %}">{% include "partials/icon.html" with name="edit" %}แก้ไขโปรไฟล์</a>
           <a class="btn btn-outline-foldo" href="{% url 'profiles:view' p.pk %}">ดูโปรไฟล์</a>
-          <a class="btn btn-outline-foldo" href="{% url 'insights:dna' p.pk %}"><span lang="en">Portfolio DNA</span></a>
+          <a class="btn btn-outline-foldo" href="{% url 'insights:dna' p.pk %}">ข้อมูลไหนใช้ที่ไหน</a>
         </div>
       {% else %}
         <div class="foldo-dash-profile__empty">
-          <p class="foldo-muted">คุณยังไม่ได้สร้างโปรไฟล์หลัก ข้อมูลทั้งหมดของพอร์ตโฟลิโอจะมาจากที่นี่</p>
+          <p class="foldo-muted">ยังไม่มีโปรไฟล์ พอร์ตโฟลิโอทุกอันดึงข้อมูลจากโปรไฟล์</p>
           <div class="d-flex flex-wrap gap-2">
-            <a class="btn btn-lime" href="{% url 'profiles:create' %}">{% include "partials/icon.html" with name="plus" %}สร้างโปรไฟล์หลัก</a>
-            <a class="btn btn-outline-foldo" href="{% url 'core:onboarding' %}"><span lang="en">How FOLDO works</span></a>
+            <a class="btn btn-lime" href="{% url 'profiles:create' %}">{% include "partials/icon.html" with name="plus" %}สร้างโปรไฟล์</a>
+            <a class="btn btn-outline-foldo" href="{% url 'core:onboarding' %}">ดูวิธีใช้งาน</a>
           </div>
         </div>
       {% endif %}
@@ -143,10 +143,10 @@
         <div>
           <h2 id="dash-portfolios-heading" class="foldo-section-title">
             <span class="foldo-icon-tile foldo-icon-tile--sm tone-magenta">{% include "partials/icon.html" with name="layers" %}</span>
-            พอร์ตโฟลิโอ <span class="visually-hidden" lang="en">Portfolio versions</span>
+            พอร์ตโฟลิโอ
           </h2>
           {% if summary.portfolio_count %}
-            <p>{{ summary.portfolio_count }} เวอร์ชัน · เผยแพร่แล้ว {{ summary.published_count }}</p>
+            <p>{{ summary.portfolio_count }} พอร์ตโฟลิโอ · เผยแพร่แล้ว {{ summary.published_count }}</p>
           {% endif %}
         </div>
         {% if summary.portfolio_count %}<a class="btn btn-ghost btn-sm" href="{% url 'portfolios:list' %}">ดูทั้งหมด {% include "partials/icon.html" with name="arrow-right" %}</a>{% endif %}
@@ -161,7 +161,7 @@
                 <span class="foldo-dash-version__title">{{ portfolio.title }}</span>
               </a>
               <span class="foldo-dash-version__meta">
-                {% if portfolio.is_published %}<span class="foldo-badge tone-lime foldo-badge--live"><span class="foldo-badge__dot"></span>เผยแพร่แล้ว</span>{% else %}<span class="foldo-badge tone-muted">ส่วนตัว</span>{% endif %}
+                {% if portfolio.is_published %}<span class="foldo-badge tone-lime foldo-badge--live"><span class="foldo-badge__dot"></span>เผยแพร่แล้ว</span>{% else %}<span class="foldo-badge tone-muted">ยังไม่เผยแพร่</span>{% endif %}
                 <span>{{ portfolio.updated_at|ago }}</span>
               </span>
               {% if portfolio.is_published %}
@@ -175,10 +175,10 @@
       {% else %}
         {% url "portfolios:create" as create_portfolio_url %}
         <div class="foldo-dash-versions__empty">
-          <p class="foldo-muted mb-3">ยังไม่มีพอร์ตโฟลิโอ สร้างเวอร์ชันแรกจากโปรไฟล์หลัก แล้วเลือกเทมเพลตที่ชอบ</p>
+          <p class="foldo-muted mb-3">ยังไม่มีพอร์ตโฟลิโอ สร้างพอร์ตโฟลิโอแรกจากโปรไฟล์ แล้วเลือกเทมเพลต</p>
           <div class="d-flex flex-wrap gap-2">
             <a class="btn btn-lime" href="{{ create_portfolio_url }}">{% include "partials/icon.html" with name="plus" %}สร้างพอร์ตโฟลิโอ</a>
-            <a class="btn btn-outline-foldo" href="{% url 'rendering:gallery' %}">ดูเทมเพลตพอร์ตโฟลิโอ</a>
+            <a class="btn btn-outline-foldo" href="{% url 'rendering:gallery' %}">ดูเทมเพลต</a>
           </div>
         </div>
       {% endif %}
@@ -217,8 +217,8 @@
         <span class="foldo-shape foldo-shape--dot" style="--s:1.4rem; --c1:#ff6a2b; --c2:#a33a0c; right:34%; bottom:1rem"></span>
       </div>
       <div class="foldo-dash-banner__copy">
-        <p class="foldo-eyebrow" lang="en">Career opportunity</p>
-        <h2 id="dash-banner-heading" class="foldo-dash-banner__title">สมัครงาน ฝึกงาน หรือขอทุน?<br>ทำเวอร์ชันเฉพาะตำแหน่งใน 3 ขั้น</h2>
+        <p class="foldo-eyebrow foldo-eyebrow--plain">วิธีใช้ FOLDO</p>
+        <h2 id="dash-banner-heading" class="foldo-dash-banner__title">สมัครงาน ฝึกงาน หรือขอทุน<br>ทำพอร์ตโฟลิโอเฉพาะงานนั้นใน 3 ขั้น</h2>
         <ol class="foldo-dash-banner__steps">
           <li><b>1</b>เลือกโปรไฟล์และเทมเพลต</li>
           <li><b>2</b>เลือกเนื้อหาที่ตรงกับงาน</li>
@@ -226,7 +226,7 @@
         </ol>
       </div>
       <a class="btn btn-lime btn-lg foldo-dash-banner__cta" href="{% url 'portfolios:create' %}">
-        เริ่มเวอร์ชันใหม่<span class="foldo-arrow" aria-hidden="true">&rarr;</span>
+        สร้างพอร์ตโฟลิโอแรก<span class="foldo-arrow" aria-hidden="true">&rarr;</span>
       </a>
     </section>
     {% endif %}

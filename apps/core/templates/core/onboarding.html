@@ -13,9 +13,9 @@
 <div class="foldo-page foldo-page--medium foldo-onboard">
   <div class="foldo-page-head">
     <div class="foldo-page-head__text tone-orange">
-      <p class="foldo-eyebrow" lang="en">Welcome to FOLDO</p>
-      <h1 id="onboarding-heading" class="foldo-page-title">เริ่มต้นใช้งาน <em lang="en">FOLDO</em> กัน</h1>
-      <p class="foldo-page-lead">สามขั้นตอนนี้พาคุณจากโปรไฟล์เปล่า ๆ ไปสู่พอร์ตโฟลิโอที่พร้อมส่งออกและแชร์</p>
+      <p class="foldo-eyebrow foldo-eyebrow--plain">เริ่มต้นใช้งาน</p>
+      <h1 id="onboarding-heading" class="foldo-page-title">จากโปรไฟล์ <em>ถึงลิงก์ที่ส่งได้</em></h1>
+      <p class="foldo-page-lead">สามขั้นนี้ทำตามลำดับหรือข้ามไปมาก็ได้ ขั้นที่ทำแล้วจะมีเครื่องหมายถูก</p>
       <div class="foldo-bands" aria-hidden="true"><span></span><span></span><span></span></div>
     </div>
   </div>
@@ -25,7 +25,6 @@
       <li class="foldo-step {% cycle 'tone-blue' 'tone-purple' 'tone-pink' %}{% if step.done %} foldo-step--done{% endif %}">
         <span class="foldo-step__number" aria-hidden="true">{% if step.done %}&check;{% else %}{{ step.number }}{% endif %}</span>
         <div class="foldo-step__body">
-          <p class="foldo-step__title-en" lang="en">{{ step.title_en }}</p>
           <h2 class="foldo-step__title">{{ step.title }}</h2>
           <p class="foldo-step__description">{{ step.description }}</p>
         </div>
@@ -43,7 +42,7 @@
 
   <div class="foldo-onboard__footer">
     <a class="btn btn-lime btn-lg" href="{% url 'core:dashboard' %}">
-      <span lang="en">Go to dashboard</span><span class="foldo-arrow foldo-arrow--out" aria-hidden="true">&nearr;</span>
+      ไปที่แดชบอร์ด<span class="foldo-arrow foldo-arrow--out" aria-hidden="true">&nearr;</span>
     </a>
   </div>
 </div>

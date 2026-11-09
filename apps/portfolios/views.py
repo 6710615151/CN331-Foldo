@@ -52,7 +52,7 @@ def _process_form(request, portfolio):
 
     form = PortfolioForm(request.POST, instance=instance, owner=request.user)
     if not form.is_valid():
-        messages.error(request, "Not saved. Please fix the highlighted fields. Everything else you typed has been kept.")
+        messages.error(request, "ยังไม่ได้บันทึก — แก้ช่องที่ไฮไลต์ ข้อมูลอื่นที่กรอกไว้ยังอยู่ครบ")
         return None, form
 
     try:
@@ -62,14 +62,13 @@ def _process_form(request, portfolio):
             obj.save()
     except DatabaseError:
         logger.exception("Failed saving portfolio for user %s", request.user.pk)
-        form.add_error(None, "We couldn't save your portfolio because of a temporary problem. "
-                             "Your entries are still in the form below. Please try again.")
-        messages.error(request, "Not saved. Please try again.")
+        form.add_error(None, "บันทึกไม่สำเร็จเพราะระบบขัดข้องชั่วคราว ข้อมูลที่กรอกยังอยู่ในฟอร์ม ลองกดบันทึกอีกครั้ง")
+        messages.error(request, "บันทึกไม่สำเร็จ ลองอีกครั้ง")
         return None, form
 
     saved_at = timezone.localtime(obj.updated_at).strftime("%H:%M")
-    state = "published" if obj.is_published else "saved as a private draft"
-    messages.success(request, f"“{obj.title}” {state} at {saved_at}.")
+    state = "เผยแพร่แล้ว" if obj.is_published else "ยังไม่เผยแพร่"
+    messages.success(request, f"บันทึก “{obj.title}” แล้ว ({state}) เวลา {saved_at} น.")
     return redirect("portfolios:preview", pk=obj.pk), form
 
 
@@ -125,12 +124,11 @@ def portfolio_delete(request, pk):
             portfolio.delete()
         except DatabaseError:
             logger.exception("Failed deleting portfolio %s for user %s", pk, request.user.pk)
-            messages.error(request, "Couldn't delete that portfolio. Please try again.")
+            messages.error(request, "ลบพอร์ตโฟลิโอไม่สำเร็จ ลองอีกครั้ง")
             return redirect("portfolios:list")
-        messages.success(request, f"“{title}” was deleted.")
+        messages.success(request, f"ลบ “{title}” แล้ว")
         return redirect("portfolios:list")
     return render(request, "portfolios/confirm_delete.html", {"portfolio": portfolio})
-
 
 
 @require_POST
@@ -142,9 +140,11 @@ def portfolio_duplicate(request, pk):
         copy = duplicate_portfolio(portfolio)
     except DatabaseError:
         logger.exception("Failed duplicating portfolio %s for user %s", pk, request.user.pk)
-        messages.error(request, "Couldn't duplicate that portfolio. Please try again.")
+        messages.error(request, "ทำสำเนาไม่สำเร็จ ลองอีกครั้ง")
         return redirect("portfolios:list")
-    messages.success(request, f"สร้างสำเนา “{copy.title}” แล้ว (ยังไม่เผยแพร่)")
+    messages.success(
+        request, f"สร้างสำเนา “{copy.title}” แล้ว สำเนายังไม่เผยแพร่ ตั้งชื่อใหม่ให้ตรงกับงานที่จะสมัครได้เลย"
+    )
     return redirect("portfolios:update", pk=copy.pk)
 
 
@@ -190,14 +190,14 @@ def portfolio_pdf(request, pk):
         pdf = render_pdf(portfolio, request=request, page_size=page_size)
     except PdfUnavailable:
         logger.warning("PDF export unavailable: WeasyPrint or Pango missing", exc_info=True)
-        message = "PDF export isn't set up on this server yet."
+        message = "เซิร์ฟเวอร์นี้ยังสร้าง PDF ไม่ได้ ใช้ “ดูตัวอย่าง” แล้วสั่งพิมพ์เป็น PDF จากเบราว์เซอร์แทนได้"
         if in_page:
             return JsonResponse({"error": message}, status=503)
         messages.error(request, message)
         return redirect("portfolios:list")
     except Exception:
         logger.exception("PDF export failed for portfolio %s", pk)
-        message = "Couldn't create the PDF. Please try again."
+        message = "สร้าง PDF ไม่สำเร็จ ลองอีกครั้ง"
         if in_page:
             return JsonResponse({"error": message}, status=500)
         messages.error(request, message)

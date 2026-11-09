@@ -58,7 +58,7 @@ class DevicePreviewTests(TestCase):
     def test_loading_state_is_shown_until_the_frame_loads(self):
         response = self.client.get(self.device_url)
         self.assertContains(response, "data-preview-loading")
-        self.assertContains(response, "Loading preview")
+        self.assertContains(response, "กำลังโหลดตัวอย่าง")
 
     def test_list_page_links_to_device_preview(self):
         response = self.client.get(reverse("portfolios:list"))

@@ -37,7 +37,7 @@ def profile_photo_path(instance, filename):
 
 def validate_photo_size(file):
     if file.size > MAX_PHOTO_BYTES:
-        raise ValidationError(f"Photo is too large (max {MAX_PHOTO_BYTES // (1024 * 1024)} MB).")
+        raise ValidationError(f"รูปใหญ่เกินไป ใช้ไฟล์ขนาดไม่เกิน {MAX_PHOTO_BYTES // (1024 * 1024)} MB")
 
 
 class MainProfile(models.Model):

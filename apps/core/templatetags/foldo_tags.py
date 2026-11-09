@@ -125,3 +125,36 @@ def lookup(mapping, key):
         return mapping.get(key, 0)
     except AttributeError:
         return 0
+
+
+LEVELS_TH = {"beginner": "เริ่มต้น", "intermediate": "ปานกลาง", "advanced": "ชำนาญ", "expert": "เชี่ยวชาญ"}
+SECTIONS_TH = {"education": "การศึกษา", "skills": "ทักษะ", "experience": "ประสบการณ์", "projects": "โปรเจกต์"}
+
+
+@register.filter
+def level_th(value):
+    """Skill proficiency key → Thai UI label (the portfolio document keeps English)."""
+    return LEVELS_TH.get(str(value).lower(), value)
+
+
+@register.filter
+def missing_th(profile):
+    """A profile's missing required fields as Thai labels."""
+    from apps.core.selectors import profile_missing_labels
+
+    return profile_missing_labels(profile)
+
+
+CATEGORIES_TH = {"university": "สายวิชาการ", "career": "สายอาชีพ", "creative": "สายสร้างสรรค์"}
+
+
+@register.filter
+def category_th(value):
+    """Template category → Thai label."""
+    return CATEGORIES_TH.get(str(value).lower(), value)
+
+
+@register.filter
+def section_th(value):
+    """Content section key → Thai UI label."""
+    return SECTIONS_TH.get(str(value).lower(), value)

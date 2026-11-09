@@ -34,7 +34,7 @@ class ShareKitView(_OwnedPortfolioMixin, View):
             url = services.public_url(portfolio, request)
             context.update(
                 public_url=url,
-                qr_svg=services.qr_svg_inline(url, title=f"QR code for {portfolio.title}"),
+                qr_svg=services.qr_svg_inline(url, title=f"QR code ของ {portfolio.title}"),
             )
         return render(request, TEMPLATE, context)
 

@@ -28,10 +28,15 @@ class Choice:
     detail: str = ""
 
 
+# UI labels for skill levels (the portfolio document keeps the English ones).
+SKILL_LEVELS_TH = {"beginner": "เริ่มต้น", "intermediate": "ปานกลาง", "advanced": "ชำนาญ", "expert": "เชี่ยวชาญ"}
+
+
 def _skills(profile, owner):
     if not profile:
         return []
-    return [Choice(s.pk, s.name, s.get_proficiency_display()) for s in profile.skills.all()]
+    return [Choice(s.pk, s.name, SKILL_LEVELS_TH.get(s.proficiency, s.get_proficiency_display()))
+            for s in profile.skills.all()]
 
 
 def _experience(profile, owner):
